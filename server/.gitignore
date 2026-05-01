@@ -1,0 +1,7 @@
+node_modules
+dist
+*.js
+*.d.ts
+*.map
+# Prevent ignoring source files if they happen to be JS
+!src/**/*.js
