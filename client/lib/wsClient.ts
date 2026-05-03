@@ -1,56 +1,45 @@
+import { io, Socket } from 'socket.io-client';
 
 type WSCallback = (payload: any) => void;
 
 class WSClient {
-  private ws: WebSocket | null = null;
+  private socket: Socket | null = null;
   private url: string;
   private listeners: Map<string, Set<WSCallback>> = new Map();
-  private messageQueue: string[] = [];
-  private reconnectTimeout: NodeJS.Timeout | null = null;
 
   constructor(url: string) {
     this.url = url;
   }
 
   connect() {
-    if (this.ws?.readyState === WebSocket.OPEN || this.ws?.readyState === WebSocket.CONNECTING) return;
+    if (this.socket?.connected) return;
 
-    this.ws = new WebSocket(this.url);
+    this.socket = io(this.url, {
+      transports: ['websocket', 'polling']
+    });
 
-    this.ws.onopen = () => {
-      console.log('Connected to WebSocket');
+    this.socket.on('connect', () => {
+      console.log('Connected to WebSocket (Socket.IO)');
       this.emit('CONNECTED', null);
-      
-      // Flush queue
-      while (this.messageQueue.length > 0) {
-        const msg = this.messageQueue.shift();
-        if (msg) this.ws?.send(msg);
-      }
+    });
 
-      if (this.reconnectTimeout) {
-        clearTimeout(this.reconnectTimeout);
-        this.reconnectTimeout = null;
-      }
-    };
-
-    this.ws.onmessage = (event) => {
+    this.socket.on('message', (data: string) => {
       try {
-        const { event: eventName, payload } = JSON.parse(event.data);
+        const { event: eventName, payload } = JSON.parse(data);
         this.emit(eventName, payload);
       } catch (err) {
         console.error('Error parsing WS message:', err);
       }
-    };
+    });
 
-    this.ws.onclose = () => {
-      console.log('Disconnected from WebSocket, reconnecting...');
+    this.socket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket (Socket.IO)');
       this.emit('DISCONNECTED', null);
-      this.reconnect();
-    };
+    });
 
-    this.ws.onerror = (err) => {
+    this.socket.on('connect_error', (err) => {
       console.error('WebSocket error:', err);
-    };
+    });
   }
 
   private emit(eventName: string, payload: any) {
@@ -60,30 +49,19 @@ class WSClient {
     }
   }
 
-  private reconnect() {
-    if (this.reconnectTimeout) return;
-    this.reconnectTimeout = setTimeout(() => {
-      this.connect();
-      this.reconnectTimeout = null;
-    }, 3000);
-  }
-
   isConnected() {
-    return this.ws?.readyState === WebSocket.OPEN;
+    return this.socket?.connected || false;
   }
 
   send(event: string, payload: any = {}) {
     const message = JSON.stringify({ event, payload });
     
-    if (this.isConnected()) {
-      this.ws?.send(message);
-    } else {
-      // If still connecting, queue the message
-      this.messageQueue.push(message);
-      if (!this.ws || this.ws.readyState !== WebSocket.CONNECTING) {
-        this.connect();
-      }
+    if (!this.socket) {
+      this.connect();
     }
+    
+    // Socket.IO automatically buffers messages when disconnected
+    this.socket?.emit('message', message);
   }
 
   on(event: string, callback: WSCallback) {
@@ -102,7 +80,12 @@ class WSClient {
   }
 }
 
-const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3021';
+// Convert ws:// to http:// if needed, or just use the provided URL.
+// Socket.IO supports both ws:// and http:// formats.
+const wsUrl = process.env.NEXT_PUBLIC_WS_URL 
+  ? process.env.NEXT_PUBLIC_WS_URL.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:') 
+  : 'http://localhost:3021';
+
 const wsClient = typeof window !== 'undefined' ? new WSClient(wsUrl) : null;
 
 export default wsClient;

@@ -1,9 +1,9 @@
-import { WebSocket, WebSocketServer } from 'ws';
+import { Socket, Server } from 'socket.io';
 import { WSEvent } from './events.js';
 import * as roomManager from '../managers/roomManager.js';
 import * as gameManager from '../managers/gameManager.js';
 
-export function handleConnection(ws: WebSocket, wss: WebSocketServer) {
+export function handleConnection(ws: Socket, wss: Server) {
   let currentPlayerId: string | null = null;
 
   ws.on('message', (data: string) => {
@@ -67,7 +67,7 @@ export function handleConnection(ws: WebSocket, wss: WebSocketServer) {
     }
   });
 
-  ws.on('close', () => {
+  ws.on('disconnect', () => {
     if (currentPlayerId) {
       console.log(`[WS] Connection closed for player ${currentPlayerId}. Starting 10s grace period.`);
       

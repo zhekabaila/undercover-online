@@ -1,19 +1,19 @@
-import { WebSocket, WebSocketServer } from 'ws';
+import { Socket, Server } from 'socket.io';
 import * as roomStore from '../state/roomStore.js';
 import { Player, RoomSettings } from '../state/types.js';
 import { WSEvent, ErrorCode } from '../ws/events.js';
 
-export function sendToPlayer(ws: WebSocket, event: WSEvent, payload: any) {
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ event, payload }));
+export function sendToPlayer(ws: Socket, event: WSEvent, payload: any) {
+  if (ws.connected) {
+    ws.emit('message', JSON.stringify({ event, payload }));
   }
 }
 
-export function broadcastToRoom(wss: WebSocketServer, roomId: string, event: WSEvent, payload: any) {
+export function broadcastToRoom(wss: Server, roomId: string, event: WSEvent, payload: any) {
   const room = roomStore.getRoom(roomId);
   if (!room) return;
 
-  wss.clients.forEach((client) => {
+  Array.from(wss.sockets.sockets.values()).forEach((client) => {
     // In a real app, we should map ws -> playerId or room
     // For simplicity, we check if the player is in this room
     // Note: This requires us to store ws in Player or have a map ws -> player
@@ -21,7 +21,7 @@ export function broadcastToRoom(wss: WebSocketServer, roomId: string, event: WSE
 }
 
 // Better broadcast approach: use a Map of playerId -> ws
-export const playerSockets = new Map<string, WebSocket>();
+export const playerSockets = new Map<string, Socket>();
 export const pendingRemovals = new Map<string, NodeJS.Timeout>();
 
 export function cancelPendingRemoval(playerId: string) {
@@ -45,7 +45,7 @@ export function broadcast(roomId: string, event: WSEvent, payload: any) {
   });
 }
 
-export function handleCreateRoom(ws: WebSocket, payload: { name: string, settings: RoomSettings }) {
+export function handleCreateRoom(ws: Socket, payload: { name: string, settings: RoomSettings }) {
   const playerId = Math.random().toString(36).substring(7);
   const host: Player = {
     id: playerId,
@@ -69,7 +69,7 @@ export function handleCreateRoom(ws: WebSocket, payload: { name: string, setting
   sendToPlayer(ws, WSEvent.ROOM_CREATED, { room: { ...room, players: Array.from(room.players.values()) }, playerId });
 }
 
-export function handleJoinRoom(ws: WebSocket, payload: { roomId: string, name: string }) {
+export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: string }) {
   const room = roomStore.getRoom(payload.roomId);
 
   console.log(`[JoinRoom] Player "${payload.name}" attempting to join "${payload.roomId}"`);
@@ -110,7 +110,7 @@ export function handleJoinRoom(ws: WebSocket, payload: { roomId: string, name: s
   broadcast(room.id, WSEvent.PLAYER_JOINED, { player });
 }
 
-export function handleReconnect(ws: WebSocket, payload: { roomId: string, playerId: string }) {
+export function handleReconnect(ws: Socket, payload: { roomId: string, playerId: string }) {
   // Cancel any pending removal for this player
   cancelPendingRemoval(payload.playerId);
 

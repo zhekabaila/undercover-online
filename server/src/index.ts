@@ -1,13 +1,13 @@
 import express from 'express';
 import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
+import { Server } from 'socket.io';
 import cors from 'cors';
 import { handleConnection } from './ws/wsHandler.js';
 import { getAllRooms } from './state/roomStore.js';
 
 const app = express();
 const server = createServer(app);
-const wss = new WebSocketServer({ server });
+const wss = new Server(server, { cors: { origin: '*' } });
 
 app.use(cors());
 app.use(express.json());
