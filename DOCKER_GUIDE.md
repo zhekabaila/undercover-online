@@ -25,7 +25,7 @@ Gunakan mode ini untuk deployment di server. Dioptimalkan untuk **Server 1 Core*
 
 **Perintah:**
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
 ```
 - **Akses**: `http://localhost:3020`
 - **Fitur**:
@@ -47,4 +47,11 @@ NEXT_PUBLIC_WS_URL=https://undercover-server.coreapps.web.id docker-compose up -
 ## 🧹 Perintah Berguna Lainnya
 - **Menghentikan aplikasi**: `docker-compose down` (atau tambahkan `-f docker-compose.local.yml` jika di dev).
 - **Melihat log**: `docker-compose logs -f`
-- **Membersihkan image lama**: `docker system prune -a`
+- **Bersihkan Semua (Nuclear Reset)**: 
+  ```bash
+  # Hentikan, hapus volume, dan hapus semua image buatan
+  docker compose down -v
+  docker system prune -af
+  # Jalankan ulang dari nol
+  docker compose up --build -d
+  ```

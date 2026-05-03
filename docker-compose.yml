@@ -19,6 +19,8 @@ services:
     build:
       context: ./client
       target: production
+      args:
+        - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL:-https://undercover-server.coreapps.web.id}
     ports:
       - "3020:3020"
     restart: always
