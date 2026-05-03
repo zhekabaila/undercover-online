@@ -29,6 +29,7 @@ export interface GameState {
   roundNumber: number;
   turnOrder: TurnOrder;
   votes: Record<string, string>; // voterId -> targetId
+  passes?: Record<string, boolean>; // voterId -> true if passed
   turnEndTime?: number;          // timestamp unix kapan giliran berakhir
   eliminatedPlayerId?: string;   // For showing vote results
   winnerRole?: RoleType | 'civilian';

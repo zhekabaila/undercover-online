@@ -21,7 +21,7 @@ import { Loader2 } from 'lucide-react'
 const PHASE_LABELS: Record<GamePhase, string> = {
   lobby: 'Lobby',
   starting: 'Starting...',
-  speaking: 'Speaking Phase',
+  speaking: 'Speaking Phase', // Legacy - no longer used
   discussion: 'Discussion Phase',
   voting: 'Voting Phase',
   mrwhite_guessing: 'Mr. White Guessing',
@@ -37,6 +37,7 @@ export default function GameScreen() {
     messages,
     sendChat,
     castVote,
+    passVote,
     turnDone,
     mrWhiteGuess,
     leaveRoom,
@@ -150,7 +151,7 @@ export default function GameScreen() {
                 READY?
               </h2>
               <p className="text-xl text-gray-400">
-                Assigning roles and words...
+                Starting discussion phase...
               </p>
             </motion.div>
           )}
@@ -253,25 +254,45 @@ export default function GameScreen() {
             </motion.div>
           )}
 
-          {/* Speaking/Discussion/Voting Phase - Player Grid */}
-          {['speaking', 'discussion', 'voting'].includes(room.game.phase) && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {room.players.map((player) => (
-                <PlayerCard
-                  key={player.id}
-                  player={player}
-                  isCurrent={
-                    room.game?.turnOrder.playerIds[
-                      room.game.turnOrder.currentIndex
-                    ] === player.id
-                  }
-                  isSelf={player.id === playerId}
-                  phase={room.game!.phase}
-                  onVote={() => castVote(player.id)}
-                  hasVoted={!!room.game?.votes[playerId!]}
-                />
-              ))}
-            </div>
+          {/* Discussion/Voting Phase - Player Grid */}
+          {['discussion', 'voting'].includes(room.game.phase) && (
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {room.players.map((player) => (
+                  <PlayerCard
+                    key={player.id}
+                    player={player}
+                    isCurrent={
+                      room.game?.turnOrder.playerIds[
+                        room.game.turnOrder.currentIndex
+                      ] === player.id
+                    }
+                    isSelf={player.id === playerId}
+                    phase={room.game!.phase}
+                    onVote={() => castVote(player.id)}
+                    hasVoted={!!room.game?.votes[playerId!]}
+                  />
+                ))}
+              </div>
+
+              {/* Voting Phase - Pass Button */}
+              {room.game.phase === 'voting' &&
+                !room.game?.passes?.[playerId!] && (
+                  <div className="flex justify-center mt-8">
+                    <button
+                      onClick={() => passVote()}
+                      disabled={!!room.game?.votes[playerId!]}
+                      className={`px-8 py-4 rounded-2xl text-sm font-black transition-all flex items-center gap-2 ${
+                        !!room.game?.votes[playerId!]
+                          ? 'bg-white/5 text-gray-500 cursor-not-allowed opacity-50'
+                          : 'bg-yellow-600 hover:bg-yellow-500 text-white active:scale-95 shadow-lg shadow-yellow-600/20'
+                      }`}
+                    >
+                      PASS (NO ELIMINATION)
+                    </button>
+                  </div>
+                )}
+            </>
           )}
 
           {/* Role Card (Fixed at bottom for self) */}
@@ -285,25 +306,44 @@ export default function GameScreen() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex flex-col ${msg.playerId === playerId ? 'items-end' : 'items-start'}`}
-              >
-                <span className="text-[10px] text-gray-500 font-bold uppercase mb-1">
-                  {msg.name}
-                </span>
+            {messages.map((msg, i) => {
+              const isVoteOrPass = msg.type === 'vote' || msg.type === 'pass'
+              const isSystemVote =
+                msg.playerName === 'SYSTEM' && msg.type === 'vote'
+              const isSystemPass =
+                msg.playerName === 'SYSTEM' && msg.type === 'pass'
+
+              return (
                 <div
-                  className={`px-4 py-2 rounded-2xl max-w-[80%] text-sm ${
-                    msg.playerId === playerId
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white/10 text-gray-200'
-                  }`}
+                  key={i}
+                  className={`flex flex-col ${msg.playerId === playerId ? 'items-end' : 'items-start'}`}
                 >
-                  {msg.message}
+                  <span className="text-[10px] text-gray-500 font-bold uppercase mb-1">
+                    {msg.playerName}
+                  </span>
+                  <div
+                    className={`px-4 py-2 rounded-2xl max-w-[80%] text-sm ${
+                      isSystemVote
+                        ? 'bg-red-600/30 border border-red-500/50 text-red-200 flex items-center gap-2'
+                        : isSystemPass
+                          ? 'bg-yellow-600/30 border border-yellow-500/50 text-yellow-200 flex items-center gap-2'
+                          : msg.playerId === playerId
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white/10 text-gray-200'
+                    }`}
+                  >
+                    {isVoteOrPass && (
+                      <span
+                        className={`font-black ${isSystemVote ? 'text-red-400' : 'text-yellow-400'}`}
+                      >
+                        {isSystemVote ? '🗳️' : '✋'}
+                      </span>
+                    )}
+                    {msg.message}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
             <div ref={chatEndRef} />
           </div>
 
@@ -383,18 +423,25 @@ function PlayerCard({
       className={`p-5 rounded-[2rem] border-2 transition-all relative group ${
         !player.isAlive ? 'opacity-40 grayscale' : ''
       } ${
-        isCurrent
-          ? 'bg-blue-600/20 border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.3)]'
-          : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20'
+        isSelf
+          ? 'bg-green-600/20 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]'
+          : isCurrent
+            ? 'bg-blue-600/20 border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.3)]'
+            : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20'
       }`}
     >
+      {isSelf && (
+        <div className="absolute -top-3 right-2 flex items-center gap-1 bg-green-500 text-white text-[9px] font-black px-2 py-1 rounded-full shadow-lg z-10">
+          <span>YOU</span>
+        </div>
+      )}
       {isCurrent && (
         <div
           className={`absolute -top-3 left-1/2 -translate-x-1/2 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10 animate-bounce ${
             isSelf ? 'bg-green-500 ring-4 ring-green-500/20' : 'bg-blue-500'
           }`}
         >
-          {isSelf ? 'YOUR TURN' : 'SPEAKING'}
+          {isSelf ? 'VOTING PRIORITY' : 'SUSPICIOUS'}
         </div>
       )}
       <div className="flex flex-col items-center text-center gap-3">

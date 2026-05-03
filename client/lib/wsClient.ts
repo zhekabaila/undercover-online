@@ -1,4 +1,3 @@
-import { WSEvent } from '../types/events';
 
 type WSCallback = (payload: any) => void;
 
