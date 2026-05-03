@@ -15,7 +15,10 @@ class WSClient {
     if (this.socket?.connected) return;
 
     this.socket = io(this.url, {
-      transports: ['websocket', 'polling']
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 20000, // Increase timeout to 20s
     });
 
     this.socket.on('connect', () => {

@@ -7,7 +7,15 @@ import { getAllRooms } from './state/roomStore.js';
 
 const app = express();
 const server = createServer(app);
-const wss = new Server(server, { cors: { origin: '*' } });
+const wss = new Server(server, { 
+  cors: { 
+    origin: ["https://undercover.coreapps.web.id", "http://localhost:3020"],
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true // for compatibility if needed
+});
 
 app.use(cors());
 app.use(express.json());
