@@ -12,10 +12,21 @@ export function handleConnection(ws: Socket, wss: Server) {
 
       // 1. Try to find/refresh playerId if not already known
       if (!currentPlayerId) {
-        for (const [pId, socket] of roomManager.playerSockets.entries()) {
-          if (socket === ws) {
-            currentPlayerId = pId;
-            break;
+        // Try payload first (robustness)
+        const pid = payload?.playerId;
+        if (pid) {
+          currentPlayerId = pid;
+          // Associate if not already
+          if (!roomManager.playerSockets.has(pid)) {
+             roomManager.playerSockets.set(pid, ws);
+          }
+        } else {
+          // Fallback to discovery loop
+          for (const [pId, socket] of roomManager.playerSockets.entries()) {
+            if (socket === ws) {
+              currentPlayerId = pId;
+              break;
+            }
           }
         }
       }
@@ -28,25 +39,53 @@ export function handleConnection(ws: Socket, wss: Server) {
           roomManager.handleJoinRoom(ws, payload);
           break;
         case WSEvent.LEAVE_ROOM:
-          if (currentPlayerId) roomManager.handleLeaveRoom(currentPlayerId);
+          if (currentPlayerId) {
+            roomManager.handleLeaveRoom(currentPlayerId);
+          } else {
+            console.warn(`[WS] Ignore LEAVE_ROOM: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
         case WSEvent.SET_READY:
-          if (currentPlayerId) roomManager.handleSetReady(currentPlayerId, payload);
+          if (currentPlayerId) {
+            roomManager.handleSetReady(currentPlayerId, payload);
+          } else {
+            console.warn(`[WS] Ignore SET_READY: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
         case WSEvent.START_GAME:
-          if (currentPlayerId) gameManager.handleStartGame(currentPlayerId);
+          if (currentPlayerId) {
+            gameManager.handleStartGame(currentPlayerId);
+          } else {
+            console.warn(`[WS] Ignore START_GAME: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
         case WSEvent.TURN_DONE:
-          if (currentPlayerId) gameManager.handleTurnDone(currentPlayerId);
+          if (currentPlayerId) {
+            gameManager.handleTurnDone(currentPlayerId);
+          } else {
+            console.warn(`[WS] Ignore TURN_DONE: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
         case WSEvent.CAST_VOTE:
-          if (currentPlayerId) gameManager.handleCastVote(currentPlayerId, payload);
+          if (currentPlayerId) {
+            gameManager.handleCastVote(currentPlayerId, payload);
+          } else {
+            console.warn(`[WS] Ignore CAST_VOTE: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
         case WSEvent.SEND_CHAT:
-          if (currentPlayerId) gameManager.handleChat(currentPlayerId, payload);
+          if (currentPlayerId) {
+            gameManager.handleChat(currentPlayerId, payload);
+          } else {
+            console.warn(`[WS] Ignore SEND_CHAT: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
         case WSEvent.UPDATE_SETTINGS:
-          if (currentPlayerId) roomManager.handleUpdateSettings(currentPlayerId, payload);
+          if (currentPlayerId) {
+            roomManager.handleUpdateSettings(currentPlayerId, payload);
+          } else {
+            console.warn(`[WS] Ignore UPDATE_SETTINGS: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
         case WSEvent.RECONNECT:
           roomManager.handleReconnect(ws, payload);
@@ -54,7 +93,11 @@ export function handleConnection(ws: Socket, wss: Server) {
           currentPlayerId = payload.playerId;
           break;
         case WSEvent.MRWHITE_GUESS:
-          if (currentPlayerId) gameManager.handleMrWhiteGuess(currentPlayerId, payload);
+          if (currentPlayerId) {
+            gameManager.handleMrWhiteGuess(currentPlayerId, payload);
+          } else {
+            console.warn(`[WS] Ignore MRWHITE_GUESS: No currentPlayerId for socket ${ws.id}`);
+          }
           break;
       }
 

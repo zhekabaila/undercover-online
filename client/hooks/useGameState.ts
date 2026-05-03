@@ -272,35 +272,35 @@ export function useGameState() {
   }, [])
 
   const setReady = useCallback((isReady: boolean) => {
-    wsClient?.send(WSEvent.SET_READY, { isReady })
+    wsClient?.send(WSEvent.SET_READY, { isReady, playerId: globalPlayerId, roomId: globalRoom?.id })
   }, [])
 
   const startGame = useCallback(() => {
-    wsClient?.send(WSEvent.START_GAME)
+    wsClient?.send(WSEvent.START_GAME, { playerId: globalPlayerId, roomId: globalRoom?.id })
   }, [])
 
   const sendChat = useCallback((message: string) => {
-    wsClient?.send(WSEvent.SEND_CHAT, { message })
+    wsClient?.send(WSEvent.SEND_CHAT, { message, playerId: globalPlayerId, roomId: globalRoom?.id })
   }, [])
 
   const castVote = useCallback((targetId: string) => {
-    wsClient?.send(WSEvent.CAST_VOTE, { targetId })
+    wsClient?.send(WSEvent.CAST_VOTE, { targetId, playerId: globalPlayerId, roomId: globalRoom?.id })
   }, [])
 
   const passVote = useCallback(() => {
-    wsClient?.send(WSEvent.CAST_VOTE, { pass: true })
+    wsClient?.send(WSEvent.CAST_VOTE, { pass: true, playerId: globalPlayerId, roomId: globalRoom?.id })
   }, [])
 
   const turnDone = useCallback(() => {
-    wsClient?.send(WSEvent.TURN_DONE)
+    wsClient?.send(WSEvent.TURN_DONE, { playerId: globalPlayerId, roomId: globalRoom?.id })
   }, [])
 
   const mrWhiteGuess = useCallback((word: string) => {
-    wsClient?.send(WSEvent.MRWHITE_GUESS, { word })
+    wsClient?.send(WSEvent.MRWHITE_GUESS, { word, playerId: globalPlayerId, roomId: globalRoom?.id })
   }, [])
 
   const leaveRoom = useCallback(() => {
-    wsClient?.send(WSEvent.LEAVE_ROOM)
+    wsClient?.send(WSEvent.LEAVE_ROOM, { playerId: globalPlayerId, roomId: globalRoom?.id })
     updateGlobalState({ room: null, playerId: null })
     localStorage.removeItem('undercover_roomId')
     localStorage.removeItem('undercover_playerId')
@@ -340,7 +340,11 @@ export function useGameState() {
             settings: updatedSettings,
           },
         });
-        wsClient?.send(WSEvent.UPDATE_SETTINGS, { settings: updatedSettings });
+        wsClient?.send(WSEvent.UPDATE_SETTINGS, { 
+          settings: updatedSettings,
+          playerId: globalPlayerId,
+          roomId: globalRoom.id 
+        });
       }
     }, []),
     isInitialLoading,
