@@ -45,6 +45,7 @@ export default function GameScreen() {
   } = useGameState()
   const [chatInput, setChatInput] = useState('')
   const [guessInput, setGuessInput] = useState('')
+  const [isChatOpen, setIsChatOpen] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const handleMrWhiteGuess = (e: React.FormEvent) => {
@@ -92,37 +93,40 @@ export default function GameScreen() {
   return (
     <main className="min-h-screen bg-[#020617] text-white flex flex-col h-screen overflow-hidden relative">
       {/* Decorative Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[60%] sm:w-[40%] h-[60%] sm:h-[40%] bg-blue-600/10 blur-[80px] sm:blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] sm:w-[40%] h-[60%] sm:h-[40%] bg-purple-600/10 blur-[80px] sm:blur-[120px] rounded-full pointer-events-none" />
 
       {/* Header / Timer */}
-      <header className="p-4 bg-white/5 border-b border-white/10 flex items-center justify-between backdrop-blur-2xl z-20 shadow-2xl">
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase shadow-lg shadow-blue-500/20 flex flex-col justify-center leading-tight">
-            <span className="text-blue-200/60 text-[8px] mb-0.5">
-              Current Phase
+      <header className="p-3 sm:p-4 bg-white/5 border-b border-white/10 flex items-center justify-between backdrop-blur-2xl z-30 shadow-2xl shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="bg-blue-600 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-black tracking-widest uppercase shadow-lg shadow-blue-500/20 flex flex-col justify-center leading-tight">
+            <span className="text-blue-200/60 text-[6px] sm:text-[8px] mb-0.5">
+              Phase
             </span>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-              {room.game ? PHASE_LABELS[room.game.phase] : 'Loading...'}
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              {room.game ? PHASE_LABELS[room.game.phase] : '...'}
             </div>
           </div>
-          <div className="text-sm font-bold text-gray-400 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-            Round {room.game.roundNumber}
+          <div className="text-[10px] sm:text-sm font-bold text-gray-400 bg-white/5 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-white/5">
+            R{room.game.roundNumber}
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2 sm:gap-6">
           <Timer endsAt={room.game.turnEndTime} onExpire={() => {}} />
-
-          {/* Role Info */}
-          {currentPlayer && <RoleCard player={currentPlayer} compact={true} />}
+          <div className="hidden sm:block">
+            {currentPlayer && <RoleCard player={currentPlayer} compact={true} />}
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-mono text-blue-400 hidden md:inline">
-            {params.roomId}
-          </span>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <button
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className={`md:hidden p-2 rounded-lg transition-all ${isChatOpen ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400'}`}
+          >
+            <MessageSquare size={20} />
+          </button>
           <button
             onClick={() => {
               if (confirm('Are you sure you want to quit?')) {
@@ -130,16 +134,20 @@ export default function GameScreen() {
                 router.push('/')
               }
             }}
-            className="bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition-all active:scale-95"
+            className="bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black transition-all active:scale-95"
           >
             QUIT
           </button>
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden md:mr-96">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Game Area */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8">
+        <div className={`flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 transition-all duration-300 ${isChatOpen ? 'md:mr-96' : ''}`}>
+          {/* Mobile Role Badge (Floating) */}
+          <div className="sm:hidden flex justify-center mb-4">
+             {currentPlayer && <RoleCard player={currentPlayer} compact={true} />}
+          </div>
           {/* Phase: Starting */}
           {room.game.phase === 'starting' && (
             <motion.div
@@ -296,13 +304,30 @@ export default function GameScreen() {
           )}
 
           {/* Role Card (Fixed at bottom for self) */}
+          {/* {currentPlayer && <RoleCard player={currentPlayer} />} */}
         </div>
 
-        {/* Chat Area */}
-        <aside className="fixed right-0 top-20 w-96 h-[calc(100vh-80px)] bg-white/5 border-l border-white/10 flex flex-col overflow-hidden backdrop-blur-md z-10">
-          <div className="p-4 border-b border-white/10 flex items-center gap-2">
-            <MessageSquare size={18} className="text-blue-500" />
-            <h3 className="font-bold">Room Chat</h3>
+        {/* Chat Area - Responsive Drawer/Sidebar */}
+        <aside 
+          className={`
+            fixed md:relative inset-y-0 right-0 w-full md:w-96 bg-[#020617]/95 md:bg-white/5 
+            border-l border-white/10 flex flex-col overflow-hidden backdrop-blur-2xl md:backdrop-blur-md 
+            z-40 transition-transform duration-300 ease-in-out
+            ${isChatOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0 md:hidden lg:flex'}
+            ${!isChatOpen ? 'pointer-events-none md:pointer-events-auto' : ''}
+          `}
+        >
+          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageSquare size={18} className="text-blue-500" />
+              <h3 className="font-bold">Room Chat</h3>
+            </div>
+            <button 
+              onClick={() => setIsChatOpen(false)}
+              className="md:hidden p-2 hover:bg-white/10 rounded-lg"
+            >
+              <AlertCircle size={20} className="rotate-45" />
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -420,7 +445,7 @@ function PlayerCard({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={player.isAlive ? { y: -5, scale: 1.02 } : {}}
-      className={`p-5 rounded-[2rem] border-2 transition-all relative group ${
+      className={`p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] border-2 transition-all relative group ${
         !player.isAlive ? 'opacity-40 grayscale' : ''
       } ${
         isSelf
@@ -444,9 +469,9 @@ function PlayerCard({
           {isSelf ? 'VOTING PRIORITY' : 'SUSPICIOUS'}
         </div>
       )}
-      <div className="flex flex-col items-center text-center gap-3">
+      <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
         <div
-          className={`w-20 h-20 rounded-3xl flex items-center justify-center font-black text-3xl relative transition-transform duration-500 ${
+          className={`w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center font-black text-xl sm:text-3xl relative transition-transform duration-500 ${
             isCurrent
               ? 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-2xl shadow-blue-500/40 rotate-3'
               : 'bg-white/10'
@@ -454,15 +479,15 @@ function PlayerCard({
         >
           {player.name[0].toUpperCase()}
           {!player.isAlive && (
-            <div className="absolute inset-0 flex items-center justify-center bg-red-950/90 rounded-3xl border-2 border-red-500/50">
-              <span className="text-[10px] font-black uppercase rotate-[-20deg] text-red-500">
+            <div className="absolute inset-0 flex items-center justify-center bg-red-950/90 rounded-2xl sm:rounded-3xl border-2 border-red-500/50">
+              <span className="text-[8px] sm:text-[10px] font-black uppercase rotate-[-20deg] text-red-500">
                 Eliminated
               </span>
             </div>
           )}
         </div>
         <div className="w-full">
-          <p className="font-black text-lg truncate mb-1">{player.name}</p>
+          <p className="font-black text-sm sm:text-lg truncate mb-0.5 sm:mb-1">{player.name}</p>
           <div className="h-1.5 w-12 bg-white/10 rounded-full mx-auto overflow-hidden">
             {isCurrent && (
               <motion.div
@@ -478,9 +503,9 @@ function PlayerCard({
         {phase === 'voting' && player.isAlive && !isSelf && !hasVoted && (
           <button
             onClick={onVote}
-            className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white py-3 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 active:scale-95"
+            className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white py-2 sm:py-3 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/20 active:scale-95"
           >
-            <Vote size={14} />
+            <Vote size={12} />
             ELIMINATE
           </button>
         )}
@@ -532,27 +557,27 @@ function RoleCard({
   }
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30">
+    <div className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-xs sm:max-w-none">
       <motion.div
         whileHover={{ y: -5 }}
-        className="bg-white/10 backdrop-blur-2xl border border-white/20 p-6 rounded-3xl shadow-2xl flex flex-col items-center min-w-60"
+        className="bg-white/10 backdrop-blur-2xl border border-white/20 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col items-center min-w-0 sm:min-w-60"
       >
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-            <Shield size={20} />
+        <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 w-full">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0">
+            <Shield size={16} />
           </div>
-          <div className="text-left">
-            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+          <div className="text-left flex-1 min-w-0">
+            <p className="text-[8px] sm:text-[10px] font-black text-gray-500 uppercase tracking-widest">
               Your Role
             </p>
-            <p className="text-xl font-black uppercase tracking-tighter">
+            <p className="text-lg sm:text-xl font-black uppercase tracking-tighter truncate">
               {revealed ? player.role : '••••••••'}
             </p>
           </div>
         </div>
 
         <div
-          className={`w-full p-4 rounded-2xl border transition-all ${
+          className={`w-full p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all ${
             revealed
               ? 'bg-white/5 border-white/10'
               : 'bg-blue-600 border-blue-500 cursor-pointer'
@@ -562,21 +587,21 @@ function RoleCard({
           <div className="flex items-center justify-center gap-2">
             {revealed ? (
               <div className="text-center">
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">
+                <p className="text-[8px] sm:text-[10px] font-black text-gray-500 uppercase tracking-widest mb-0.5 sm:mb-1">
                   Secret Word
                 </p>
-                <p className="text-2xl font-black text-blue-400">
+                <p className="text-xl sm:text-2xl font-black text-blue-400">
                   {player.role === 'mrwhite' ? '???' : player.word}
                 </p>
                 {player.role === 'mrwhite' && (
-                  <p className="text-[10px] text-gray-400 mt-1">
-                    You are Mr. White! Try to guess the word.
+                  <p className="text-[8px] sm:text-[10px] text-gray-400 mt-1">
+                    Guess the word!
                   </p>
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2 font-black italic">
-                <Eye size={20} />
+              <div className="flex items-center gap-2 font-black italic text-sm sm:text-base">
+                <Eye size={18} />
                 CLICK TO REVEAL
               </div>
             )}
@@ -613,18 +638,19 @@ function Timer({
 
   return (
     <div
-      className={`flex items-center gap-3 px-6 py-2 rounded-2xl border transition-colors ${
+      className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border transition-colors ${
         timeLeft <= 10
           ? 'bg-red-600/20 border-red-500 animate-pulse'
           : 'bg-white/5 border-white/10'
       }`}
     >
       <TimerIcon
-        size={24}
+        size={18}
+      
         className={timeLeft <= 10 ? 'text-red-500' : 'text-blue-500'}
       />
       <span
-        className={`text-2xl font-mono font-black ${timeLeft <= 10 ? 'text-red-500' : 'text-white'}`}
+        className={`text-lg sm:text-2xl font-mono font-black ${timeLeft <= 10 ? 'text-red-500' : 'text-white'}`}
       >
         {timeLeft}s
       </span>
