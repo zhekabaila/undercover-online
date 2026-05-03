@@ -26,7 +26,7 @@ services:
       - NODE_ENV=production
       - PORT=3020
       # Update these values during deployment
-      - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL:-http://localhost:3021}
+      - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL:-https://undercover-server.coreapps.web.id}
     depends_on:
       - server
     deploy:

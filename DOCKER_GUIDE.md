@@ -39,7 +39,7 @@ docker-compose up --build -d
 Jika Anda men-deploy di server dengan domain/IP publik, jalankan dengan variabel berikut:
 
 ```bash
-NEXT_PUBLIC_WS_URL=https://api.domainanda.com docker-compose up -d
+NEXT_PUBLIC_WS_URL=https://undercover-server.coreapps.web.id docker-compose up -d
 ```
 
 ---
