@@ -315,14 +315,14 @@ export default function GameScreen() {
         {/* Chat Area - Responsive Drawer/Sidebar */}
         <aside 
           className={`
-            fixed md:relative top-0 md:top-auto bottom-0 right-0 w-full md:w-96 bg-[#020617]/95 md:bg-white/5 
+            absolute top-0 bottom-0 right-0 w-full md:w-96 bg-[#020617]/95 md:bg-[#020617]/90
             border-l border-white/10 flex flex-col overflow-hidden backdrop-blur-2xl md:backdrop-blur-md 
             z-40 transition-transform duration-300 ease-in-out
-            ${isChatOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0 md:hidden lg:flex'}
-            ${!isChatOpen ? 'pointer-events-none md:pointer-events-auto' : ''}
+            ${isChatOpen ? 'translate-x-0' : 'translate-x-full'}
+            ${!isChatOpen ? 'pointer-events-none' : 'pointer-events-auto'}
           `}
         >
-          <div className="p-4 pt-20 md:pt-4 border-b border-white/10 flex items-center justify-between">
+          <div className="p-4 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare size={18} className="text-blue-500" />
               <h3 className="font-bold">Room Chat</h3>
