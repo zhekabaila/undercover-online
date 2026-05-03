@@ -97,8 +97,12 @@ export default function GameScreen() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[60%] sm:w-[40%] h-[60%] sm:h-[40%] bg-purple-600/10 blur-[80px] sm:blur-[120px] rounded-full pointer-events-none" />
 
       {/* Header / Timer */}
-      <header className="p-3 sm:p-4 bg-white/5 border-b border-white/10 flex items-center justify-between backdrop-blur-2xl z-30 shadow-2xl shrink-0">
+      <header className="p-3 sm:p-4 bg-[#020617]/80 border-b border-white/10 flex items-center justify-between backdrop-blur-2xl z-50 shadow-2xl shrink-0 sticky top-0">
         <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden lg:flex items-center gap-2 mr-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10">
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Room</span>
+            <span className="font-mono font-bold text-blue-500">{params.roomId}</span>
+          </div>
           <div className="bg-blue-600 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-black tracking-widest uppercase shadow-lg shadow-blue-500/20 flex flex-col justify-center leading-tight">
             <span className="text-blue-200/60 text-[6px] sm:text-[8px] mb-0.5">
               Phase
@@ -123,7 +127,8 @@ export default function GameScreen() {
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}
-            className={`md:hidden p-2 rounded-lg transition-all ${isChatOpen ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400'}`}
+            className={`p-2 rounded-lg transition-all ${isChatOpen ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400'}`}
+            title="Toggle Chat"
           >
             <MessageSquare size={20} />
           </button>
@@ -141,7 +146,7 @@ export default function GameScreen() {
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex overflow-hidden relative pt-12 md:pt-24">
         {/* Game Area */}
         <div className={`flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 transition-all duration-300 ${isChatOpen ? 'md:mr-96' : ''}`}>
           {/* Mobile Role Badge (Floating) */}
@@ -310,14 +315,14 @@ export default function GameScreen() {
         {/* Chat Area - Responsive Drawer/Sidebar */}
         <aside 
           className={`
-            fixed md:relative inset-y-0 right-0 w-full md:w-96 bg-[#020617]/95 md:bg-white/5 
+            fixed md:relative top-0 md:top-auto bottom-0 right-0 w-full md:w-96 bg-[#020617]/95 md:bg-white/5 
             border-l border-white/10 flex flex-col overflow-hidden backdrop-blur-2xl md:backdrop-blur-md 
             z-40 transition-transform duration-300 ease-in-out
             ${isChatOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0 md:hidden lg:flex'}
             ${!isChatOpen ? 'pointer-events-none md:pointer-events-auto' : ''}
           `}
         >
-          <div className="p-4 border-b border-white/10 flex items-center justify-between">
+          <div className="p-4 pt-20 md:pt-4 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare size={18} className="text-blue-500" />
               <h3 className="font-bold">Room Chat</h3>

@@ -17,8 +17,8 @@ export default function Home() {
     if (!name) return
     createRoom(name, {
       maxPlayers: 8,
-      turnDurationSeconds: 5,
-      discussionDurationSeconds: 5,
+      turnDurationSeconds: 60,
+      discussionDurationSeconds: 60,
     })
     setIsCreating(true)
   }

@@ -121,11 +121,11 @@ export default function Lobby() {
   const allReady = room.players.length >= 3 && room.players.every(p => p.isReady);
 
   return (
-    <main className="min-h-screen bg-[#0f172a] text-white p-4 sm:p-6 md:p-12 relative overflow-hidden">
+    <main className="min-h-screen bg-[#0f172a] text-white p-4 sm:p-6 md:p-12 relative overflow-x-hidden">
       <div className="absolute top-[-10%] right-[-10%] w-[60%] sm:w-[50%] h-[60%] sm:h-[50%] bg-blue-600/10 rounded-full blur-[80px] sm:blur-[120px]" />
       
       <div className="max-w-6xl mx-auto z-10 relative">
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 sm:mb-12">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 sm:mb-12 bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10">
           <div className="w-full md:w-auto">
             <button onClick={handleBackToMenu} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4 group text-sm sm:text-base">
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
