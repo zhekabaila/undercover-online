@@ -10,12 +10,19 @@ export function handleConnection(ws: Socket, wss: Server) {
     try {
       const { event, payload } = JSON.parse(data);
 
+      // 1. Try to find/refresh playerId if not already known
+      if (!currentPlayerId) {
+        for (const [pId, socket] of roomManager.playerSockets.entries()) {
+          if (socket === ws) {
+            currentPlayerId = pId;
+            break;
+          }
+        }
+      }
+
       switch (event) {
         case WSEvent.CREATE_ROOM:
           roomManager.handleCreateRoom(ws, payload);
-          // After room is created, we'll have a playerId. We need to track it.
-          // The handleCreateRoom should ideally return it or we intercept it.
-          // For now, let's assume we can get it from the map after it's set.
           break;
         case WSEvent.JOIN_ROOM:
           roomManager.handleJoinRoom(ws, payload);
@@ -43,20 +50,25 @@ export function handleConnection(ws: Socket, wss: Server) {
           break;
         case WSEvent.RECONNECT:
           roomManager.handleReconnect(ws, payload);
+          // After reconnect, we immediately know the playerId
+          currentPlayerId = payload.playerId;
           break;
         case WSEvent.MRWHITE_GUESS:
           if (currentPlayerId) gameManager.handleMrWhiteGuess(currentPlayerId, payload);
           break;
       }
 
-      // Hacky way to track playerId for this connection
+      // 2. Post-action discovery (if newly created/joined)
       if (!currentPlayerId) {
-          roomManager.playerSockets.forEach((socket, pId) => {
-              if (socket === ws) currentPlayerId = pId;
-          });
+        for (const [pId, socket] of roomManager.playerSockets.entries()) {
+          if (socket === ws) {
+            currentPlayerId = pId;
+            break;
+          }
+        }
       }
 
-      // If reconnecting, clear the removal timeout
+      // If we have a player ID now, clear the removal timeout
       if (currentPlayerId && roomManager.pendingRemovals.has(currentPlayerId)) {
         clearTimeout(roomManager.pendingRemovals.get(currentPlayerId));
         roomManager.pendingRemovals.delete(currentPlayerId);

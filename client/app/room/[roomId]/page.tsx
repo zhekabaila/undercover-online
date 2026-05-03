@@ -9,7 +9,18 @@ import { useGameState } from '../../../hooks/useGameState';
 export default function Lobby() {
   const params = useParams();
   const router = useRouter();
-  const { room, playerId, setReady, startGame, leaveRoom, joinRoom, error, isConnected, isInitialLoading } = useGameState();
+  const { 
+    room, 
+    playerId, 
+    setReady, 
+    startGame, 
+    leaveRoom, 
+    joinRoom, 
+    updateSettings,
+    error, 
+    isConnected, 
+    isInitialLoading 
+  } = useGameState();
   const [copied, setCopied] = useState(false);
   const [name, setName] = useState('');
   const [isJoining, setIsJoining] = useState(false);
@@ -158,8 +169,13 @@ export default function Lobby() {
               </div>
               <div className="w-px h-8 bg-white/10" />
               <div className="text-center">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5 sm:mb-1">Turns</p>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5 sm:mb-1">Turn</p>
                 <p className="text-lg sm:text-xl font-black">{room.settings.turnDurationSeconds}s</p>
+              </div>
+              <div className="w-px h-8 bg-white/10" />
+              <div className="text-center">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5 sm:mb-1">Disc.</p>
+                <p className="text-lg sm:text-xl font-black">{room.settings.discussionDurationSeconds}s</p>
               </div>
             </div>
           </div>
@@ -264,6 +280,53 @@ export default function Lobby() {
                 </p>
               )}
             </div>
+
+            {isHost && (
+              <div className="bg-white/5 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-white/10">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 flex items-center gap-2">
+                  <Settings size={20} className="text-purple-500" />
+                  Game Settings
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">Max Players</label>
+                    <select 
+                      value={room.settings.maxPlayers}
+                      onChange={(e) => updateSettings({ maxPlayers: parseInt(e.target.value) })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(n => (
+                        <option key={n} value={n} className="bg-slate-900">{n} Players</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">Turn Duration</label>
+                    <select 
+                      value={room.settings.turnDurationSeconds}
+                      onChange={(e) => updateSettings({ turnDurationSeconds: parseInt(e.target.value) })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      {[15, 30, 45, 60, 90, 120].map(s => (
+                        <option key={s} value={s} className="bg-slate-900">{s} Seconds</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">Discussion Duration</label>
+                    <select 
+                      value={room.settings.discussionDurationSeconds}
+                      onChange={(e) => updateSettings({ discussionDurationSeconds: parseInt(e.target.value) })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    >
+                      {[30, 60, 90, 120, 180, 300].map(s => (
+                        <option key={s} value={s} className="bg-slate-900">{s} Seconds</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

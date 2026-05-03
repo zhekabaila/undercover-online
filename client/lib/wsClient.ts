@@ -12,7 +12,10 @@ class WSClient {
   }
 
   connect() {
-    if (this.socket?.connected) return;
+    if (this.socket?.connected) {
+      this.emit('CONNECTED', null);
+      return;
+    }
 
     this.socket = io(this.url, {
       reconnection: true,

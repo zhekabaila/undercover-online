@@ -57,7 +57,18 @@ export function useGameState() {
     wsClient.connect()
 
     const unsubscribers = [
-      wsClient.on('CONNECTED', () => setIsConnected(true)),
+      wsClient.on('CONNECTED', () => {
+        setIsConnected(true)
+        // Auto-reconnect if we have a saved session
+        const savedRoomId = localStorage.getItem('undercover_roomId')
+        const savedPlayerId = localStorage.getItem('undercover_playerId')
+        if (savedRoomId && savedPlayerId) {
+          wsClient?.send(WSEvent.RECONNECT, {
+            roomId: savedRoomId,
+            playerId: savedPlayerId,
+          })
+        }
+      }),
       wsClient.on('DISCONNECTED', () => setIsConnected(false)),
       wsClient.on(WSEvent.ROOM_CREATED, (payload) => {
         updateGlobalState({
@@ -240,20 +251,12 @@ export function useGameState() {
       }),
     ]
 
-    // Attempt reconnection ONLY if we don't have a room state yet
-    if (!globalRoom) {
-      const savedRoomId = localStorage.getItem('undercover_roomId')
-      const savedPlayerId = localStorage.getItem('undercover_playerId')
-
-      if (savedRoomId && savedPlayerId) {
-        wsClient.send(WSEvent.RECONNECT, {
-          roomId: savedRoomId,
-          playerId: savedPlayerId,
-        })
-      } else {
-        updateGlobalState({ isInitialLoading: false })
-      }
-    } else {
+    // Initial loading state resolution:
+    // If we have a session, isInitialLoading will stay true until ROOM_JOINED or ERROR.
+    // If we don't have a session, we can set it to false immediately.
+    const savedRoomId = localStorage.getItem('undercover_roomId')
+    const savedPlayerId = localStorage.getItem('undercover_playerId')
+    if (!savedRoomId || !savedPlayerId) {
       updateGlobalState({ isInitialLoading: false })
     }
 
@@ -326,6 +329,20 @@ export function useGameState() {
     mrWhiteGuess,
     leaveRoom,
     clearSession,
+    updateSettings: useCallback((settings: any) => {
+      if (globalRoom) {
+        // Optimistic update: merge with the absolute latest global state
+        // to prevent race conditions when multiple settings are changed rapidly
+        const updatedSettings = { ...globalRoom.settings, ...settings };
+        updateGlobalState({
+          room: {
+            ...globalRoom,
+            settings: updatedSettings,
+          },
+        });
+        wsClient?.send(WSEvent.UPDATE_SETTINGS, { settings: updatedSettings });
+      }
+    }, []),
     isInitialLoading,
   }
 }
