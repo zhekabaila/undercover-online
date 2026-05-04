@@ -77,11 +77,9 @@ export default function GameScreen() {
   const params = useParams()
   const router = useRouter()
 
-  // Move loading check to top BEFORE all hooks
-  const { room, playerId: rawPlayerId } = useGameState()
-
-  // Now safe to call all hooks after loading check
+  // Call useGameState ONLY ONCE
   const {
+    room,
     playerId,
     messages,
     sendChat,
@@ -1136,7 +1134,7 @@ function GameEndedView({
           )
         })}
       </div>
-      <button
+      {/* <button
         onClick={onReturn}
         className="group relative bg-white text-black font-black px-10 py-5 sm:px-14 sm:py-6 rounded-[2rem] transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 flex items-center gap-4 uppercase tracking-[0.2em] text-[10px] sm:text-xs"
       >
@@ -1145,7 +1143,7 @@ function GameEndedView({
           size={20}
           className="group-hover:translate-x-1.5 transition-transform"
         />
-      </button>
+      </button> */}
     </motion.div>
   )
 }
