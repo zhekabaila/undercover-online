@@ -1,19 +1,19 @@
 import { useState, useEffect, useCallback } from 'react'
 import wsClient from '../lib/wsClient'
 import { WSEvent, ErrorCode } from '../types/events'
-import { Room, Player } from '../types/game'
+import { Room, Player, ChatMessage } from '../types/game'
 
 // Global state to persist between page navigations - defined OUTSIDE the hook
 let globalRoom: Room | null = null
 let globalPlayerId: string | null = null
-let globalMessages: any[] = []
+let globalMessages: ChatMessage[] = []
 let globalIsInitialLoading = true
 const listeners = new Set<() => void>()
 
 const updateGlobalState = (updates: {
   room?: Room | null
   playerId?: string | null
-  messages?: any[]
+  messages?: ChatMessage[]
   isInitialLoading?: boolean
 }) => {
   if (updates.room !== undefined) globalRoom = updates.room
@@ -30,7 +30,7 @@ export function useGameState() {
   const [error, setError] = useState<{ code: string; message: string } | null>(
     null,
   )
-  const [messages, setMessages] = useState<any[]>(globalMessages)
+  const [messages, setMessages] = useState<ChatMessage[]>(globalMessages)
   const [isInitialLoading, setIsInitialLoading] = useState(
     globalIsInitialLoading,
   )
@@ -53,8 +53,6 @@ export function useGameState() {
 
   useEffect(() => {
     if (!wsClient) return
-
-    wsClient.connect()
 
     const unsubscribers = [
       wsClient.on('CONNECTED', () => {
@@ -259,6 +257,8 @@ export function useGameState() {
     if (!savedRoomId || !savedPlayerId) {
       updateGlobalState({ isInitialLoading: false })
     }
+
+    wsClient.connect()
 
     return () => unsubscribers.forEach((unsub) => unsub())
   }, [])

@@ -48,3 +48,10 @@ export interface WordPair {
   civilian: string;
   undercover: string;
 }
+export interface ChatMessage {
+  playerId?: string;
+  playerName: string;
+  message: string;
+  type?: 'chat' | 'vote' | 'pass';
+  timestamp: number;
+}

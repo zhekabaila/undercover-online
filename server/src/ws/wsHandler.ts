@@ -4,39 +4,26 @@ import * as roomManager from '../managers/roomManager.js';
 import * as gameManager from '../managers/gameManager.js';
 
 export function handleConnection(ws: Socket, wss: Server) {
-  let currentPlayerId: string | null = null;
+  let currentPlayerId: string | undefined;
 
   ws.on('message', (data: string) => {
     try {
       const { event, payload } = JSON.parse(data);
 
       // 1. Try to find/refresh playerId if not already known
-      if (!currentPlayerId) {
-        // Try payload first (robustness)
-        const pid = payload?.playerId;
-        if (pid) {
-          currentPlayerId = pid;
-          // Associate if not already
-          if (!roomManager.playerSockets.has(pid)) {
-             roomManager.playerSockets.set(pid, ws);
-          }
-        } else {
-          // Fallback to discovery loop
-          for (const [pId, socket] of roomManager.playerSockets.entries()) {
-            if (socket === ws) {
-              currentPlayerId = pId;
-              break;
-            }
-          }
+      if (currentPlayerId === undefined && payload?.playerId) {
+        currentPlayerId = String(payload.playerId);
+        if (currentPlayerId && !roomManager.playerSockets.has(currentPlayerId)) {
+          roomManager.playerSockets.set(currentPlayerId, ws);
         }
       }
 
       switch (event) {
         case WSEvent.CREATE_ROOM:
-          roomManager.handleCreateRoom(ws, payload);
+          currentPlayerId = roomManager.handleCreateRoom(ws, payload);
           break;
         case WSEvent.JOIN_ROOM:
-          roomManager.handleJoinRoom(ws, payload);
+          currentPlayerId = roomManager.handleJoinRoom(ws, payload);
           break;
         case WSEvent.LEAVE_ROOM:
           if (currentPlayerId) {
@@ -90,7 +77,7 @@ export function handleConnection(ws: Socket, wss: Server) {
         case WSEvent.RECONNECT:
           roomManager.handleReconnect(ws, payload);
           // After reconnect, we immediately know the playerId
-          currentPlayerId = payload.playerId;
+          currentPlayerId = payload.playerId || undefined;
           break;
         case WSEvent.MRWHITE_GUESS:
           if (currentPlayerId) {
@@ -101,15 +88,7 @@ export function handleConnection(ws: Socket, wss: Server) {
           break;
       }
 
-      // 2. Post-action discovery (if newly created/joined)
-      if (!currentPlayerId) {
-        for (const [pId, socket] of roomManager.playerSockets.entries()) {
-          if (socket === ws) {
-            currentPlayerId = pId;
-            break;
-          }
-        }
-      }
+
 
       // If we have a player ID now, clear the removal timeout
       if (currentPlayerId && roomManager.pendingRemovals.has(currentPlayerId)) {

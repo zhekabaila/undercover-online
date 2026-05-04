@@ -45,7 +45,7 @@ export function broadcast(roomId: string, event: WSEvent, payload: any) {
   });
 }
 
-export function handleCreateRoom(ws: Socket, payload: { name: string, settings: RoomSettings }) {
+export function handleCreateRoom(ws: Socket, payload: { name: string, settings: RoomSettings }): string {
   const playerId = Math.random().toString(36).substring(7);
   const host: Player = {
     id: playerId,
@@ -67,9 +67,10 @@ export function handleCreateRoom(ws: Socket, payload: { name: string, settings: 
   playerSockets.set(playerId, ws);
 
   sendToPlayer(ws, WSEvent.ROOM_CREATED, { room: { ...room, players: Array.from(room.players.values()) }, playerId });
+  return playerId;
 }
 
-export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: string }) {
+export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: string }): string | undefined {
   const room = roomStore.getRoom(payload.roomId);
 
   console.log(`[JoinRoom] Player "${payload.name}" attempting to join "${payload.roomId}"`);
@@ -108,6 +109,7 @@ export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: stri
 
   sendToPlayer(ws, WSEvent.ROOM_JOINED, { room: { ...room, players: Array.from(room.players.values()) }, playerId });
   broadcast(room.id, WSEvent.PLAYER_JOINED, { player });
+  return playerId;
 }
 
 export function handleReconnect(ws: Socket, payload: { roomId: string, playerId: string }) {
