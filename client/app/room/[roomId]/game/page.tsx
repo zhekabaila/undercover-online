@@ -80,10 +80,6 @@ export default function GameScreen() {
   // Move loading check to top BEFORE all hooks
   const { room, playerId: rawPlayerId } = useGameState()
 
-  if (!room || !room.game) {
-    return <LoadingState roomId={params.roomId as string} />
-  }
-
   // Now safe to call all hooks after loading check
   const {
     playerId,
@@ -170,6 +166,10 @@ export default function GameScreen() {
     if (!guessInput.trim()) return
     mrWhiteGuess(guessInput.trim())
     setGuessInput('')
+  }
+
+  if (!room || !room.game) {
+    return <LoadingState roomId={params.roomId as string} />
   }
 
   return (
