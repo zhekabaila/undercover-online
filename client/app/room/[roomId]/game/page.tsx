@@ -7,54 +7,67 @@ import {
   MessageSquare,
   Send,
   Timer as TimerIcon,
-  Shield, Vote,
+  Shield,
+  Vote,
   AlertCircle,
-  Trophy, ArrowLeft,
-  Loader2, X, ChevronRight,
+  Trophy,
+  ArrowLeft,
+  Loader2,
+  X,
+  ChevronRight,
   ShieldAlert,
-  Crown, Activity,
-  Ghost
+  Crown,
+  Activity,
+  Ghost,
 } from 'lucide-react'
 import { useGameState } from '../../../../hooks/useGameState'
-import { Player, GamePhase, Room, ChatMessage as ChatMessageType } from '../../../../types/game'
+import {
+  Player,
+  GamePhase,
+  Room,
+  ChatMessage as ChatMessageType,
+} from '../../../../types/game'
 
 // --- Constants & Config ---
 
-const PHASE_CONFIG: Record<GamePhase, { label: string; color: string; glow: string }> = {
-  lobby: { 
-    label: 'Lobby', 
-    color: 'from-slate-500 to-slate-700', 
-    glow: 'shadow-slate-500/20' 
+const PHASE_CONFIG: Record<
+  GamePhase,
+  { label: string; color: string; glow: string }
+> = {
+  lobby: {
+    label: 'Lobby',
+    color: 'from-slate-500 to-slate-700',
+    glow: 'shadow-slate-500/20',
   },
-  starting: { 
-    label: 'Initializing', 
-    color: 'from-blue-600 to-indigo-600', 
-    glow: 'shadow-blue-500/20' 
+  starting: {
+    label: 'Initializing',
+    color: 'from-blue-600 to-indigo-600',
+    glow: 'shadow-blue-500/20',
   },
-  speaking: { 
-    label: 'Speaking', 
-    color: 'from-emerald-500 to-teal-600', 
-    glow: 'shadow-emerald-500/20' 
+  speaking: {
+    label: 'Speaking',
+    color: 'from-emerald-500 to-teal-600',
+    glow: 'shadow-emerald-500/20',
   },
-  discussion: { 
-    label: 'Discussion', 
-    color: 'from-amber-500 to-orange-600', 
-    glow: 'shadow-amber-500/20' 
+  discussion: {
+    label: 'Discussion',
+    color: 'from-amber-500 to-orange-600',
+    glow: 'shadow-amber-500/20',
   },
-  voting: { 
-    label: 'Voting', 
-    color: 'from-rose-500 to-red-600', 
-    glow: 'shadow-rose-500/20' 
+  voting: {
+    label: 'Voting',
+    color: 'from-rose-500 to-red-600',
+    glow: 'shadow-rose-500/20',
   },
-  mrwhite_guessing: { 
-    label: 'Final Guess', 
-    color: 'from-purple-600 to-fuchsia-600', 
-    glow: 'shadow-purple-500/20' 
+  mrwhite_guessing: {
+    label: 'Final Guess',
+    color: 'from-purple-600 to-fuchsia-600',
+    glow: 'shadow-purple-500/20',
   },
-  ended: { 
-    label: 'Terminated', 
-    color: 'from-slate-800 to-black', 
-    glow: 'shadow-slate-900/20' 
+  ended: {
+    label: 'Terminated',
+    color: 'from-slate-800 to-black',
+    glow: 'shadow-slate-900/20',
   },
 }
 
@@ -63,8 +76,16 @@ const PHASE_CONFIG: Record<GamePhase, { label: string; color: string; glow: stri
 export default function GameScreen() {
   const params = useParams()
   const router = useRouter()
+
+  // Move loading check to top BEFORE all hooks
+  const { room, playerId: rawPlayerId } = useGameState()
+
+  if (!room || !room.game) {
+    return <LoadingState roomId={params.roomId as string} />
+  }
+
+  // Now safe to call all hooks after loading check
   const {
-    room,
     playerId,
     messages,
     sendChat,
@@ -110,21 +131,25 @@ export default function GameScreen() {
   }, [room, room?.game?.phase, params?.roomId, router])
 
   // Memoized current player
-  const currentPlayer = useMemo(() => 
-    room?.players.find((p: Player) => p.id === playerId)
-  , [room?.players, playerId])
+  const currentPlayer = useMemo(
+    () => room?.players.find((p: Player) => p.id === playerId),
+    [room?.players, playerId],
+  )
 
-  const isMyTurn = useMemo(() => 
-    room?.game?.phase === 'speaking' &&
-    room?.game?.turnOrder?.playerIds[room.game.turnOrder.currentIndex] === playerId
-  , [room?.game, playerId])
+  const isMyTurn = useMemo(
+    () =>
+      room?.game?.phase === 'speaking' &&
+      room?.game?.turnOrder?.playerIds[room.game.turnOrder.currentIndex] ===
+        playerId,
+    [room?.game, playerId],
+  )
 
   const infiltratorStats = useMemo(() => {
     return {
       undercover: room?.game?.remainingUndercover ?? 0,
       mrWhite: room?.game?.remainingMrWhite ?? 0,
-    };
-  }, [room?.game?.remainingUndercover, room?.game?.remainingMrWhite]);
+    }
+  }, [room?.game?.remainingUndercover, room?.game?.remainingMrWhite])
 
   const handleSendChat = (e: React.FormEvent) => {
     e.preventDefault()
@@ -147,10 +172,6 @@ export default function GameScreen() {
     setGuessInput('')
   }
 
-  if (!room || !room.game) {
-    return <LoadingState roomId={params.roomId as string} />
-  }
-
   return (
     <div className="h-screen flex flex-col bg-[#020617] text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
       {/* Global Background Decor */}
@@ -164,8 +185,10 @@ export default function GameScreen() {
       <header className="sticky top-0 h-16 sm:h-20 shrink-0 border-b border-white/10 bg-[#020617]/90 backdrop-blur-2xl flex items-center px-4 sm:px-8 z-[100] shadow-2xl">
         <div className="w-full flex items-center justify-between max-w-[1920px] mx-auto gap-4">
           <div className="flex items-center gap-3 sm:gap-6">
-            <button 
-              onClick={() => confirm('Exit game?') && (leaveRoom(), router.push('/'))}
+            <button
+              onClick={() =>
+                confirm('Exit game?') && (leaveRoom(), router.push('/'))
+              }
               className="p-2.5 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/10"
               title="Exit Room"
             >
@@ -174,16 +197,24 @@ export default function GameScreen() {
             <div className="h-6 w-px bg-white/10 hidden sm:block" />
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none hidden sm:inline">Terminal</span>
-                <span className="text-sm sm:text-lg font-mono font-bold text-blue-500 leading-none">{params.roomId}</span>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none hidden sm:inline">
+                  Terminal
+                </span>
+                <span className="text-sm sm:text-lg font-mono font-bold text-blue-500 leading-none">
+                  {params.roomId}
+                </span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-6">
-            <div className={`flex items-center gap-2.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-gradient-to-r ${PHASE_CONFIG[room.game.phase].color} border border-white/10 shadow-lg ${PHASE_CONFIG[room.game.phase].glow} transition-all duration-500`}>
+            <div
+              className={`flex items-center gap-2.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-gradient-to-r ${PHASE_CONFIG[room.game.phase].color} border border-white/10 shadow-lg ${PHASE_CONFIG[room.game.phase].glow} transition-all duration-500`}
+            >
               <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em]">{PHASE_CONFIG[room.game.phase].label}</span>
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em]">
+                {PHASE_CONFIG[room.game.phase].label}
+              </span>
             </div>
             <div className="h-8 w-px bg-white/10 hidden md:block" />
             <div className="hidden md:block">
@@ -199,15 +230,20 @@ export default function GameScreen() {
               onClick={() => setShowRoleOverlay(true)}
               className="group relative flex items-center gap-2.5 px-3 py-2 sm:px-4 sm:py-2.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 rounded-xl transition-all"
             >
-              <Shield size={18} className="text-blue-400 group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest hidden sm:block text-blue-100">Role</span>
+              <Shield
+                size={18}
+                className="text-blue-400 group-hover:scale-110 transition-transform"
+              />
+              <span className="text-[10px] font-black uppercase tracking-widest hidden sm:block text-blue-100">
+                Role
+              </span>
             </button>
 
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
               className={`p-2.5 sm:p-3 rounded-xl transition-all border shadow-lg ${
-                isChatOpen 
-                  ? 'bg-blue-600 border-blue-400 text-white shadow-blue-600/20' 
+                isChatOpen
+                  ? 'bg-blue-600 border-blue-400 text-white shadow-blue-600/20'
                   : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'
               }`}
             >
@@ -222,54 +258,64 @@ export default function GameScreen() {
         {/* Main Content Area - Independently Scrollable */}
         <main className="flex-1 min-w-0 overflow-y-auto custom-scrollbar relative z-10 px-4 py-6 sm:p-8 lg:p-12">
           <div className="max-w-[1400px] mx-auto w-full flex flex-col gap-6 sm:gap-8">
-            
             {/* Turn Interaction Banner - Show when it's your turn to speak */}
             <AnimatePresence>
-              {room.game.phase === 'speaking' && isMyTurn && !currentPlayer?.description && (
-                <motion.div
-                  initial={{ opacity: 0, y: -40, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                  className="bg-gradient-to-br from-blue-600/20 via-indigo-600/10 to-transparent border-2 border-blue-500/40 p-6 sm:p-8 rounded-[3rem] backdrop-blur-2xl shadow-[0_30px_100px_rgba(59,130,246,0.15)] flex flex-col sm:flex-row items-center gap-6 sm:gap-10 relative overflow-hidden group"
-                >
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
-                  <div className="shrink-0 relative">
-                    <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white shadow-[0_0_40px_rgba(59,130,246,0.5)] border-4 border-white/20">
-                      <Send size={32} className="animate-pulse" />
+              {room.game.phase === 'speaking' &&
+                isMyTurn &&
+                !currentPlayer?.description && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -40, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                    className="bg-gradient-to-br from-blue-600/20 via-indigo-600/10 to-transparent border-2 border-blue-500/40 p-6 sm:p-8 rounded-[3rem] backdrop-blur-2xl shadow-[0_30px_100px_rgba(59,130,246,0.15)] flex flex-col sm:flex-row items-center gap-6 sm:gap-10 relative overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-50" />
+                    <div className="shrink-0 relative">
+                      <div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white shadow-[0_0_40px_rgba(59,130,246,0.5)] border-4 border-white/20">
+                        <Send size={32} className="animate-pulse" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex-1 text-center sm:text-left space-y-2">
-                    <div className="flex items-center justify-center sm:justify-start gap-2">
-                       <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">Tactical Intel Required</span>
-                       <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+                    <div className="flex-1 text-center sm:text-left space-y-2">
+                      <div className="flex items-center justify-center sm:justify-start gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">
+                          Tactical Intel Required
+                        </span>
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+                      </div>
+                      <h3 className="text-xl sm:text-2xl font-black uppercase italic tracking-tight text-white">
+                        Describe Your Word
+                      </h3>
+                      <p className="text-slate-400 text-sm font-medium">
+                        Be strategic. Don't reveal too much to the infiltrators.
+                      </p>
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-black uppercase italic tracking-tight text-white">Describe Your Word</h3>
-                    <p className="text-slate-400 text-sm font-medium">Be strategic. Don't reveal too much to the infiltrators.</p>
-                  </div>
-                  <form onSubmit={handleSendDescription} className="w-full sm:w-[400px] flex gap-3">
-                    <input
-                      type="text"
-                      value={descriptionInput}
-                      onChange={(e) => setDescriptionInput(e.target.value)}
-                      placeholder="Transmission..."
-                      maxLength={100}
-                      className="flex-1 bg-white/5 border border-blue-500/30 rounded-2xl py-4 px-6 focus:outline-none focus:border-blue-500/60 transition-all text-sm placeholder:text-blue-400/20 text-white shadow-inner"
-                      autoFocus
-                    />
-                    <button
-                      type="submit"
-                      disabled={!descriptionInput.trim()}
-                      className="px-8 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl transition-all disabled:opacity-30 shadow-lg shadow-blue-600/30 font-black uppercase text-[10px] tracking-widest active:scale-95"
+                    <form
+                      onSubmit={handleSendDescription}
+                      className="w-full sm:w-[400px] flex gap-3"
                     >
-                      Send
-                    </button>
-                  </form>
-                </motion.div>
-              )}
+                      <input
+                        type="text"
+                        value={descriptionInput}
+                        onChange={(e) => setDescriptionInput(e.target.value)}
+                        placeholder="Transmission..."
+                        maxLength={100}
+                        className="flex-1 bg-white/5 border border-blue-500/30 rounded-2xl py-4 px-6 focus:outline-none focus:border-blue-500/60 transition-all text-sm placeholder:text-blue-400/20 text-white shadow-inner"
+                        autoFocus
+                      />
+                      <button
+                        type="submit"
+                        disabled={!descriptionInput.trim()}
+                        className="px-8 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl transition-all disabled:opacity-30 shadow-lg shadow-blue-600/30 font-black uppercase text-[10px] tracking-widest active:scale-95"
+                      >
+                        Send
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
             </AnimatePresence>
 
             {/* Top Stats Bar */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex items-center justify-between bg-white/[0.03] border border-white/5 p-4 sm:p-5 rounded-3xl backdrop-blur-md shadow-2xl gap-4"
@@ -279,40 +325,59 @@ export default function GameScreen() {
                   <Activity size={20} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">Operation Round</span>
+                  <span className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">
+                    Operation Round
+                  </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-black text-white uppercase italic">Phase #{room.game.roundNumber}</span>
+                    <span className="text-sm font-black text-white uppercase italic">
+                      Phase #{room.game.roundNumber}
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-4 sm:gap-8 overflow-hidden">
                 <div className="hidden sm:flex flex-col items-end">
-                  <span className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">Agents Alive</span>
+                  <span className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">
+                    Agents Alive
+                  </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-black text-white">{room.players.filter((p: Player) => p.isAlive).length}/{room.players.length}</span>
+                    <span className="text-sm font-black text-white">
+                      {room.players.filter((p: Player) => p.isAlive).length}/
+                      {room.players.length}
+                    </span>
                   </div>
                 </div>
                 <div className="hidden sm:block h-8 w-px bg-white/5" />
-                
+
                 <div className="flex items-center gap-2 sm:gap-4">
                   {/* Infiltrators Stat Box */}
                   <div className="flex flex-col items-center gap-2 p-3 bg-white/5 border border-white/10 rounded-2xl min-w-[160px] shadow-inner">
-                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Infiltrators Remaining</span>
+                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest">
+                      Infiltrators Remaining
+                    </span>
                     <div className="flex items-center gap-6">
                       <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center gap-2">
                           <Ghost size={14} className="text-white opacity-40" />
-                          <span className="text-sm font-black text-white">{infiltratorStats.undercover}</span>
+                          <span className="text-sm font-black text-white">
+                            {infiltratorStats.undercover}
+                          </span>
                         </div>
-                        <span className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter">Undercover</span>
+                        <span className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter">
+                          Undercover
+                        </span>
                       </div>
                       <div className="w-px h-6 bg-white/10" />
                       <div className="flex flex-col items-center gap-1">
                         <div className="flex items-center gap-2">
                           <ShieldAlert size={14} className="text-purple-400" />
-                          <span className="text-sm font-black text-white">{infiltratorStats.mrWhite}</span>
+                          <span className="text-sm font-black text-white">
+                            {infiltratorStats.mrWhite}
+                          </span>
                         </div>
-                        <span className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter">Mr. White</span>
+                        <span className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter">
+                          Mr. White
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -323,9 +388,13 @@ export default function GameScreen() {
             {/* Game Phase Content */}
             <div className="flex-1 min-h-[40vh] flex flex-col">
               <AnimatePresence mode="wait">
-                {room.game.phase === 'starting' && <StartingView key="starting" />}
+                {room.game.phase === 'starting' && (
+                  <StartingView key="starting" />
+                )}
 
-                {['speaking', 'discussion', 'voting'].includes(room.game.phase) && (
+                {['speaking', 'discussion', 'voting'].includes(
+                  room.game.phase,
+                ) && (
                   <motion.div
                     key="gameplay"
                     initial={{ opacity: 0, scale: 0.98 }}
@@ -334,7 +403,7 @@ export default function GameScreen() {
                     className="flex flex-col gap-6 sm:gap-8 pb-32"
                   >
                     {room.game.phase === 'voting' && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-3xl flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(244,63,94,0.1)]"
@@ -351,7 +420,11 @@ export default function GameScreen() {
                         <PlayerCard
                           key={player.id}
                           player={player}
-                          isCurrent={room.game?.turnOrder?.playerIds[room.game.turnOrder.currentIndex] === player.id}
+                          isCurrent={
+                            room.game?.turnOrder?.playerIds[
+                              room.game.turnOrder.currentIndex
+                            ] === player.id
+                          }
                           isSelf={player.id === playerId}
                           phase={room.game!.phase}
                           onVote={() => castVote(player.id)}
@@ -360,26 +433,29 @@ export default function GameScreen() {
                       ))}
                     </div>
 
-                    {room.game.phase === 'voting' && !room.game?.passes?.[playerId!] && !room.game?.votes?.[playerId!] && currentPlayer?.isAlive && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex justify-center pt-8"
-                      >
-                        <button
-                          onClick={() => passVote()}
-                          className="w-full max-w-[280px] bg-amber-500 hover:bg-amber-400 text-white font-black py-4 px-6 rounded-3xl transition-all shadow-2xl shadow-amber-500/40 active:scale-95 border-b-4 border-amber-700 hover:border-amber-600 active:border-b-0 uppercase tracking-[0.2em] flex items-center justify-center gap-3 text-[10px]"
+                    {room.game.phase === 'voting' &&
+                      !room.game?.passes?.[playerId!] &&
+                      !room.game?.votes?.[playerId!] &&
+                      currentPlayer?.isAlive && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex justify-center pt-8"
                         >
-                          <AlertCircle size={18} />
-                          Abstain Vote
-                        </button>
-                      </motion.div>
-                    )}
+                          <button
+                            onClick={() => passVote()}
+                            className="w-full max-w-[280px] bg-amber-500 hover:bg-amber-400 text-white font-black py-4 px-6 rounded-3xl transition-all shadow-2xl shadow-amber-500/40 active:scale-95 border-b-4 border-amber-700 hover:border-amber-600 active:border-b-0 uppercase tracking-[0.2em] flex items-center justify-center gap-3 text-[10px]"
+                          >
+                            <AlertCircle size={18} />
+                            Abstain Vote
+                          </button>
+                        </motion.div>
+                      )}
                   </motion.div>
                 )}
 
                 {room.game.phase === 'mrwhite_guessing' && (
-                  <MrWhiteGuessView 
+                  <MrWhiteGuessView
                     key="mrwhite"
                     currentPlayer={currentPlayer}
                     guessInput={guessInput}
@@ -389,11 +465,11 @@ export default function GameScreen() {
                 )}
 
                 {room.game.phase === 'ended' && (
-                  <GameEndedView 
+                  <GameEndedView
                     key="ended"
-                    room={room} 
-                    playerId={playerId} 
-                    onReturn={() => router.push(`/room/${params.roomId}`)} 
+                    room={room}
+                    playerId={playerId}
+                    onReturn={() => router.push(`/room/${params.roomId}`)}
                   />
                 )}
               </AnimatePresence>
@@ -403,15 +479,15 @@ export default function GameScreen() {
 
         {/* Desktop Chat Sidebar - Right Side */}
         {mounted && (
-          <aside 
+          <aside
             className={`hidden lg:flex shrink-0 transition-all duration-300 ease-in-out border-l border-white/5 bg-[#020617]/40 backdrop-blur-3xl relative overflow-hidden h-full ${
               isChatOpen ? 'w-[400px] opacity-100' : 'w-0 opacity-0'
             }`}
           >
             <div className="w-[400px] h-full flex flex-col">
-              <ChatContent 
-                messages={messages} 
-                playerId={playerId} 
+              <ChatContent
+                messages={messages}
+                playerId={playerId}
                 chatInput={chatInput}
                 setChatInput={setChatInput}
                 handleSendChat={handleSendChat}
@@ -441,16 +517,16 @@ export default function GameScreen() {
               onClick={() => setIsChatOpen(false)}
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
-            <motion.aside 
+            <motion.aside
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="relative h-full w-[90%] max-w-[400px] bg-[#03081a] border-l border-white/10 flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)]"
             >
-              <ChatContent 
-                messages={messages} 
-                playerId={playerId} 
+              <ChatContent
+                messages={messages}
+                playerId={playerId}
                 chatInput={chatInput}
                 setChatInput={setChatInput}
                 handleSendChat={handleSendChat}
@@ -472,9 +548,9 @@ export default function GameScreen() {
       {/* Role Identity Overlay */}
       <AnimatePresence>
         {showRoleOverlay && currentPlayer && (
-          <RoleOverlay 
-            player={currentPlayer} 
-            onClose={() => setShowRoleOverlay(false)} 
+          <RoleOverlay
+            player={currentPlayer}
+            onClose={() => setShowRoleOverlay(false)}
           />
         )}
       </AnimatePresence>
@@ -491,8 +567,12 @@ export default function GameScreen() {
             >
               <AlertCircle size={24} className="text-rose-500 shrink-0" />
               <div className="flex flex-col">
-                <span className="text-[10px] font-black uppercase tracking-widest text-rose-300">Warning</span>
-                <span className="font-bold text-sm leading-tight">{error.message}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-rose-300">
+                  Warning
+                </span>
+                <span className="font-bold text-sm leading-tight">
+                  {error.message}
+                </span>
               </div>
             </motion.div>
           </div>
@@ -512,43 +592,47 @@ function LoadingState({ roomId }: { roomId: string }) {
         <div className="absolute inset-0 bg-blue-500/20 blur-2xl animate-pulse" />
       </div>
       <div className="text-center px-6">
-        <p className="text-white font-black text-xl uppercase tracking-[0.3em] mb-2">Synchronizing</p>
-        <p className="text-slate-500 text-sm font-medium">Establishing secure link to {roomId}...</p>
+        <p className="text-white font-black text-xl uppercase tracking-[0.3em] mb-2">
+          Synchronizing
+        </p>
+        <p className="text-slate-500 text-sm font-medium">
+          Establishing secure link to {roomId}...
+        </p>
       </div>
     </div>
   )
 }
 
-function ChatContent({ 
-  messages, 
-  playerId, 
+function ChatContent({
+  messages,
+  playerId,
   chatInput,
   setChatInput,
   handleSendChat,
   descriptionInput,
   setDescriptionInput,
   handleSendDescription,
-  isMyTurn, 
-  turnDone, 
-  chatEndRef, 
+  isMyTurn,
+  turnDone,
+  chatEndRef,
   phase,
   onClose,
-  currentPlayer
+  currentPlayer,
 }: {
-  messages: ChatMessageType[];
-  playerId: string | null;
-  chatInput: string;
-  setChatInput: (val: string) => void;
-  handleSendChat: (e: React.FormEvent) => void;
-  descriptionInput: string;
-  setDescriptionInput: (val: string) => void;
-  handleSendDescription: (e: React.FormEvent) => void;
-  isMyTurn: boolean;
-  turnDone: () => void;
-  chatEndRef: React.RefObject<HTMLDivElement | null>;
-  phase: GamePhase;
-  onClose: () => void;
-  currentPlayer: Player | undefined;
+  messages: ChatMessageType[]
+  playerId: string | null
+  chatInput: string
+  setChatInput: (val: string) => void
+  handleSendChat: (e: React.FormEvent) => void
+  descriptionInput: string
+  setDescriptionInput: (val: string) => void
+  handleSendDescription: (e: React.FormEvent) => void
+  isMyTurn: boolean
+  turnDone: () => void
+  chatEndRef: React.RefObject<HTMLDivElement | null>
+  phase: GamePhase
+  onClose: () => void
+  currentPlayer: Player | undefined
 }) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -559,14 +643,18 @@ function ChatContent({
             <MessageSquare size={20} />
           </div>
           <div>
-            <h3 className="font-black text-[11px] uppercase tracking-[0.25em] text-white">Encrypted Intel</h3>
+            <h3 className="font-black text-[11px] uppercase tracking-[0.25em] text-white">
+              Encrypted Intel
+            </h3>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Stable Connection</span>
+              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">
+                Stable Connection
+              </span>
             </div>
           </div>
         </div>
-        <button 
+        <button
           onClick={onClose}
           className="p-2.5 hover:bg-white/5 rounded-xl transition-all text-slate-500 hover:text-white"
         >
@@ -579,21 +667,26 @@ function ChatContent({
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-20">
             <Ghost size={48} className="mb-6 animate-bounce" />
-            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-400">No signals detected</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-400">
+              No signals detected
+            </p>
           </div>
         )}
-        {messages.filter(msg => 
-          msg.type !== 'description_submitted' && 
-          msg.type !== 'system' && // Ensure system messages don't clutter unless they are important
-          !msg.message.toLowerCase().includes('submitted their tactical description') &&
-          !msg.message.toLowerCase().includes('has submitted their description')
-        ).map((msg: ChatMessageType, i: number) => (
-          <ChatMessage 
-            key={i} 
-            msg={msg} 
-            isMine={msg.playerId === playerId} 
-          />
-        ))}
+        {messages
+          .filter(
+            (msg) =>
+              msg.type !== 'description_submitted' &&
+              msg.type !== 'system' && // Ensure system messages don't clutter unless they are important
+              !msg.message
+                .toLowerCase()
+                .includes('submitted their tactical description') &&
+              !msg.message
+                .toLowerCase()
+                .includes('has submitted their description'),
+          )
+          .map((msg: ChatMessageType, i: number) => (
+            <ChatMessage key={i} msg={msg} isMine={msg.playerId === playerId} />
+          ))}
         <div ref={chatEndRef} className="h-4" />
       </div>
 
@@ -611,7 +704,9 @@ function ChatContent({
               <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
               <div className="flex items-center gap-2 mb-3">
                 <Send size={12} className="text-blue-400" />
-                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Your Turn: Tactical Intel</span>
+                <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                  Your Turn: Tactical Intel
+                </span>
               </div>
               <form onSubmit={handleSendDescription} className="flex gap-2">
                 <input
@@ -635,7 +730,9 @@ function ChatContent({
 
         <div className="relative">
           <div className="absolute -top-3 left-6 bg-[#0a0f1d] px-3 py-0.5 border border-white/5 rounded-full z-10">
-            <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Public Comm-Link</span>
+            <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">
+              Public Comm-Link
+            </span>
           </div>
           <form onSubmit={handleSendChat} className="relative group">
             <input
@@ -659,7 +756,13 @@ function ChatContent({
   )
 }
 
-function ChatMessage({ msg, isMine }: { msg: ChatMessageType; isMine: boolean }) {
+function ChatMessage({
+  msg,
+  isMine,
+}: {
+  msg: ChatMessageType
+  isMine: boolean
+}) {
   const isSystem = msg.playerName === 'SYSTEM'
   const type = msg.type || 'chat'
 
@@ -679,31 +782,50 @@ function ChatMessage({ msg, isMine }: { msg: ChatMessageType; isMine: boolean })
       animate={{ opacity: 1, y: 0, scale: 1 }}
       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'} gap-1.5 w-full`}
     >
-      <div className={`flex items-center gap-2 px-1 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
-        <div className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}>
-          <span className={`text-[10px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded-md ${isMine ? 'bg-blue-600/20 text-blue-400 border border-blue-500/20' : 'bg-slate-800 text-slate-300 border border-white/10'}`}>
+      <div
+        className={`flex items-center gap-2 px-1 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}
+      >
+        <div
+          className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
+        >
+          <span
+            className={`text-[10px] font-black uppercase tracking-[0.1em] px-2 py-0.5 rounded-md ${isMine ? 'bg-blue-600/20 text-blue-400 border border-blue-500/20' : 'bg-slate-800 text-slate-300 border border-white/10'}`}
+          >
             {msg.playerName || 'Unknown Agent'}
           </span>
         </div>
         <span className="text-[7px] font-bold text-slate-600 uppercase tracking-widest leading-none">
-          {new Date(msg.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </span>
       </div>
-      <div className={`
+      <div
+        className={`
         px-4 py-3 rounded-2xl text-[13px] leading-relaxed max-w-[85%] shadow-xl relative group/msg transition-all
-        ${type === 'vote' ? 'bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold italic' :
-          type === 'pass' ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold italic' :
-          isMine ? 'bg-blue-600 text-white rounded-tr-none border border-white/10 shadow-blue-600/20' :
-          'bg-white/[0.05] border border-white/10 text-slate-200 rounded-tl-none backdrop-blur-md'}
-      `}>
+        ${
+          type === 'vote'
+            ? 'bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold italic'
+            : type === 'pass'
+              ? 'bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold italic'
+              : isMine
+                ? 'bg-blue-600 text-white rounded-tr-none border border-white/10 shadow-blue-600/20'
+                : 'bg-white/[0.05] border border-white/10 text-slate-200 rounded-tl-none backdrop-blur-md'
+        }
+      `}
+      >
         <div className="flex items-center gap-2">
-          {type === 'vote' && <Vote size={14} className="text-rose-400 shrink-0" />}
-          {type === 'pass' && <AlertCircle size={14} className="text-amber-400 shrink-0" />}
+          {type === 'vote' && (
+            <Vote size={14} className="text-rose-400 shrink-0" />
+          )}
+          {type === 'pass' && (
+            <AlertCircle size={14} className="text-amber-400 shrink-0" />
+          )}
           <p className="tracking-tight font-medium">{msg.message}</p>
         </div>
       </div>
     </motion.div>
-
   )
 }
 
@@ -716,9 +838,9 @@ function StartingView() {
       className="flex-1 flex flex-col items-center justify-center py-20 text-center min-h-[50vh]"
     >
       <div className="relative mb-16">
-        <motion.div 
+        <motion.div
           animate={{ scale: [1, 1.4, 1], opacity: [0.1, 0.4, 0.1] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute inset-0 bg-blue-600 blur-[120px] rounded-full"
         />
         <h2 className="text-6xl sm:text-[10rem] font-black italic tracking-tighter bg-gradient-to-b from-white via-white to-white/10 bg-clip-text text-transparent leading-none drop-shadow-2xl">
@@ -735,16 +857,16 @@ function StartingView() {
   )
 }
 
-function MrWhiteGuessView({ 
-  currentPlayer, 
-  guessInput, 
-  setGuessInput, 
-  onSubmit 
+function MrWhiteGuessView({
+  currentPlayer,
+  guessInput,
+  setGuessInput,
+  onSubmit,
 }: {
-  currentPlayer: Player | undefined;
-  guessInput: string;
-  setGuessInput: (val: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  currentPlayer: Player | undefined
+  guessInput: string
+  setGuessInput: (val: string) => void
+  onSubmit: (e: React.FormEvent) => void
 }) {
   return (
     <motion.div
@@ -754,34 +876,38 @@ function MrWhiteGuessView({
       className="flex flex-col items-center justify-center py-12 sm:py-20 text-center max-w-2xl mx-auto px-4"
     >
       <div className="relative mb-12 group">
-        <motion.div 
-          animate={{ 
+        <motion.div
+          animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 90, 180, 270, 360],
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -inset-8 bg-gradient-to-tr from-purple-600/30 via-indigo-600/20 to-fuchsia-600/30 blur-[60px] rounded-full" 
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          className="absolute -inset-8 bg-gradient-to-tr from-purple-600/30 via-indigo-600/20 to-fuchsia-600/30 blur-[60px] rounded-full"
         />
         <div className="w-28 h-28 sm:w-36 sm:h-36 bg-[#0a0f1d] border-2 border-purple-500/30 rounded-[2.5rem] sm:rounded-[3rem] flex items-center justify-center shadow-[0_0_80px_rgba(168,85,247,0.2)] relative z-10 overflow-hidden group-hover:border-purple-500/60 transition-colors">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(168,85,247,0.1),transparent)]" />
           <motion.div
-            animate={{ 
+            animate={{
               y: [0, -4, 0],
-              filter: ["drop-shadow(0 0 0px rgba(168,85,247,0))", "drop-shadow(0 0 15px rgba(168,85,247,0.5))", "drop-shadow(0 0 0px rgba(168,85,247,0))"]
+              filter: [
+                'drop-shadow(0 0 0px rgba(168,85,247,0))',
+                'drop-shadow(0 0 15px rgba(168,85,247,0.5))',
+                'drop-shadow(0 0 0px rgba(168,85,247,0))',
+              ],
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
             <ShieldAlert size={56} className="text-purple-400" />
           </motion.div>
           {/* Scanning Line Animation */}
-          <motion.div 
+          <motion.div
             animate={{ top: ['-10%', '110%'] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
             className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent z-20 opacity-40"
           />
         </div>
       </div>
-      
+
       <div className="space-y-4 mb-12 relative">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -790,28 +916,31 @@ function MrWhiteGuessView({
           className="flex items-center justify-center gap-3"
         >
           <span className="w-12 h-px bg-gradient-to-r from-transparent to-purple-500" />
-          <span className="text-[10px] font-black uppercase tracking-[0.6em] text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">Security Breach Protocol</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.6em] text-purple-500 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]">
+            Security Breach Protocol
+          </span>
           <span className="w-12 h-px bg-gradient-to-l from-transparent to-purple-500" />
         </motion.div>
-        
+
         <h2 className="text-5xl sm:text-8xl font-black tracking-tighter bg-gradient-to-b from-white via-white to-purple-500/50 bg-clip-text text-transparent uppercase italic leading-none drop-shadow-2xl">
           Override
         </h2>
-        
+
         <p className="text-slate-400 font-bold px-6 text-sm sm:text-base max-w-md mx-auto leading-relaxed tracking-tight">
-          System compromised by <span className="text-purple-400 font-black">Agent White</span>. 
-          {currentPlayer?.role === 'mrwhite' 
-            ? " Decrypt the Civilian word to seize total control." 
-            : " Intercepting final transmission sequence..."}
+          System compromised by{' '}
+          <span className="text-purple-400 font-black">Agent White</span>.
+          {currentPlayer?.role === 'mrwhite'
+            ? ' Decrypt the Civilian word to seize total control.'
+            : ' Intercepting final transmission sequence...'}
         </p>
       </div>
 
       {currentPlayer?.role === 'mrwhite' ? (
-        <motion.form 
+        <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          onSubmit={onSubmit} 
+          onSubmit={onSubmit}
           className="w-full max-w-md space-y-10 px-6"
         >
           <div className="relative group">
@@ -826,7 +955,7 @@ function MrWhiteGuessView({
               autoComplete="off"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={!guessInput.trim()}
@@ -834,23 +963,32 @@ function MrWhiteGuessView({
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-600 to-fuchsia-600 transition-transform group-hover:scale-[1.02] active:scale-95 rounded-[2.5rem]" />
             <div className="relative bg-[#020617]/20 hover:bg-transparent transition-colors py-7 rounded-[2.5rem] flex items-center justify-center gap-6 border border-white/10 shadow-2xl">
-              <span className="text-sm font-black uppercase tracking-[0.5em] text-white">Execute Breach</span>
+              <span className="text-sm font-black uppercase tracking-[0.5em] text-white">
+                Execute Breach
+              </span>
               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                <ChevronRight
+                  size={20}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
               </div>
             </div>
           </button>
 
           <div className="flex flex-col items-center gap-2">
             <div className="flex items-center gap-2 text-rose-500">
-               <AlertCircle size={14} className="animate-pulse" />
-               <p className="text-[9px] font-black uppercase tracking-[0.4em]">Single Authorization Only</p>
+              <AlertCircle size={14} className="animate-pulse" />
+              <p className="text-[9px] font-black uppercase tracking-[0.4em]">
+                Single Authorization Only
+              </p>
             </div>
-            <p className="text-[8px] font-bold text-slate-700 uppercase tracking-widest">Failure results in immediate termination</p>
+            <p className="text-[8px] font-bold text-slate-700 uppercase tracking-widest">
+              Failure results in immediate termination
+            </p>
           </div>
         </motion.form>
       ) : (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
@@ -862,10 +1000,14 @@ function MrWhiteGuessView({
             <Loader2 className="w-20 h-20 text-purple-500 animate-spin relative z-10" />
           </div>
           <div className="space-y-4">
-            <p className="text-[11px] sm:text-sm font-black text-purple-400 uppercase tracking-[0.8em] animate-pulse">Encryption Override in Progress</p>
+            <p className="text-[11px] sm:text-sm font-black text-purple-400 uppercase tracking-[0.8em] animate-pulse">
+              Encryption Override in Progress
+            </p>
             <div className="flex items-center justify-center gap-2">
-               <span className="w-1 h-1 bg-purple-500 rounded-full animate-ping" />
-               <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.4em]">Agent White is decrypting the sequence...</p>
+              <span className="w-1 h-1 bg-purple-500 rounded-full animate-ping" />
+              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.4em]">
+                Agent White is decrypting the sequence...
+              </p>
             </div>
           </div>
         </motion.div>
@@ -874,39 +1016,39 @@ function MrWhiteGuessView({
   )
 }
 
-function GameEndedView({ 
-  room, 
-  playerId, 
-  onReturn 
+function GameEndedView({
+  room,
+  playerId,
+  onReturn,
 }: {
-  room: Room;
-  playerId: string | null;
-  onReturn: () => void;
+  room: Room
+  playerId: string | null
+  onReturn: () => void
 }) {
   const winners = useMemo(() => {
-    const winnerRole = room.game?.winnerRole;
-    if (!winnerRole) return [];
+    const winnerRole = room.game?.winnerRole
+    if (!winnerRole) return []
 
     return room.players.filter((p: Player) => {
       // Civilian victory: only civilians win
-      if (winnerRole === 'civilian') return p.role === 'civilian';
-      
+      if (winnerRole === 'civilian') return p.role === 'civilian'
+
       // Infiltrator victory (Undercover or Mr. White): both win together
       if (winnerRole === 'undercover' || winnerRole === 'mrwhite') {
-        return p.role === 'undercover' || p.role === 'mrwhite';
+        return p.role === 'undercover' || p.role === 'mrwhite'
       }
-      
-      return false;
-    });
-  }, [room.players, room.game?.winnerRole]);
+
+      return false
+    })
+  }, [room.players, room.game?.winnerRole])
 
   const winTitle = useMemo(() => {
-    const role = room.game?.winnerRole;
-    if (role === 'civilian') return 'Civilian Victory';
-    if (role === 'undercover') return 'Undercover Win';
-    if (role === 'mrwhite') return 'Agent White Breach';
-    return 'Operation Concluded';
-  }, [room.game?.winnerRole]);
+    const role = room.game?.winnerRole
+    if (role === 'civilian') return 'Civilian Victory'
+    if (role === 'undercover') return 'Undercover Win'
+    if (role === 'mrwhite') return 'Agent White Breach'
+    return 'Operation Concluded'
+  }, [room.game?.winnerRole])
 
   return (
     <motion.div
@@ -920,39 +1062,56 @@ function GameEndedView({
           <Trophy size={48} className="text-white drop-shadow-lg" />
         </div>
       </div>
-      
+
       <div className="space-y-4">
         <h2 className="text-4xl sm:text-8xl font-black uppercase tracking-tighter bg-gradient-to-b from-white via-white to-slate-600 bg-clip-text text-transparent italic leading-none px-4">
           {winTitle}
         </h2>
-        <p className="text-slate-500 font-black tracking-[0.8em] uppercase text-[10px] sm:text-xs">Mission Parameters Concluded</p>
+        <p className="text-slate-500 font-black tracking-[0.8em] uppercase text-[10px] sm:text-xs">
+          Mission Parameters Concluded
+        </p>
       </div>
 
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
         {room.players.map((p: Player) => {
-          const isWinner = winners.some((w: Player) => w.id === p.id);
+          const isWinner = winners.some((w: Player) => w.id === p.id)
           return (
-            <motion.div 
+            <motion.div
               key={p.id}
               whileHover={{ scale: 1.02 }}
               className={`
                 p-5 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] border transition-all flex items-center justify-between shadow-xl
-                ${isWinner 
-                  ? 'bg-yellow-500/10 border-yellow-500/30 ring-1 ring-yellow-500/20' 
-                  : 'bg-white/[0.02] border-white/10 opacity-50'}
+                ${
+                  isWinner
+                    ? 'bg-yellow-500/10 border-yellow-500/30 ring-1 ring-yellow-500/20'
+                    : 'bg-white/[0.02] border-white/10 opacity-50'
+                }
               `}
             >
               <div className="flex items-center gap-5">
-                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center font-black text-base sm:text-lg uppercase shadow-lg
+                <div
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center font-black text-base sm:text-lg uppercase shadow-lg
                   ${isWinner ? 'bg-yellow-500 text-black' : 'bg-white/10 text-slate-500'}
-                `}>
+                `}
+                >
                   {p.name[0]}
                 </div>
                 <div className="text-left">
                   <div className="flex items-center gap-2">
-                    <span className="font-black text-sm sm:text-base tracking-tight">{p.name}</span>
-                    {isWinner && <Crown size={14} className="text-yellow-500 fill-yellow-500/20" />}
-                    {p.id === playerId && <span className="text-[8px] sm:text-[9px] px-1.5 py-0.5 bg-blue-500/20 text-blue-500 rounded-md font-black">AGENT-SELF</span>}
+                    <span className="font-black text-sm sm:text-base tracking-tight">
+                      {p.name}
+                    </span>
+                    {isWinner && (
+                      <Crown
+                        size={14}
+                        className="text-yellow-500 fill-yellow-500/20"
+                      />
+                    )}
+                    {p.id === playerId && (
+                      <span className="text-[8px] sm:text-[9px] px-1.5 py-0.5 bg-blue-500/20 text-blue-500 rounded-md font-black">
+                        AGENT-SELF
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-[0.25em]">
@@ -966,13 +1125,15 @@ function GameEndedView({
                   </div>
                 </div>
               </div>
-              <div className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em]
+              <div
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em]
                 ${p.isAlive ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-rose-500/10 border-rose-500/20 text-rose-500'}
-              `}>
+              `}
+              >
                 {p.isAlive ? 'Active' : 'Neutralized'}
               </div>
             </motion.div>
-          );
+          )
         })}
       </div>
       <button
@@ -980,26 +1141,29 @@ function GameEndedView({
         className="group relative bg-white text-black font-black px-10 py-5 sm:px-14 sm:py-6 rounded-[2rem] transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 flex items-center gap-4 uppercase tracking-[0.2em] text-[10px] sm:text-xs"
       >
         Re-Initialize System
-        <ChevronRight size={20} className="group-hover:translate-x-1.5 transition-transform" />
+        <ChevronRight
+          size={20}
+          className="group-hover:translate-x-1.5 transition-transform"
+        />
       </button>
     </motion.div>
   )
 }
 
-function PlayerCard({ 
-  player, 
-  isCurrent, 
-  isSelf, 
-  phase, 
-  onVote, 
-  hasVoted 
+function PlayerCard({
+  player,
+  isCurrent,
+  isSelf,
+  phase,
+  onVote,
+  hasVoted,
 }: {
-  player: Player;
-  isCurrent: boolean;
-  isSelf: boolean;
-  phase: GamePhase;
-  onVote: () => void;
-  hasVoted: boolean;
+  player: Player
+  isCurrent: boolean
+  isSelf: boolean
+  phase: GamePhase
+  onVote: () => void
+  hasVoted: boolean
 }) {
   return (
     <motion.div
@@ -1018,15 +1182,15 @@ function PlayerCard({
       {/* Active Turn Glow Effect */}
       <AnimatePresence>
         {isCurrent && player.isAlive && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-gradient-to-b from-amber-500/20 via-transparent to-transparent pointer-events-none rounded-[inherit]" 
+            className="absolute inset-0 bg-gradient-to-b from-amber-500/20 via-transparent to-transparent pointer-events-none rounded-[inherit]"
           />
         )}
       </AnimatePresence>
-      
+
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-[0.07] transition-opacity rounded-[inherit]">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]" />
@@ -1055,33 +1219,37 @@ function PlayerCard({
           )}
         </AnimatePresence>
 
-
         <div className="relative">
-          <div className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center font-black text-4xl sm:text-6xl transition-all duration-700 shadow-2xl relative z-10 border-4 ${
-            isCurrent && player.isAlive
-              ? 'bg-amber-500 text-black scale-110 shadow-amber-500/40 border-amber-400'
-              : isSelf
-                ? 'bg-blue-600 text-white shadow-blue-600/20 border-blue-400/30'
-                : 'bg-slate-800 text-slate-300 group-hover:bg-slate-700 border-white/5 group-hover:border-white/10'
-          }`}>
+          <div
+            className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center font-black text-4xl sm:text-6xl transition-all duration-700 shadow-2xl relative z-10 border-4 ${
+              isCurrent && player.isAlive
+                ? 'bg-amber-500 text-black scale-110 shadow-amber-500/40 border-amber-400'
+                : isSelf
+                  ? 'bg-blue-600 text-white shadow-blue-600/20 border-blue-400/30'
+                  : 'bg-slate-800 text-slate-300 group-hover:bg-slate-700 border-white/5 group-hover:border-white/10'
+            }`}
+          >
             {player.name[0].toUpperCase()}
-            
+
             {/* Inner Ring Glow */}
             <div className="absolute inset-0 rounded-full border border-white/10 opacity-20" />
           </div>
-          
+
           {!player.isAlive && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               className="absolute inset-0 flex items-center justify-center bg-black/75 backdrop-blur-[8px] rounded-full z-20 border border-rose-500/30"
             >
-              <X size={56} className="text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.6)] sm:scale-125" />
+              <X
+                size={56}
+                className="text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.6)] sm:scale-125"
+              />
             </motion.div>
           )}
 
           {isCurrent && player.isAlive && (
-            <motion.div 
+            <motion.div
               animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.7, 0.3] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="absolute -inset-4 bg-amber-500/30 rounded-full blur-2xl -z-10"
@@ -1095,7 +1263,7 @@ function PlayerCard({
               <p className="font-black text-sm sm:text-base tracking-tight truncate uppercase text-slate-800">
                 {player.name}
               </p>
-              
+
               {/* Pendants */}
               <div className="flex items-center gap-1.5 absolute -top-3 left-1/2 -translate-x-1/2">
                 {isSelf && (
@@ -1111,22 +1279,28 @@ function PlayerCard({
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-center h-6">
             {isCurrent && player.isAlive ? (
-              <motion.div 
+              <motion.div
                 animate={{ y: [0, -2, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
                 className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500 text-black shadow-lg shadow-amber-500/20"
               >
                 <TimerIcon size={12} className="animate-spin" />
-                <span className="text-[9px] font-black uppercase tracking-widest">Speaking</span>
+                <span className="text-[9px] font-black uppercase tracking-widest">
+                  Speaking
+                </span>
               </motion.div>
-            ) : !player.isAlive && (
-              <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-500 backdrop-blur-md">
-                <Ghost size={12} />
-                <span className="text-[9px] font-black uppercase tracking-widest italic">Terminated</span>
-              </div>
+            ) : (
+              !player.isAlive && (
+                <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-500 backdrop-blur-md">
+                  <Ghost size={12} />
+                  <span className="text-[9px] font-black uppercase tracking-widest italic">
+                    Terminated
+                  </span>
+                </div>
+              )
             )}
           </div>
         </div>
@@ -1147,7 +1321,13 @@ function PlayerCard({
   )
 }
 
-function Timer({ endsAt, onExpire }: { endsAt?: number; onExpire: () => void }) {
+function Timer({
+  endsAt,
+  onExpire,
+}: {
+  endsAt?: number
+  onExpire: () => void
+}) {
   const [timeLeft, setTimeLeft] = useState(0)
 
   useEffect(() => {
@@ -1165,27 +1345,36 @@ function Timer({ endsAt, onExpire }: { endsAt?: number; onExpire: () => void }) 
   const isLow = timeLeft <= 10 && timeLeft > 0
 
   return (
-    <div className={`flex items-center gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl border transition-all duration-500 shadow-xl ${
-      isLow ? 'bg-rose-600/10 border-rose-500/40 shadow-rose-600/10' : 'bg-white/5 border-white/10'
-    }`}>
-      <TimerIcon size={16} className={isLow ? 'text-rose-500 animate-pulse' : 'text-blue-400'} />
-      <span className={`text-sm sm:text-lg font-mono font-black tabular-nums ${isLow ? 'text-rose-500' : 'text-white'}`}>
+    <div
+      className={`flex items-center gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-2xl border transition-all duration-500 shadow-xl ${
+        isLow
+          ? 'bg-rose-600/10 border-rose-500/40 shadow-rose-600/10'
+          : 'bg-white/5 border-white/10'
+      }`}
+    >
+      <TimerIcon
+        size={16}
+        className={isLow ? 'text-rose-500 animate-pulse' : 'text-blue-400'}
+      />
+      <span
+        className={`text-sm sm:text-lg font-mono font-black tabular-nums ${isLow ? 'text-rose-500' : 'text-white'}`}
+      >
         {timeLeft.toString().padStart(2, '0')}s
       </span>
     </div>
   )
 }
 
-function RoleOverlay({ 
-  player, 
-  onClose 
+function RoleOverlay({
+  player,
+  onClose,
 }: {
-  player: Player;
-  onClose: () => void;
+  player: Player
+  onClose: () => void
 }) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -1199,13 +1388,15 @@ function RoleOverlay({
         className="relative w-full max-w-md bg-[#0a0f1d] border border-white/10 p-8 sm:p-12 rounded-[3rem] sm:rounded-[4rem] shadow-[0_0_120px_rgba(0,0,0,1)] flex flex-col items-center gap-10 sm:gap-12 overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
-        
+
         <div className="flex flex-col items-center gap-6 sm:gap-8 text-center">
           <div className="w-20 h-20 sm:w-24 sm:h-24 bg-blue-500/10 border border-blue-500/20 rounded-[2rem] sm:rounded-[2.5rem] flex items-center justify-center shadow-inner">
             <Shield size={40} className="text-blue-500 drop-shadow-lg" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em]">Protocol Identity</h3>
+            <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.6em]">
+              Protocol Identity
+            </h3>
             <p className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter bg-gradient-to-b from-white via-white to-slate-600 bg-clip-text text-transparent">
               {player.role}
             </p>
@@ -1214,17 +1405,19 @@ function RoleOverlay({
 
         <div className="w-full p-8 sm:p-10 bg-white/[0.03] border border-white/10 rounded-[2.5rem] sm:rounded-[3rem] flex flex-col items-center gap-4 shadow-2xl relative">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0a0f1d] px-4 py-1 border border-white/10 rounded-full">
-             <span className="text-[8px] sm:text-[9px] font-black text-blue-400 uppercase tracking-widest">Secret Word</span>
+            <span className="text-[8px] sm:text-[9px] font-black text-blue-400 uppercase tracking-widest">
+              Secret Word
+            </span>
           </div>
           <p className="text-4xl sm:text-6xl font-black text-white uppercase tracking-tighter drop-shadow-2xl text-center break-all">
             {player.role === 'mrwhite' ? '???' : player.word}
           </p>
           {player.role === 'mrwhite' && (
             <div className="flex items-center gap-3 mt-6 text-slate-500 bg-white/5 px-4 py-2 rounded-xl">
-               <Ghost size={16} />
-               <p className="text-[9px] sm:text-[10px] font-bold text-center leading-relaxed tracking-tight">
+              <Ghost size={16} />
+              <p className="text-[9px] sm:text-[10px] font-bold text-center leading-relaxed tracking-tight">
                 Infiltrate and extract the word from communications.
-               </p>
+              </p>
             </div>
           )}
         </div>
