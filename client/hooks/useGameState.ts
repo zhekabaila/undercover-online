@@ -312,6 +312,27 @@ export function useGameState() {
     localStorage.removeItem('undercover_playerId')
   }, [])
 
+  const submitDescription = useCallback((description: string) => {
+    wsClient?.send(WSEvent.SUBMIT_DESCRIPTION, { description, playerId: globalPlayerId, roomId: globalRoom?.id })
+  }, [])
+
+  const updateSettings = useCallback((settings: any) => {
+    if (globalRoom) {
+      const updatedSettings = { ...globalRoom.settings, ...settings };
+      updateGlobalState({
+        room: {
+          ...globalRoom,
+          settings: updatedSettings,
+        },
+      });
+      wsClient?.send(WSEvent.UPDATE_SETTINGS, { 
+        settings: updatedSettings,
+        playerId: globalPlayerId,
+        roomId: globalRoom.id 
+      });
+    }
+  }, [])
+
   return {
     room,
     playerId,
@@ -329,25 +350,8 @@ export function useGameState() {
     mrWhiteGuess,
     leaveRoom,
     clearSession,
-    submitDescription: useCallback((description: string) => {
-      wsClient?.send(WSEvent.SUBMIT_DESCRIPTION, { description, playerId: globalPlayerId, roomId: globalRoom?.id })
-    }, []),
-    updateSettings: useCallback((settings: any) => {
-      if (globalRoom) {
-        const updatedSettings = { ...globalRoom.settings, ...settings };
-        updateGlobalState({
-          room: {
-            ...globalRoom,
-            settings: updatedSettings,
-          },
-        });
-        wsClient?.send(WSEvent.UPDATE_SETTINGS, { 
-          settings: updatedSettings,
-          playerId: globalPlayerId,
-          roomId: globalRoom.id 
-        });
-      }
-    }, []),
+    submitDescription,
+    updateSettings,
     isInitialLoading,
   }
 }

@@ -9,13 +9,10 @@ import {
   Timer as TimerIcon,
   Shield, Vote,
   AlertCircle,
-  Trophy,
-  Search,
-  ArrowLeft,
+  Trophy, ArrowLeft,
   Loader2, X, ChevronRight,
   ShieldAlert,
-  Crown,
-  Users, Activity,
+  Crown, Activity,
   Ghost
 } from 'lucide-react'
 import { useGameState } from '../../../../hooks/useGameState'
@@ -122,10 +119,6 @@ export default function GameScreen() {
     room?.game?.turnOrder?.playerIds[room.game.turnOrder.currentIndex] === playerId
   , [room?.game, playerId])
 
-  if (!room || !room.game) {
-    return <LoadingState roomId={params.roomId as string} />
-  }
-
   const infiltratorStats = useMemo(() => {
     return {
       undercover: room?.game?.remainingUndercover ?? 0,
@@ -152,6 +145,10 @@ export default function GameScreen() {
     if (!guessInput.trim()) return
     mrWhiteGuess(guessInput.trim())
     setGuessInput('')
+  }
+
+  if (!room || !room.game) {
+    return <LoadingState roomId={params.roomId as string} />
   }
 
   return (
