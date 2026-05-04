@@ -329,10 +329,11 @@ export function useGameState() {
     mrWhiteGuess,
     leaveRoom,
     clearSession,
+    submitDescription: useCallback((description: string) => {
+      wsClient?.send(WSEvent.SUBMIT_DESCRIPTION, { description, playerId: globalPlayerId, roomId: globalRoom?.id })
+    }, []),
     updateSettings: useCallback((settings: any) => {
       if (globalRoom) {
-        // Optimistic update: merge with the absolute latest global state
-        // to prevent race conditions when multiple settings are changed rapidly
         const updatedSettings = { ...globalRoom.settings, ...settings };
         updateGlobalState({
           room: {

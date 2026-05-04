@@ -54,6 +54,7 @@ function startGameFlow(room: Room | any) {
     p.word = assign.word
     p.isAlive = true
     p.hasSpokenThisRound = false
+    p.description = undefined
 
     const ws = playerSockets.get(pId)
     if (ws) {
@@ -73,20 +74,37 @@ function startGameFlow(room: Room | any) {
     },
     votes: {},
     passes: {},
+    remainingUndercover: 0,
+    remainingMrWhite: 0,
   }
+
+  updateRemainingCounts(room)
 
   broadcast(room.id, WSEvent.GAME_STARTING, { countdown: 3 })
 
   startTimer(room.id, 3000, () => {
-    // Skip speaking phase, go directly to discussion
-    startDiscussionPhase(room)
+    startSpeakingPhase(room)
   })
 }
 
 function startSpeakingPhase(room: Room | any) {
-  // This phase is now skipped - kept for backward compatibility
   if (!room.game) return
-  startDiscussionPhase(room)
+  room.game.phase = 'speaking'
+  
+  const currentPlayerId = room.game.turnOrder.playerIds[room.game.turnOrder.currentIndex]
+  const duration = room.settings.turnDurationSeconds || 30
+
+  const endsAt = Date.now() + (duration * 1000)
+  room.game.turnEndTime = endsAt
+
+  broadcast(room.id, WSEvent.TURN_STARTED, { 
+    playerId: currentPlayerId,
+    endsAt 
+  })
+
+  startTimer(room.id, duration * 1000, () => {
+    handleTurnDone(currentPlayerId)
+  })
 }
 
 export function handleTurnDone(playerId: string) {
@@ -102,23 +120,22 @@ export function handleTurnDone(playerId: string) {
       if (currentPlayerId !== playerId) return // Not their turn
 
       clearTimer(room.id)
-      room.game.turnOrder.currentIndex++
-
-      // Check if more players need to speak
+      
+      // Move to the next index
+      let nextIndex = room.game.turnOrder.currentIndex + 1
       const playerIds = room.game.turnOrder.playerIds
       let foundNext = false
-      for (
-        let i = room.game.turnOrder.currentIndex;
-        i < playerIds.length;
-        i++
-      ) {
-        if (room.players.get(playerIds[i])!.isAlive) {
+      
+      for (let i = nextIndex; i < playerIds.length; i++) {
+        if (room.players.get(playerIds[i])?.isAlive) {
+          nextIndex = i
           foundNext = true
           break
         }
       }
 
       if (foundNext) {
+        room.game.turnOrder.currentIndex = nextIndex
         startSpeakingPhase(room)
       } else {
         startDiscussionPhase(room)
@@ -291,9 +308,20 @@ function processVotes(room: Room | any) {
     isDraw: false,
   })
 
+  updateRemainingCounts(room)
+
   if (eliminatedPlayer.role === 'mrwhite') {
     room.game.phase = 'mrwhite_guessing'
     room.game.eliminatedPlayerId = eliminatedId
+    
+    // Broadcast system message
+    broadcast(room.id, WSEvent.CHAT_MESSAGE, {
+      playerId: 'SYSTEM',
+      playerName: 'SYSTEM',
+      message: `Agent White has been compromised! They have one chance to override the system by decoding the civilian word.`,
+      timestamp: Date.now(),
+    })
+
     // 30 seconds for Mr White to guess
     const endsAt = Date.now() + 30000
     room.game.turnEndTime = endsAt
@@ -309,6 +337,16 @@ function processVotes(room: Room | any) {
   }
 }
 
+function updateRemainingCounts(room: Room | any) {
+  if (!room.game) return
+
+  const players = Array.from(room.players.values()) as Player[]
+  const alivePlayers = players.filter((p) => p.isAlive)
+  
+  room.game.remainingUndercover = alivePlayers.filter((p) => p.role === 'undercover').length
+  room.game.remainingMrWhite = alivePlayers.filter((p) => p.role === 'mrwhite').length
+}
+
 function checkWinConditions(room: Room | any) {
   if (!room.game) return
 
@@ -318,10 +356,12 @@ function checkWinConditions(room: Room | any) {
   const aliveUndercovers = alivePlayers.filter((p) => p.role === 'undercover')
   const aliveMrWhites = alivePlayers.filter((p) => p.role === 'mrwhite')
 
-  if (aliveUndercovers.length === 0 && aliveMrWhites.length === 0) {
+  const totalInfiltrators = aliveUndercovers.length + aliveMrWhites.length;
+
+  if (totalInfiltrators === 0) {
     endGame(room, 'civilian')
   } else if (
-    aliveUndercovers.length >= aliveCivilians.length &&
+    totalInfiltrators >= aliveCivilians.length &&
     aliveCivilians.length <= 1
   ) {
     endGame(room, 'undercover')
@@ -334,7 +374,16 @@ function nextRound(room: Room | any) {
   if (!room.game) return
   room.game.roundNumber++
   room.game.turnOrder.currentIndex = 0
-  // Re-shuffle turn order for next round? Or keep same? Instructions say random at start.
+  
+  // Clear descriptions for the new round
+  room.players.forEach((p: any) => {
+    p.description = undefined
+  })
+
+  broadcast(room.id, WSEvent.ROOM_UPDATED, {
+    room: { ...room, players: Array.from(room.players.values()) },
+  })
+
   startSpeakingPhase(room)
 }
 
@@ -369,17 +418,10 @@ export function handleChat(playerId: string, payload: { message: string }) {
     if (room.players.has(playerId)) {
       const player = room.players.get(playerId)!
 
-      // Validation: speaking phase chat restriction
-      if (room.game && room.game.phase === 'speaking') {
-        const game = room.game
-        const currentPlayerId =
-          game.turnOrder.playerIds[game.turnOrder.currentIndex]
-        if (currentPlayerId !== playerId) return
-      }
 
       broadcast(roomId, WSEvent.CHAT_MESSAGE, {
         playerId,
-        name: player.name,
+        playerName: player.name,
         message: payload.message.substring(0, 300),
         timestamp: Date.now(),
       })
@@ -408,11 +450,75 @@ export function handleMrWhiteGuess(
       )?.word
 
       if (payload.word.toLowerCase() === wordPair?.toLowerCase()) {
+        broadcast(room.id, WSEvent.CHAT_MESSAGE, {
+          playerId: 'SYSTEM',
+          playerName: 'SYSTEM',
+          message: `CORRECT! Mr. White successfully decoded the word: "${wordPair}". SYSTEM OVERRIDDEN.`,
+          type: 'chat',
+          timestamp: Date.now(),
+        })
         endGame(room, 'mrwhite') // Mr White wins
       } else {
+        // Broadcast that Mr White guessed wrong
+        broadcast(room.id, WSEvent.CHAT_MESSAGE, {
+          playerId: 'SYSTEM',
+          playerName: 'SYSTEM',
+          message: `INCORRECT! Mr. White failed to decode the word. Initializing termination sequence...`,
+          type: 'chat',
+          timestamp: Date.now(),
+        })
         checkWinConditions(room)
       }
       break
+    }
+  }
+}
+
+export function handleSubmitDescription(
+  playerId: string,
+  payload: { description: string },
+) {
+  const rooms = roomStore.getAllRooms()
+  for (const [roomId, room] of rooms.entries()) {
+    if (room.players.has(playerId)) {
+      const player = room.players.get(playerId)!
+
+      if (!room.game || !['speaking', 'discussion'].includes(room.game.phase)) {
+        return
+      }
+
+      if (!player.isAlive) return
+
+      // In speaking phase, must be your turn
+      if (room.game.phase === 'speaking') {
+        const currentPlayerId = room.game.turnOrder.playerIds[room.game.turnOrder.currentIndex]
+        if (currentPlayerId !== playerId) return
+      }
+
+      if (player.description) {
+        // Already submitted this round
+        return
+      }
+
+      player.description = payload.description.substring(0, 100)
+      
+      broadcast(roomId, WSEvent.ROOM_UPDATED, {
+        room: { ...room, players: Array.from(room.players.values()) },
+      })
+
+      // Broadcast system message to chat
+      broadcast(roomId, WSEvent.CHAT_MESSAGE, {
+        playerId: 'SYSTEM',
+        playerName: 'SYSTEM',
+        message: `${player.name} has submitted their tactical description.`,
+        type: 'description_submitted',
+        timestamp: Date.now(),
+      })
+
+      // If in speaking phase, move to next player after description
+      if (room.game.phase === 'speaking') {
+        handleTurnDone(playerId)
+      }
     }
   }
 }

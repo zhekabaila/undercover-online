@@ -17,6 +17,7 @@ export interface Player {
   word?: string;             // kata rahasia (hanya dikirim ke player itu sendiri)
   isAlive: boolean;
   hasSpokenThisRound: boolean;
+  description?: string;      // per-round description
 }
 
 export interface TurnOrder {
@@ -33,6 +34,8 @@ export interface GameState {
   turnEndTime?: number;          // timestamp unix kapan giliran berakhir
   eliminatedPlayerId?: string;   // For showing vote results
   winnerRole?: RoleType | 'civilian';
+  remainingUndercover?: number;
+  remainingMrWhite?: number;
 }
 
 export interface Room {
@@ -52,6 +55,6 @@ export interface ChatMessage {
   playerId?: string;
   playerName: string;
   message: string;
-  type?: 'chat' | 'vote' | 'pass';
+  type?: 'chat' | 'vote' | 'pass' | 'system' | 'description_submitted';
   timestamp: number;
 }

@@ -86,6 +86,13 @@ export function handleConnection(ws: Socket, wss: Server) {
             console.warn(`[WS] Ignore MRWHITE_GUESS: No currentPlayerId for socket ${ws.id}`);
           }
           break;
+        case WSEvent.SUBMIT_DESCRIPTION:
+          if (currentPlayerId) {
+            gameManager.handleSubmitDescription(currentPlayerId, payload);
+          } else {
+            console.warn(`[WS] Ignore SUBMIT_DESCRIPTION: No currentPlayerId for socket ${ws.id}`);
+          }
+          break;
       }
 
 
