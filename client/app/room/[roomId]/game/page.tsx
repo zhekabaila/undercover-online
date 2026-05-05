@@ -107,15 +107,26 @@ export default function GameScreen() {
     setMounted(true)
   }, [])
 
-  // Auto-scroll chat
+  // Auto-scroll chat and play notification sound
   useEffect(() => {
-    if (isChatOpen) {
+    if (messages.length > 0) {
+      // Scroll to bottom
       const timer = setTimeout(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
       }, 100)
+      
+      // Play notification sound
+      try {
+        const audio = new Audio('/sounds/notification.mp3')
+        audio.volume = 0.5
+        audio.play().catch(() => {}) // Silently fail if audio fails
+      } catch (e) {
+        // Silently ignore audio errors
+      }
+      
       return () => clearTimeout(timer)
     }
-  }, [messages, isChatOpen])
+  }, [messages])
 
   // Auto-show role overlay for 5 seconds when game starts
   useEffect(() => {
@@ -652,6 +663,21 @@ function ChatContent({
   onClose: () => void
   currentPlayer: Player | undefined
 }) {
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+
+  // Auto-scroll messages container to bottom
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      const timer = setTimeout(() => {
+        messagesContainerRef.current?.scrollTo({
+          top: messagesContainerRef.current.scrollHeight,
+          behavior: 'smooth',
+        })
+      }, 50)
+      return () => clearTimeout(timer)
+    }
+  }, [messages])
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Chat Header */}
@@ -681,7 +707,10 @@ function ChatContent({
       </div>
 
       {/* Messages List */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 custom-scrollbar bg-gradient-to-b from-transparent to-blue-500/[0.02]">
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 custom-scrollbar bg-gradient-to-b from-transparent to-blue-500/[0.02]"
+      >
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-20">
             <Ghost size={48} className="mb-6 animate-bounce" />
