@@ -126,6 +126,7 @@ export function useGameState() {
               votes: {},
             } as any,
           },
+          messages: [], // Clear chat history for new game
         })
       }),
       wsClient.on(WSEvent.ROLE_ASSIGNED, (payload) => {
@@ -228,6 +229,7 @@ export function useGameState() {
             },
             players: payload.players,
           },
+          messages: [], // Clear chat history when game ends
         })
       }),
       wsClient.on(WSEvent.CHAT_MESSAGE, (payload) => {

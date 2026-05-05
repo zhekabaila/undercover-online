@@ -100,6 +100,7 @@ export default function GameScreen() {
   const [showRoleOverlay, setShowRoleOverlay] = useState(false)
   const [mounted, setMounted] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const roleShownRef = useRef(false) // Track if role has been auto-shown for current game
 
   // Handle hydration and initial desktop state
   useEffect(() => {
@@ -115,6 +116,25 @@ export default function GameScreen() {
       return () => clearTimeout(timer)
     }
   }, [messages, isChatOpen])
+
+  // Auto-show role overlay for 5 seconds when game starts
+  useEffect(() => {
+    if (room?.game?.phase === 'starting' && !roleShownRef.current) {
+      roleShownRef.current = true
+      setShowRoleOverlay(true)
+      
+      const timer = setTimeout(() => {
+        setShowRoleOverlay(false)
+      }, 5000) // 5 seconds
+      
+      return () => clearTimeout(timer)
+    }
+    
+    // Reset ref when game ends or returns to lobby
+    if (room?.game?.phase === 'lobby' || room?.game?.phase === 'ended') {
+      roleShownRef.current = false
+    }
+  }, [room?.game?.phase])
 
   // Redirect to lobby if game not active
   useEffect(() => {
@@ -180,7 +200,7 @@ export default function GameScreen() {
       </div>
 
       {/* App Header - Sticky and Premium */}
-      <header className="sticky top-0 h-16 sm:h-20 shrink-0 border-b border-white/10 bg-[#020617]/90 backdrop-blur-2xl flex items-center px-4 sm:px-8 z-[100] shadow-2xl">
+      <header className="sticky top-0 h-16 sm:h-20 shrink-0 overflow-x-auto border-b border-white/10 bg-[#020617]/90 backdrop-blur-2xl flex items-center px-4 sm:px-8 z-[100] shadow-2xl">
         <div className="w-full flex items-center justify-between max-w-[1920px] mx-auto gap-4">
           <div className="flex items-center gap-3 sm:gap-6">
             <button
