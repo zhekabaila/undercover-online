@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     openGraph: {
       title: "Party Crashers | The Ultimate Social Deduction Game",
       description: "Join the most chaotic party online! Play Party Crashers with your friends. Real-time word deduction game with a vibrant neobrutalist vibe.",
-      images: ["/og-image.png"],
+      images: ["https://undercover.coreapps.web.id/og-image.png"],
     },
     twitter: {
       card: "summary_large_image",
       title: "Party Crashers | The Ultimate Social Deduction Game",
       description: "Join the most chaotic party online! Play Party Crashers with your friends. Real-time word deduction game with a vibrant neobrutalist vibe.",
-      images: ["/og-image.png"],
+      images: ["https://undercover.coreapps.web.id/og-image.png"],
     },
 };
 
