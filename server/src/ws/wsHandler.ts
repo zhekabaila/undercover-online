@@ -25,6 +25,9 @@ export function handleConnection(ws: Socket, wss: Server) {
         case WSEvent.JOIN_ROOM:
           currentPlayerId = roomManager.handleJoinRoom(ws, payload);
           break;
+        case WSEvent.LIST_PUBLIC_ROOMS:
+          roomManager.handleListPublicRooms(ws);
+          break;
         case WSEvent.LEAVE_ROOM:
           if (currentPlayerId) {
             roomManager.handleLeaveRoom(currentPlayerId);

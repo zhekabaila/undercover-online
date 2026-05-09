@@ -60,7 +60,8 @@ export function handleCreateRoom(ws: Socket, payload: { name: string, settings: 
     maxPlayers: payload.settings?.maxPlayers ?? 8,
     turnDurationSeconds: payload.settings?.turnDurationSeconds ?? 30,
     discussionDurationSeconds: payload.settings?.discussionDurationSeconds ?? 60,
-    wordPairId: payload.settings?.wordPairId
+    wordPairId: payload.settings?.wordPairId,
+    isPublic: payload.settings?.isPublic ?? false
   };
 
   const room = roomStore.createRoom(host, settings);
@@ -68,6 +69,20 @@ export function handleCreateRoom(ws: Socket, payload: { name: string, settings: 
 
   sendToPlayer(ws, WSEvent.ROOM_CREATED, { room: { ...room, players: Array.from(room.players.values()) }, playerId });
   return playerId;
+}
+
+export function handleListPublicRooms(ws: Socket) {
+  const allRooms = roomStore.getAllRooms();
+  const publicRooms = Array.from(allRooms.values())
+    .filter(room => room.isPublic && (!room.game || room.game.phase === 'lobby') && room.players.size < room.settings.maxPlayers)
+    .map(room => ({
+      id: room.id,
+      name: Array.from(room.players.values()).find(p => p.isHost)?.name || 'Unknown',
+      playerCount: room.players.size,
+      maxPlayers: room.settings.maxPlayers
+    }));
+
+  sendToPlayer(ws, WSEvent.PUBLIC_ROOMS_LIST, { rooms: publicRooms });
 }
 
 export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: string }): string | undefined {
@@ -189,6 +204,9 @@ export function handleUpdateSettings(playerId: string, payload: { settings: Room
           return;
         }
         room.settings = { ...room.settings, ...payload.settings };
+        if (payload.settings.isPublic !== undefined) {
+          room.isPublic = payload.settings.isPublic;
+        }
         broadcast(roomId, WSEvent.ROOM_UPDATED, { room: { ...room, players: Array.from(room.players.values()) } });
         break;
       }

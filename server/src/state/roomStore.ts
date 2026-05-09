@@ -10,6 +10,7 @@ export function createRoom(hostPlayer: Player, settings: RoomSettings): Room {
     players: new Map([[hostPlayer.id, hostPlayer]]),
     game: null,
     createdAt: Date.now(),
+    isPublic: settings.isPublic,
   };
   rooms.set(roomId, room);
   return room;

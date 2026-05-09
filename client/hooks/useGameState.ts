@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import wsClient from '../lib/wsClient'
 import { WSEvent, ErrorCode } from '../types/events'
-import { Room, Player, ChatMessage } from '../types/game'
+import { Room, Player, ChatMessage, PublicRoom } from '../types/game'
 
 // Global state to persist between page navigations - defined OUTSIDE the hook
 let globalRoom: Room | null = null
 let globalPlayerId: string | null = null
 let globalMessages: ChatMessage[] = []
+let globalPublicRooms: PublicRoom[] = []
 let globalIsInitialLoading = true
 const listeners = new Set<() => void>()
 
@@ -14,11 +15,13 @@ const updateGlobalState = (updates: {
   room?: Room | null
   playerId?: string | null
   messages?: ChatMessage[]
+  publicRooms?: PublicRoom[]
   isInitialLoading?: boolean
 }) => {
   if (updates.room !== undefined) globalRoom = updates.room
   if (updates.playerId !== undefined) globalPlayerId = updates.playerId
   if (updates.messages !== undefined) globalMessages = updates.messages
+  if (updates.publicRooms !== undefined) globalPublicRooms = updates.publicRooms
   if (updates.isInitialLoading !== undefined)
     globalIsInitialLoading = updates.isInitialLoading
   listeners.forEach((l) => l())
@@ -31,6 +34,7 @@ export function useGameState() {
     null,
   )
   const [messages, setMessages] = useState<ChatMessage[]>(globalMessages)
+  const [publicRooms, setPublicRooms] = useState<PublicRoom[]>(globalPublicRooms)
   const [isInitialLoading, setIsInitialLoading] = useState(
     globalIsInitialLoading,
   )
@@ -43,6 +47,7 @@ export function useGameState() {
       setRoom(globalRoom)
       setPlayerId(globalPlayerId)
       setMessages(globalMessages)
+      setPublicRooms(globalPublicRooms)
       setIsInitialLoading(globalIsInitialLoading)
     }
     listeners.add(handleChange)
@@ -58,8 +63,8 @@ export function useGameState() {
       wsClient.on('CONNECTED', () => {
         setIsConnected(true)
         // Auto-reconnect if we have a saved session
-        const savedRoomId = localStorage.getItem('undercover_roomId')
-        const savedPlayerId = localStorage.getItem('undercover_playerId')
+        const savedRoomId = localStorage.getItem('party_roomId')
+        const savedPlayerId = localStorage.getItem('party_playerId')
         if (savedRoomId && savedPlayerId) {
           wsClient?.send(WSEvent.RECONNECT, {
             roomId: savedRoomId,
@@ -74,8 +79,8 @@ export function useGameState() {
           playerId: payload.playerId,
           isInitialLoading: false,
         })
-        localStorage.setItem('undercover_roomId', payload.room.id)
-        localStorage.setItem('undercover_playerId', payload.playerId)
+        localStorage.setItem('party_roomId', payload.room.id)
+        localStorage.setItem('party_playerId', payload.playerId)
       }),
       wsClient.on(WSEvent.ROOM_JOINED, (payload) => {
         updateGlobalState({
@@ -83,8 +88,8 @@ export function useGameState() {
           playerId: payload.playerId,
           isInitialLoading: false,
         })
-        localStorage.setItem('undercover_roomId', payload.room.id)
-        localStorage.setItem('undercover_playerId', payload.playerId)
+        localStorage.setItem('party_roomId', payload.room.id)
+        localStorage.setItem('party_playerId', payload.playerId)
       }),
       wsClient.on(WSEvent.PLAYER_JOINED, (payload) => {
         if (!globalRoom) return
@@ -113,6 +118,9 @@ export function useGameState() {
       }),
       wsClient.on(WSEvent.ROOM_UPDATED, (payload) => {
         updateGlobalState({ room: payload.room })
+      }),
+      wsClient.on(WSEvent.PUBLIC_ROOMS_LIST, (payload) => {
+        updateGlobalState({ publicRooms: payload.rooms })
       }),
       wsClient.on(WSEvent.GAME_STARTING, (payload) => {
         if (!globalRoom) return
@@ -254,8 +262,8 @@ export function useGameState() {
     // Initial loading state resolution:
     // If we have a session, isInitialLoading will stay true until ROOM_JOINED or ERROR.
     // If we don't have a session, we can set it to false immediately.
-    const savedRoomId = localStorage.getItem('undercover_roomId')
-    const savedPlayerId = localStorage.getItem('undercover_playerId')
+    const savedRoomId = localStorage.getItem('party_roomId')
+    const savedPlayerId = localStorage.getItem('party_playerId')
     if (!savedRoomId || !savedPlayerId) {
       updateGlobalState({ isInitialLoading: false })
     }
@@ -304,18 +312,22 @@ export function useGameState() {
   const leaveRoom = useCallback(() => {
     wsClient?.send(WSEvent.LEAVE_ROOM, { playerId: globalPlayerId, roomId: globalRoom?.id })
     updateGlobalState({ room: null, playerId: null })
-    localStorage.removeItem('undercover_roomId')
-    localStorage.removeItem('undercover_playerId')
+    localStorage.removeItem('party_roomId')
+    localStorage.removeItem('party_playerId')
   }, [])
 
   const clearSession = useCallback(() => {
     updateGlobalState({ room: null, playerId: null })
-    localStorage.removeItem('undercover_roomId')
-    localStorage.removeItem('undercover_playerId')
+    localStorage.removeItem('party_roomId')
+    localStorage.removeItem('party_playerId')
   }, [])
 
   const submitDescription = useCallback((description: string) => {
     wsClient?.send(WSEvent.SUBMIT_DESCRIPTION, { description, playerId: globalPlayerId, roomId: globalRoom?.id })
+  }, [])
+
+  const refreshPublicRooms = useCallback(() => {
+    wsClient?.send(WSEvent.LIST_PUBLIC_ROOMS, {})
   }, [])
 
   const updateSettings = useCallback((settings: any) => {
@@ -354,6 +366,8 @@ export function useGameState() {
     clearSession,
     submitDescription,
     updateSettings,
+    refreshPublicRooms,
     isInitialLoading,
+    publicRooms,
   }
 }

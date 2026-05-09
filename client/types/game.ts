@@ -6,6 +6,7 @@ export interface RoomSettings {
   turnDurationSeconds: number; // custom per room, default: 30
   discussionDurationSeconds: number; // default: 120
   wordPairId?: string;       // optional: pilih kategori kata
+  isPublic: boolean;         // default: false
 }
 
 export interface Player {
@@ -44,6 +45,14 @@ export interface Room {
   players: Player[];
   game: GameState | null;
   createdAt: number;
+  isPublic: boolean;
+}
+
+export interface PublicRoom {
+  id: string;
+  name: string;
+  playerCount: number;
+  maxPlayers: number;
 }
 
 export interface WordPair {
