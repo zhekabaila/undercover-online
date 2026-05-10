@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Search, Plus, Sparkles, Users, Zap, ChevronRight, Radio, ArrowRight, PartyPopper, Smile, Gamepad2, Info, X, ChevronLeft, HelpCircle, LogOut, KeyRound, History } from 'lucide-react'
 import { useGameState } from '../hooks/useGameState'
 import { FloatingShape } from '../components/ui/FloatingShape'
@@ -24,6 +24,7 @@ export default function Home() {
   const [formError, setFormError] = useState('')
   const [isNameAlertOpen, setIsNameAlertOpen] = useState(false)
   const [codeOrEventState, setCodeOrEventState] = useState<string | React.MouseEvent | undefined>(undefined)
+  const [activeTab, setActiveTab] = useState<'create' | 'join'>('create')
   
   const [user, setUser] = useState<{ id: string, username: string } | null>(null)
   const [token, setToken] = useState<string | null>(null)
@@ -375,72 +376,110 @@ export default function Home() {
 
                   <div className="flex items-center gap-6 py-1 sm:py-2">
                     <div className="h-[2px] bg-black/10 flex-1 neo-border-b-sm border-black/5" />
-                    <div className="text-xs sm:text-sm font-black text-black/60 uppercase tracking-[0.3em] italic whitespace-nowrap">IKUTI KESERUAN</div>
+                    <div className="text-xs sm:text-sm font-black text-black/60 uppercase tracking-[0.3em] italic whitespace-nowrap">OPSI PESTA</div>
                     <div className="h-[2px] bg-black/10 flex-1 neo-border-b-sm border-black/5" />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-1 gap-6 md:gap-8">
-                    <div className="space-y-6">
-                      <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-4 bg-[var(--neutral)] neo-border hover:bg-white transition-all group active:translate-y-1 hover:neo-shadow-md border-l-[6px] border-l-[var(--success)] relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-12 h-full neo-strip opacity-10" />
-                        <div className="relative w-6 h-6 shrink-0">
-                          <input 
-                            type="checkbox" 
-                            checked={isPublic} 
-                            onChange={(e) => setIsPublic(e.target.checked)}
-                            className="peer absolute inset-0 opacity-0 cursor-pointer z-10"
-                          />
-                          <div className="w-6 h-6 neo-border bg-white peer-checked:bg-[var(--success)] flex items-center justify-center transition-colors neo-shadow-sm peer-active:shadow-none peer-active:translate-x-[1px] peer-active:translate-y-[1px]">
-                            <motion.div 
-                              animate={{ scale: isPublic ? 1 : 0 }}
-                              className="w-3 h-3 bg-black rounded-sm"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-col relative z-10 gap-0.5">
-                          <span className="text-sm sm:text-base font-black uppercase tracking-wider select-none group-hover:text-[var(--success)] transition-colors">Tampilkan di Lobi</span>
-                          <span className="text-[10px] sm:text-xs font-bold opacity-30 uppercase tracking-tighter leading-tight">Izinkan pemain lain untuk bergabung</span>
-                        </div>
-                      </label>
-                      
-                      <button
-                        onClick={() => handleCreate()}
-                        disabled={isCreating || !isConnected}
-                        className="w-full neo-button bg-[var(--primary)] text-black min-h-[56px] sm:min-h-[64px] flex flex-col gap-0.5 items-center justify-center group relative overflow-hidden animate-shimmer neo-pop"
-                      >
-                        <div className="flex items-center gap-2 relative z-10 font-black italic tracking-tighter text-lg lg:text-xl">
-                          <Plus className="w-4 lg:w-5 h-4 lg:h-5" strokeWidth={4} />
-                          <span>BUAT PESTA</span>
-                        </div>
-                        <span className="text-[9px] lg:text-[10px] font-black opacity-40 uppercase tracking-[0.1em] relative z-10 leading-none">Mulai Ruangan Baru</span>
-                      </button>
-                    </div>
+                  <div className="flex p-1 bg-[var(--neutral)] neo-border neo-shadow-sm mb-4">
+                    <button
+                      onClick={() => setActiveTab('create')}
+                      className={`flex-1 py-3 px-4 font-black uppercase italic tracking-tighter text-sm transition-all flex items-center justify-center gap-2 ${
+                        activeTab === 'create'
+                          ? 'bg-[var(--primary)] text-black neo-border-sm'
+                          : 'text-black/40 hover:text-black'
+                      }`}
+                    >
+                      <Plus className="w-4 h-4" strokeWidth={4} />
+                      BUAT PESTA
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('join')}
+                      className={`flex-1 py-3 px-4 font-black uppercase italic tracking-tighter text-sm transition-all flex items-center justify-center gap-2 ${
+                        activeTab === 'join'
+                          ? 'bg-[var(--secondary)] text-black neo-border-sm'
+                          : 'text-black/40 hover:text-black'
+                      }`}
+                    >
+                      <ArrowRight className="w-4 h-4" strokeWidth={4} />
+                      GABUNG PESTA
+                    </button>
+                  </div>
 
-                    <div className="space-y-6">
-                      <div className="flex flex-col gap-4 sm:gap-6">
-                        <div className="relative group">
-                          <input
-                            type="text"
-                            placeholder="KODE"
-                            value={roomCode}
-                            onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                            maxLength={6}
-                            className="w-full neo-input text-xl sm:text-2xl text-center font-mono tracking-[0.3em] uppercase py-3 sm:py-4 bg-[var(--neutral)] group-focus-within:bg-white group-focus-within:neo-shadow-md transition-all placeholder:opacity-10"
-                          />
-                          <div className="absolute -top-3 left-3 bg-black text-white text-[9px] sm:text-[10px] px-3 py-1 font-black uppercase tracking-[0.2em] italic neo-shadow-sm leading-none whitespace-nowrap">
-                            KODE GABUNGAN
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleJoin()}
-                          disabled={!roomCode || !isConnected}
-                          className="w-full neo-button bg-[var(--secondary)] min-h-[56px] sm:min-h-[64px] flex items-center justify-center gap-2 group animate-shimmer neo-pop"
+                  <div className="min-h-[140px]">
+                    <AnimatePresence mode="wait">
+                      {activeTab === 'create' ? (
+                        <motion.div
+                          key="create-form"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          className="space-y-6"
                         >
-                          <ArrowRight className="w-4 lg:w-5 h-4 lg:h-5 group-hover:translate-x-2 transition-transform duration-500" strokeWidth={4} />
-                          <span className="text-lg lg:text-xl font-black italic tracking-tighter">GABUNG PESTA</span>
-                        </button>
-                      </div>
-                    </div>
+                          <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-4 bg-[var(--neutral)] neo-border hover:bg-white transition-all group active:translate-y-1 hover:neo-shadow-md border-l-[6px] border-l-[var(--success)] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-12 h-full neo-strip opacity-10" />
+                            <div className="relative w-6 h-6 shrink-0">
+                              <input 
+                                type="checkbox" 
+                                checked={isPublic} 
+                                onChange={(e) => setIsPublic(e.target.checked)}
+                                className="peer absolute inset-0 opacity-0 cursor-pointer z-10"
+                              />
+                              <div className="w-6 h-6 neo-border bg-white peer-checked:bg-[var(--success)] flex items-center justify-center transition-colors neo-shadow-sm peer-active:shadow-none peer-active:translate-x-[1px] peer-active:translate-y-[1px]">
+                                <motion.div 
+                                  animate={{ scale: isPublic ? 1 : 0 }}
+                                  className="w-3 h-3 bg-black rounded-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col relative z-10 gap-0.5">
+                              <span className="text-sm sm:text-base font-black uppercase tracking-wider select-none group-hover:text-[var(--success)] transition-colors">Tampilkan di Lobi</span>
+                              <span className="text-[10px] sm:text-xs font-bold opacity-30 uppercase tracking-tighter leading-tight">Izinkan pemain lain untuk bergabung</span>
+                            </div>
+                          </label>
+                          
+                          <button
+                            onClick={() => handleCreate()}
+                            disabled={isCreating || !isConnected}
+                            className="w-full neo-button bg-[var(--primary)] text-black min-h-[56px] sm:min-h-[64px] flex flex-col gap-0.5 items-center justify-center group relative overflow-hidden animate-shimmer neo-pop"
+                          >
+                            <div className="flex items-center gap-2 relative z-10 font-black italic tracking-tighter text-lg lg:text-xl">
+                              <Plus className="w-4 lg:w-5 h-4 lg:h-5" strokeWidth={4} />
+                              <span>MULAI PESTA BARU</span>
+                            </div>
+                          </button>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="join-form"
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          className="space-y-6"
+                        >
+                          <div className="relative group">
+                            <input
+                              type="text"
+                              placeholder="KODE"
+                              value={roomCode}
+                              onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+                              maxLength={6}
+                              className="w-full neo-input text-xl sm:text-2xl text-center font-mono tracking-[0.3em] uppercase py-3 sm:py-4 bg-[var(--neutral)] group-focus-within:bg-white group-focus-within:neo-shadow-md transition-all placeholder:opacity-10"
+                            />
+                            <div className="absolute -top-3 left-3 bg-black text-white text-[9px] sm:text-[10px] px-3 py-1 font-black uppercase tracking-[0.2em] italic neo-shadow-sm leading-none whitespace-nowrap">
+                              KODE GABUNGAN
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleJoin()}
+                            disabled={!roomCode || !isConnected}
+                            className="w-full neo-button bg-[var(--secondary)] min-h-[56px] sm:min-h-[64px] flex items-center justify-center gap-2 group animate-shimmer neo-pop"
+                          >
+                            <ArrowRight className="w-4 lg:w-5 h-4 lg:h-5 group-hover:translate-x-2 transition-transform duration-500" strokeWidth={4} />
+                            <span className="text-lg lg:text-xl font-black italic tracking-tighter">MASUK KE PESTA</span>
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
 
