@@ -21,6 +21,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+button {
+  cursor: pointer !important;
+}
+
 /* Neobrutalism Utilities */
 .neo-border {
   border: 3px solid var(--border);
