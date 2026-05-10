@@ -203,10 +203,10 @@ export default function Lobby() {
     const isHost = currentPlayer?.isHost;
     // Logic for role counts (custom or automatic)
     const totalPlayers = room.players.length;
-    const currentUcCount = room.settings.undercoverCount !== undefined 
+    const currentUcCount = room.settings.undercoverCount != null 
       ? room.settings.undercoverCount 
       : (totalPlayers >= 7 ? 2 : 1);
-    const currentMwCount = room.settings.mrWhiteCount !== undefined 
+    const currentMwCount = room.settings.mrWhiteCount != null 
       ? room.settings.mrWhiteCount 
       : (totalPlayers >= 5 ? 1 : 0);
     
@@ -621,7 +621,7 @@ export default function Lobby() {
                                 value={room.settings.undercoverCount ?? -1}
                                 onChange={(e) => {
                                   const val = parseInt(e.target.value);
-                                  updateSettings({ undercoverCount: val === -1 ? undefined : val });
+                                  updateSettings({ undercoverCount: val });
                                 }}
                                 className="w-full neo-border bg-white cursor-pointer text-xs italic uppercase hover:bg-[var(--neutral)] transition-all appearance-none pr-8 py-2 px-3 font-black"
                               >
@@ -648,7 +648,7 @@ export default function Lobby() {
                                 value={room.settings.mrWhiteCount ?? -1}
                                 onChange={(e) => {
                                   const val = parseInt(e.target.value);
-                                  updateSettings({ mrWhiteCount: val === -1 ? undefined : val });
+                                  updateSettings({ mrWhiteCount: val });
                                 }}
                                 className="w-full neo-border bg-white cursor-pointer text-xs italic uppercase hover:bg-[var(--neutral)] transition-all appearance-none pr-8 py-2 px-3 font-black"
                               >

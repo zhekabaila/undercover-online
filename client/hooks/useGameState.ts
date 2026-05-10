@@ -334,15 +334,23 @@ export function useGameState() {
 
   const updateSettings = useCallback((settings: any) => {
     if (globalRoom) {
-      const updatedSettings = { ...globalRoom.settings, ...settings };
+      // Optimistic update for UI responsiveness
+      const newSettings = { ...globalRoom.settings, ...settings };
+      
+      // Handle automatic counts (-1 means remove the custom setting)
+      if (settings.undercoverCount === -1) delete newSettings.undercoverCount;
+      if (settings.mrWhiteCount === -1) delete newSettings.mrWhiteCount;
+
       updateGlobalState({
         room: {
           ...globalRoom,
-          settings: updatedSettings,
+          settings: newSettings,
         },
       });
+
+      // Send only the delta to the server
       wsClient?.send(WSEvent.UPDATE_SETTINGS, { 
-        settings: updatedSettings,
+        settings,
         playerId: globalPlayerId,
         roomId: globalRoom.id 
       });

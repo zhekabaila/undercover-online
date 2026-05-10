@@ -227,7 +227,18 @@ export function handleUpdateSettings(playerId: string, payload: { settings: Part
           sendToPlayer(playerSockets.get(playerId)!, WSEvent.ERROR, { code: ErrorCode.NOT_HOST, message: 'Only host can update settings' });
           return;
         }
-        room.settings = { ...room.settings, ...payload.settings };
+        const updatedSettings = { ...payload.settings };
+        
+        room.settings = { ...room.settings, ...updatedSettings };
+
+        // Handle reverting to automatic counts (-1 or null)
+        if (payload.settings.undercoverCount === -1 || payload.settings.undercoverCount === null) {
+          delete room.settings.undercoverCount;
+        }
+        if (payload.settings.mrWhiteCount === -1 || payload.settings.mrWhiteCount === null) {
+          delete room.settings.mrWhiteCount;
+        }
+
         if (payload.settings.isPublic !== undefined) {
           room.isPublic = payload.settings.isPublic;
         }
