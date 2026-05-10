@@ -286,12 +286,12 @@ export default function Lobby() {
 
 
       <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
-        <div className="max-w-6xl mx-auto p-4 sm:p-8">
-          <div className="flex flex-col lg:flex-row gap-3 lg:gap-5 items-start">
+        <div className="max-w-6xl mx-auto p-4 sm:p-10">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
             
             {/* Player List Section */}
-            <div className="flex-1 space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
+            <div className="flex-1 space-y-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative">
                 <div className="flex items-center gap-2">
                   <motion.div 
                     animate={{ rotate: [-5, 5, -5], scale: [1, 1.05, 1] }}
@@ -327,7 +327,7 @@ export default function Lobby() {
 
 
 
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-4">
                 <AnimatePresence mode="popLayout">
                   {room.players.map((player: Player, index: number) => (
                     <motion.div
@@ -417,7 +417,7 @@ export default function Lobby() {
             </div>
 
             {/* Sidebar Controls */}
-            <div className="w-full lg:w-80 space-y-4">
+            <div className="w-full lg:w-80 space-y-8">
               <div className="bg-white p-4 sm:p-6 neo-card lg:sticky lg:top-4 relative overflow-hidden group">
                 {/* Visual Accent */}
                 <div className="absolute top-0 left-0 w-full h-1 neo-strip" />
@@ -436,7 +436,7 @@ export default function Lobby() {
                   </h3>
                 </div>
 
-                <div className="space-y-2.5 relative z-10">
+                <div className="space-y-4 relative z-10">
                   <button
                     onClick={() => setReady(!currentPlayer?.isReady)}
                     className={`w-full neo-button text-sm h-12 transition-all active:translate-y-0.5 active:shadow-none relative overflow-hidden group/btn neo-pop ${
@@ -453,7 +453,7 @@ export default function Lobby() {
 
 
                   {isHost && (
-                    <div className="space-y-2 pt-1.5">
+                    <div className="space-y-4 pt-4">
                       <button
                         onClick={startGame}
                         disabled={!allReady}
@@ -531,7 +531,7 @@ export default function Lobby() {
                     </h3>
                   </div>
                   
-                  <div className="space-y-4 relative z-10">
+                  <div className="space-y-6 relative z-10">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">

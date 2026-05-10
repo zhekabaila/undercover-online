@@ -316,7 +316,7 @@ export default function GameScreen() {
       <div className="flex-1 flex relative overflow-hidden">
         {/* Main Content Area - Independently Scrollable */}
         <main className="flex-1 min-w-0 overflow-y-auto custom-scrollbar relative z-10 px-2 py-2 sm:p-3 lg:p-4">
-          <div className="max-w-[1400px] mx-auto w-full flex flex-col gap-2 sm:gap-3">
+          <div className="max-w-[1400px] mx-auto w-full flex flex-col gap-6 sm:gap-8">
             {/* Turn Interaction Banner - Show when it's your turn to speak */}
             <AnimatePresence>
               {room.game.phase === 'speaking' &&
@@ -391,7 +391,7 @@ export default function GameScreen() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-wrap items-center justify-between bg-white neo-card p-4 sm:p-5 gap-4 sm:gap-6 relative overflow-hidden group"
+              className="flex flex-wrap items-center justify-between bg-white neo-card p-6 sm:p-8 gap-6 sm:gap-10 relative overflow-hidden group"
             >
               <div className="neo-accent-corner-tl opacity-30" />
               <div className="neo-accent-corner-tr opacity-30" />
@@ -425,7 +425,7 @@ export default function GameScreen() {
                 </div>
                 
                 {/* Infiltrators Stat Box */}
-                <div className="flex items-center gap-4 sm:gap-6 neo-border-l pl-4 sm:pl-6">
+                <div className="flex items-center gap-6 sm:gap-10 neo-border-l pl-6 sm:pl-10">
                     <div className="flex flex-col items-center group/cr">
                   <div className="flex items-center gap-2 mb-1 bg-[var(--primary)] neo-border px-4 py-2 neo-shadow-sm group-hover/cr:scale-105 transition-transform">
                     <Search size={24} className="text-black" strokeWidth={4} />
@@ -483,7 +483,7 @@ export default function GameScreen() {
                       </motion.div>
                     )}
  
-                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
+                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 sm:gap-8 lg:gap-12">
                        {room.players.map((player: Player) => (
                          <PlayerCard
                            key={player.id}
@@ -754,7 +754,7 @@ function ChatContent({
       {/* Messages List */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3 custom-scrollbar bg-dot-pattern opacity-10"
+        className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar bg-dot-pattern opacity-10"
       >
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center">

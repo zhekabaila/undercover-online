@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Plus, Sparkles, Users, MessageSquare, Zap, Target, ChevronRight, Trophy, Radio, ArrowRight, PartyPopper, Smile, Gamepad2 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Search, Plus, Sparkles, Users, Zap, ChevronRight, Trophy, Radio, ArrowRight, PartyPopper, Smile, Gamepad2 } from 'lucide-react'
 import { useGameState } from '../hooks/useGameState'
 import { FloatingShape } from '../components/ui/FloatingShape'
 
@@ -12,7 +12,7 @@ export default function Home() {
   const [roomCode, setRoomCode] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   const [isPublic, setIsPublic] = useState(false)
-  const [view, setView] = useState<'main' | 'browse'>('main')
+  const [view, setView] = useState<'main' | 'browse'>('browse')
   const router = useRouter()
   const { createRoom, joinRoom, room, isConnected, error, publicRooms, refreshPublicRooms } = useGameState()
 
@@ -68,9 +68,9 @@ export default function Home() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="z-10 w-full max-w-4xl px-4 flex flex-col items-center"
+        className="z-10 w-full max-w-4xl px-4 pb-10 pt-20 flex flex-col items-center"
       >
-        <header className="mb-1 mt-0.5 flex flex-col items-center text-center relative w-full">
+        <header className="mb-10 mt-4 flex flex-col items-center text-center relative w-full gap-8">
           <motion.div 
             initial={{ scale: 0, rotate: -45 }}
             animate={{ scale: 1, rotate: -12 }}
@@ -119,7 +119,7 @@ export default function Home() {
             </motion.div>
           </div>
           
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
             <motion.span 
               className="neo-badge bg-[var(--secondary)] py-2.5 px-5 text-base rotate-1 cursor-default neo-shadow-sm"
             >
@@ -153,9 +153,9 @@ export default function Home() {
           </motion.div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 w-full items-stretch mb-6 mt-6">
+        <div className="grid grid-cols-1 gap-8 w-full items-stretch mb-10 mt-8">
           {/* Main Action Card */}
-          <div className="lg:col-span-7 bg-white p-6 md:p-8 neo-card relative overflow-hidden flex flex-col justify-between border-t-[4px] border-t-[var(--primary)]">
+          <div className="bg-white p-6 md:p-8 neo-card relative overflow-hidden flex flex-col justify-between border-t-[4px] border-t-[var(--primary)]">
             <div className="neo-accent-corner-tl opacity-50" />
             <div className="neo-accent-corner-tr opacity-50" />
             <div className="neo-accent-corner-bl opacity-10" />
@@ -164,7 +164,7 @@ export default function Home() {
               <Smile size={160} className="rotate-12" />
             </div>
             
-            <div className="space-y-2 relative z-10">
+            <div className="space-y-8 relative z-10">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 text-left text-base font-black uppercase tracking-[0.2em] text-black italic leading-none">
@@ -198,7 +198,7 @@ export default function Home() {
                 <div className="h-[2px] bg-black/10 flex-1 neo-border-b-sm border-black/5" />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-8">
                 <div className="space-y-4">
                   <button
                     onClick={() => handleCreate()}
@@ -282,152 +282,133 @@ export default function Home() {
           </div>
 
           {/* Right Column: Browse or Features */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
+          {/* <div className="lg:col-span-5 flex flex-col gap-8">
             <AnimatePresence mode="wait">
-              {view === 'browse' ? (
-                <motion.div 
-                  key="browse"
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  className="space-y-3 flex-1 flex flex-col"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <h2 className="text-lg font-black uppercase tracking-tighter flex items-center gap-2 italic neo-text-glow">
-                      <Radio className="text-[var(--secondary)] animate-pulse" size={20} strokeWidth={4} />
-                      OPEN PARTIES
-                    </h2>
-                    <button 
-                      onClick={refreshPublicRooms}
-                      className="neo-button bg-white text-sm py-2 px-6 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
-                    >
-                      REFRESH
-                    </button>
-                  </div>
-
-                  <div className="flex-1 bg-white neo-border p-4 min-h-[250px] flex flex-col neo-shadow bg-grid-pattern bg-[length:20px_20px] relative overflow-hidden">
-                    <div className="absolute inset-0 bg-white/60 pointer-events-none" />
-                    
-                    {publicRooms.length === 0 ? (
-                      <div className="flex-1 flex flex-col items-center justify-center text-center p-8 relative z-10">
-                        <motion.div 
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                          className="w-16 h-16 bg-[var(--bg-cheerful)] neo-border flex items-center justify-center mb-4 rounded-full opacity-40 neo-shadow-sm"
-                        >
-                          <Search size={32} className="text-black" strokeWidth={1.5} />
-                        </motion.div>
-                        <p className="text-base font-black uppercase text-black tracking-tighter italic">NO PARTIES YET!</p>
-                        <p className="text-sm uppercase font-bold text-black/30 mt-2 max-w-[200px] leading-relaxed">Quiet here. Start the celebration!</p>
-                        <button 
-                          onClick={() => setView('main')}
-                          className="mt-6 neo-button bg-[var(--primary)] text-base px-8 py-4 active:translate-y-1 active:shadow-none animate-shimmer neo-pop"
-                        >
-                          GO BACK HOME
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3 overflow-y-auto max-h-[400px] pr-1.5 custom-scrollbar flex-1 relative z-10">
-                        {publicRooms.map((r, i) => (
-                          <motion.div
-                            key={r.id}
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            whileHover={{ x: 8, scale: 1.02 }}
-                            className="bg-white p-4 neo-border neo-shadow flex items-center justify-between group cursor-pointer border-l-[8px] border-l-[var(--primary)] relative overflow-hidden"
-                            onClick={() => handleJoin(r.id)}
-                          >
-                            <div className="absolute top-0 right-0 w-24 h-full neo-strip opacity-[0.03]" />
-                            <div className="flex-1 min-w-0 pr-4 text-left relative z-10">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-sm font-black uppercase text-white bg-black px-3 py-1.5 neo-border-sm tracking-[0.1em]">{r.id}</span>
-                                <span className="text-lg font-black uppercase truncate tracking-tighter italic group-hover:text-[var(--secondary)] transition-colors">{r.name}'S ROOM</span>
-                              </div>
-                              <div className="flex items-center gap-4">
-                                <div className="neo-badge bg-[var(--success)] px-5 py-2.5 text-base italic neo-shadow-sm leading-none h-auto">
-                                  <Users size={20} strokeWidth={4} />
-                                  <span>{r.playerCount} / {r.maxPlayers}</span>
-                                </div>
-                                <span className="text-sm font-black uppercase text-black/40 italic flex items-center gap-2 tracking-[0.1em]">
-                                  <div className="w-3.5 h-3.5 bg-[var(--success)] rounded-full animate-pulse shadow-[0_0_6px_var(--success)]" />
-                                  JOIN
-                                </span>
-                              </div>
-                            </div>
-                            <div className="neo-button bg-[var(--secondary)] p-2 group-hover:rotate-12 transition-transform neo-shadow-sm relative z-10 neo-pop">
-                              <ChevronRight size={24} strokeWidth={5} />
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <button
-                    onClick={() => setView('main')}
-                    className="w-full neo-button bg-black text-white text-sm min-h-[60px] uppercase tracking-[0.3em] italic active:translate-y-1 active:shadow-none neo-pop"
-                  >
-                    RETURN HOME
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.div 
-                  key="features"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.05 }}
-                  className="flex flex-col gap-3 flex-1"
-                >
-                  <Feature 
-                    icon={<Users size={24} strokeWidth={4} />} 
-                    label="3-20 GUESTS" 
-                    desc="Invite the whole squad for massive social chaos"
-                    color="var(--primary)"
-                    rotate={-1}
-                  />
-                  <Feature 
-                    icon={<MessageSquare size={24} strokeWidth={4} />} 
-                    label="LIVELY CHAT" 
-                    desc="Debate, deceive, and laugh in real-time"
-                    color="var(--secondary)"
-                    rotate={1}
-                  />
-                  <Feature 
-                    icon={<Target size={24} strokeWidth={4} />} 
-                    label="FIND THE CRASHERS" 
-                    desc="Partiers vs Crashers vs Mystery Guests"
-                    color="var(--success)"
-                    rotate={-1.5}
-                  />
-                  
-                  <div className="flex-1 min-h-[40px]" />
-
-                  <button
-                    onClick={() => setView('browse')}
-                    className="w-full neo-button bg-white text-black min-h-[70px] mt-auto flex items-center justify-center gap-3 group relative overflow-hidden neo-glass active:translate-y-2 active:shadow-none animate-shimmer neo-pop"
-                  >
-                    <div className="absolute inset-0 bg-[var(--primary)]/40 -translate-y-full group-hover:translate-y-0 transition-transform duration-700 skew-y-1" />
-                    <Search size={24} strokeWidth={4} className="group-hover:scale-125 transition-transform group-hover:-rotate-12 relative z-10" />
-                    <span className="font-black tracking-tighter uppercase italic relative z-10 text-lg">FIND ACTIVE PARTIES</span>
-                    <Sparkles size={20} className="text-[var(--secondary)] group-hover:animate-bounce relative z-10" />
-                  </button>
-                </motion.div>
-              )}
+              <motion.div 
+                key="features"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                className="flex flex-col gap-3 flex-1"
+              >
+                <Feature 
+                  icon={<Users size={24} strokeWidth={4} />} 
+                  label="3-20 GUESTS" 
+                  desc="Invite the whole squad for massive social chaos"
+                  color="var(--primary)"
+                  rotate={-1}
+                />
+                <Feature 
+                  icon={<MessageSquare size={24} strokeWidth={4} />} 
+                  label="LIVELY CHAT" 
+                  desc="Debate, deceive, and laugh in real-time"
+                  color="var(--secondary)"
+                  rotate={1}
+                />
+                <Feature 
+                  icon={<Target size={24} strokeWidth={4} />} 
+                  label="FIND THE CRASHERS" 
+                  desc="Partiers vs Crashers vs Mystery Guests"
+                  color="var(--success)"
+                  rotate={-1.5}
+                />
+              </motion.div>
             </AnimatePresence>
-          </div>
+          </div> */}
         </div>
 
-        <footer className="mt-4 mb-2 py-2 border-t-[2px] border-[var(--border)] w-full flex flex-col lg:flex-row items-center justify-between gap-2 text-center lg:text-left relative">
+        <div className="w-full">
+          <motion.div 
+            key="browse"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            className="space-y-3 flex-1 flex flex-col"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-lg font-black uppercase tracking-tighter flex items-center gap-2 italic neo-text-glow">
+                <Radio className="text-[var(--secondary)] animate-pulse" size={20} strokeWidth={4} />
+                OPEN PARTIES
+              </h2>
+              <button 
+                onClick={refreshPublicRooms}
+                className="neo-button bg-white text-sm py-2 px-6 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
+              >
+                REFRESH
+              </button>
+            </div>
+
+            <div className="flex-1 bg-white neo-border p-4 min-h-[250px] flex flex-col neo-shadow bg-grid-pattern bg-[length:20px_20px] relative overflow-hidden">
+              <div className="absolute inset-0 bg-white/60 pointer-events-none" />
+              
+              {publicRooms.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-8 relative z-10">
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                    className="w-16 h-16 bg-[var(--bg-cheerful)] neo-border flex items-center justify-center mb-4 rounded-full opacity-40 neo-shadow-sm"
+                  >
+                    <Search size={32} className="text-black" strokeWidth={1.5} />
+                  </motion.div>
+                  <p className="text-base font-black uppercase text-black tracking-tighter italic">NO PARTIES YET!</p>
+                  <p className="text-sm uppercase font-bold text-black/30 mt-2 max-w-[200px] leading-relaxed">Quiet here. Start the celebration!</p>
+                  <button 
+                    onClick={() => setView('main')}
+                    className="mt-6 neo-button bg-[var(--primary)] text-base px-8 py-4 active:translate-y-1 active:shadow-none animate-shimmer neo-pop"
+                  >
+                    GO BACK HOME
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3 overflow-y-auto max-h-[400px] pr-1.5 custom-scrollbar flex-1 relative z-10">
+                  {publicRooms.map((r, i) => (
+                    <motion.div
+                      key={r.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      whileHover={{ x: 8, scale: 1.02 }}
+                      className="bg-white p-4 neo-border neo-shadow flex items-center justify-between group cursor-pointer border-l-[8px] border-l-[var(--primary)] relative overflow-hidden"
+                      onClick={() => handleJoin(r.id)}
+                    >
+                      <div className="absolute top-0 right-0 w-24 h-full neo-strip opacity-[0.03]" />
+                      <div className="flex-1 min-w-0 pr-4 text-left relative z-10">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-black uppercase text-white bg-black px-3 py-1.5 neo-border-sm tracking-[0.1em]">{r.id}</span>
+                          <span className="text-lg font-black uppercase truncate tracking-tighter italic group-hover:text-[var(--secondary)] transition-colors">{r.name}'S ROOM</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="neo-badge bg-[var(--success)] px-5 py-2.5 text-base italic neo-shadow-sm leading-none h-auto">
+                            <Users size={20} strokeWidth={4} />
+                            <span>{r.playerCount} / {r.maxPlayers}</span>
+                          </div>
+                          <span className="text-sm font-black uppercase text-black/40 italic flex items-center gap-2 tracking-[0.1em]">
+                            <div className="w-3.5 h-3.5 bg-[var(--success)] rounded-full animate-pulse shadow-[0_0_6px_var(--success)]" />
+                            JOIN
+                          </span>
+                        </div>
+                      </div>
+                      <div className="neo-button bg-[var(--secondary)] p-2 group-hover:rotate-12 transition-transform neo-shadow-sm relative z-10 neo-pop">
+                        <ChevronRight size={24} strokeWidth={5} />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setView('main')}
+              className="w-full neo-button bg-black text-white text-sm min-h-[60px] uppercase tracking-[0.3em] italic active:translate-y-1 active:shadow-none neo-pop"
+            >
+              RETURN HOME
+            </button>
+          </motion.div>
+        </div>
+
+        <footer className="mt-12 mb-6 py-8 border-t-[2px] border-[var(--border)] w-full flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left relative">
           <div className="absolute top-[-5px] left-0 w-12 h-[5px] bg-[var(--primary)]" />
           <div className="absolute top-[-5px] right-0 w-12 h-[5px] bg-[var(--secondary)]" />
-          
-          <div className="flex flex-col gap-1">
-            <h4 className="text-lg font-black uppercase tracking-tighter drop-shadow-[2px_2px_0px_var(--secondary)] italic">UNDERCOVER ONLINE</h4>
-            <p className="text-sm font-black uppercase tracking-[0.3em] text-black/30">
-              &copy; 2026 FUN PARTY SYSTEM • SOCIAL CHAOS
-            </p>
-          </div>
 
           <div className="flex flex-wrap justify-center gap-3">
              {[Trophy, Users, PartyPopper, Smile].map((Icon, i) => (
@@ -447,6 +428,14 @@ export default function Home() {
             CRAFTED WITH <span className="text-black bg-[var(--primary)] px-4 py-2 neo-border-sm mx-1 not-italic neo-shadow-sm">JOY</span> BY THE PARTIERS
           </div>
         </footer>
+        <div className="w-full flex flex-row items-center justify-center text-center">
+          <div className="flex flex-col gap-1">
+            <h4 className="text-lg font-black uppercase tracking-tighter drop-shadow-[2px_2px_0px_var(--secondary)] italic">UNDERCOVER ONLINE</h4>
+            <p className="text-sm font-black uppercase tracking-[0.3em] text-black/30">
+              &copy; 2026 FUN PARTY SYSTEM • SOCIAL CHAOS
+            </p>
+          </div>
+        </div>
       </motion.div>
     </main>
 
