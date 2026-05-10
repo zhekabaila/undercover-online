@@ -39,49 +39,49 @@ const PHASE_CONFIG: Record<
   { label: string; color: string; shadow: string; icon: any; accent: string }
 > = {
   lobby: {
-    label: 'PARTY LOUNGE',
+    label: 'LOUNGE PESTA',
     color: 'bg-[var(--surface)]',
     shadow: 'neo-shadow-sm',
     icon: Users,
     accent: 'text-black/40',
   },
   starting: {
-    label: 'GATHERING CREW',
+    label: 'MENGUMPULKAN KRU',
     color: 'bg-[var(--primary)]',
     shadow: 'neo-shadow-sm',
     icon: PartyPopper,
     accent: 'text-black',
   },
   speaking: {
-    label: 'PARTY TALK',
+    label: 'PERCAKAPAN PESTA',
     color: 'bg-[var(--success)]',
     shadow: 'neo-shadow-sm',
     icon: MessageSquare,
     accent: 'text-black',
   },
   discussion: {
-    label: 'PARTY GOSSIP',
+    label: 'GOSIP PESTA',
     color: 'bg-[var(--secondary)]',
     shadow: 'neo-shadow-sm',
     icon: Music,
     accent: 'text-black',
   },
   voting: {
-    label: 'KICK THE CRASHER',
+    label: 'TENDANG PENYUSUP',
     color: 'bg-[var(--danger)]',
     shadow: 'neo-shadow-sm',
     icon: Vote,
     accent: 'text-white',
   },
   mrwhite_guessing: {
-    label: "MYSTERY GUESS",
+    label: "TEBAKAN MISTERI",
     color: 'bg-[var(--warning)]',
     shadow: 'neo-shadow-sm',
     icon: Search,
     accent: 'text-black',
   },
   ended: {
-    label: 'PARTY OVER!',
+    label: 'PESTA BERAKHIR!',
     color: 'bg-black',
     shadow: 'neo-shadow-sm',
     icon: Trophy,
@@ -208,6 +208,7 @@ export default function GameScreen() {
     e.preventDefault()
     if (!descriptionInput.trim() || currentPlayer?.description) return
     submitDescription(descriptionInput.trim())
+    turnDone() // Finalize turn after submitting description
     setDescriptionInput('')
   }
 
@@ -240,24 +241,34 @@ export default function GameScreen() {
       {/* App Header */}
       <header className="sticky top-0 h-auto overflow-x-auto custom-scrollbar shrink-0 neo-border-b bg-[var(--surface)] flex items-center px-4 py-4 sm:px-6 z-[100] neo-shadow-sm">
         <div className="w-full flex items-center justify-between max-w-[1920px] mx-auto gap-4">
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-4 sm:gap-8">
             <button
               onClick={() =>
-                confirm('Leaving the party? You will miss all the fun!') && (leaveRoom(), router.push('/'))
+                confirm('Meninggalkan pesta? Anda akan melewatkan semua keseruannya!') && (leaveRoom(), router.push('/'))
               }
               className="neo-button group bg-[var(--danger)] text-white p-2 lg:p-3 hover:rotate-6 active:translate-y-0.5 transition-all flex items-center justify-center"
-              title="Leave Party"
+              title="Keluar Pesta"
             >
               <ArrowLeft className="w-5 lg:w-6 h-5 lg:h-6 text-white group-hover:scale-110 transition-transform" strokeWidth={4} />
             </button>
             
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5 lg:gap-2">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3 lg:gap-6">
                 <h1 
-                  data-text={`PARTY ID: ${params.roomId}`}
+                  data-text={`ID PESTA: ${params.roomId}`}
                   className="flex whitespace-nowrap items-center text-xl lg:text-4xl font-black uppercase italic leading-none tracking-tighter"
                 >
-                  PARTY ID: <div className="bg-[var(--primary)] px-3 py-1.5 lg:px-5 lg:py-2.5 neo-border neo-shadow-sm ml-1 text-base lg:text-2xl">{params.roomId}</div>
+                  ID PESTA: 
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(params.roomId as string);
+                      alert('ID Pesta disalin ke clipboard!');
+                    }}
+                    className="bg-[var(--primary)] px-3 py-1.5 lg:px-5 lg:py-2.5 neo-border neo-shadow-sm ml-2 text-base lg:text-2xl hover:scale-105 active:scale-95 transition-all neo-pop flex items-center gap-2 group/copy"
+                  >
+                    {params.roomId}
+                    <Sparkles size={16} className="text-black group-hover/copy:animate-spin" />
+                  </button>
                 </h1>
               </div>
             </div>
@@ -281,20 +292,25 @@ export default function GameScreen() {
 
           <div className="flex items-center gap-4 sm:gap-6">
             {room.game.phase !== 'voting' && (
-              <Timer endsAt={room.game.turnEndTime} onExpire={() => {}} />
+              <Timer 
+                endsAt={room.game.turnEndTime} 
+                onExpire={() => {
+                  if (isMyTurn) turnDone()
+                }} 
+              />
             )}
             
             <button
               onClick={() => setShowRoleOverlay(true)}
-              className="neo-button bg-[var(--success)] text-black px-3 lg:px-6 py-2 lg:py-3 flex items-center gap-2 lg:gap-3 hover:scale-105 active:translate-y-0.1 transition-all"
+              className="neo-button bg-[var(--success)] text-black px-3 lg:px-6 py-2 lg:py-3 flex items-center gap-2 lg:gap-4 hover:scale-105 active:translate-y-0.1 transition-all neo-pop"
             >
               <Smile className="w-4.5 lg:w-5 h-4.5 lg:h-5" strokeWidth={3} />
-              <span className="hidden sm:inline text-base lg:text-lg font-black uppercase tracking-widest italic">MY ROLE</span>
+              <span className="hidden sm:inline text-base lg:text-lg font-black uppercase tracking-widest italic">PERAN SAYA</span>
             </button>
  
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
-              className={`neo-button p-2 lg:p-3 flex items-center justify-center relative transition-all ${
+              className={`neo-button p-2 lg:p-4 flex items-center justify-center relative transition-all neo-pop ${
                 isChatOpen
                   ? 'bg-black text-white'
                   : 'bg-[var(--secondary)] text-black'
@@ -343,21 +359,21 @@ export default function GameScreen() {
                       </div>
                     </div>
                     
-                    <div className="flex-1 text-center lg:text-left space-y-2 relative z-10">
-                      <div className="flex items-center justify-center lg:justify-start gap-2">
+                    <div className="flex-1 text-center lg:text-left space-y-4 relative z-10">
+                      <div className="flex items-center justify-center lg:justify-start gap-4">
                         <span className="bg-black text-white px-5 py-2 text-lg font-black uppercase tracking-[0.2em]">
-                          YOUR TURN!
+                          GILIRAN ANDA!
                         </span>
                         <span className="w-2.5 h-2.5 bg-black rounded-full animate-ping" />
                       </div>
                       <h3 
-                        data-text="Describe Your Word"
+                        data-text="Jelaskan Kata Anda"
                         className=" text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-none transform -skew-x-6"
                       >
-                        Describe Your Word
+                        Jelaskan Kata Anda
                       </h3>
                       <p className="text-black/80 font-bold uppercase text-base sm:text-lg tracking-widest italic max-w-xl">
-                        Say something that hints at your word!
+                        Ucapkan sesuatu yang memberi petunjuk tentang kata Anda!
                       </p>
                     </div>
                     
@@ -369,7 +385,7 @@ export default function GameScreen() {
                           type="text"
                           value={descriptionInput}
                           onChange={(e) => setDescriptionInput(e.target.value)}
-                          placeholder="Hint..."
+                          placeholder="Petunjuk..."
                           maxLength={100}
                           className="flex-1 neo-input text-lg py-2 px-3 focus:bg-[var(--primary)]/10 transition-colors"
                           autoFocus
@@ -377,89 +393,133 @@ export default function GameScreen() {
                         <button
                           type="submit"
                           disabled={!descriptionInput.trim()}
-                          className="neo-button bg-black text-white px-8 py-3 text-lg font-black hover:bg-black/90 active:scale-95 transition-all"
+                          className="neo-button bg-black text-white px-8 py-3 text-lg font-black hover:bg-black/90 active:scale-95 transition-all neo-pop"
                         >
-                          SHARE
+                          BAGIKAN
                         </button>
                       </form>
                   </motion.div>
                 )}
+
+              {/* Discussion Banner */}
+              {room.game.phase === 'discussion' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -40, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  className="bg-[var(--secondary)] neo-border p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 sm:gap-6 relative overflow-hidden group neo-shadow-sm"
+                >
+                  <div className="neo-accent-corner-tl opacity-50" />
+                  <div className="neo-accent-corner-tr opacity-50" />
+                  
+                  <div className="shrink-0 relative">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white neo-border flex items-center justify-center text-black neo-shadow-sm transform group-hover:rotate-12 transition-transform duration-500">
+                      <MessageSquare size={24} className="animate-pulse" />
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 text-center lg:text-left space-y-4 relative z-10">
+                    <div className="flex items-center justify-center lg:justify-start gap-4">
+                      <span className="bg-black text-white px-5 py-2 text-lg font-black uppercase tracking-[0.2em]">
+                        DISKUSI TERBUKA!
+                      </span>
+                      <Music size={20} className="animate-float" />
+                    </div>
+                    <h3 
+                      data-text="Gosip Pesta Dimulai"
+                      className=" text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-none transform -skew-x-6"
+                    >
+                      Gosip Pesta Dimulai
+                    </h3>
+                    <p className="text-black/80 font-bold uppercase text-base sm:text-lg tracking-widest italic max-w-xl">
+                      Waktunya mendiskusikan petunjuk dan mencari siapa penyusupnya!
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsChatOpen(true)}
+                    className="neo-button bg-black text-white px-8 py-3 text-lg font-black hover:bg-black/90 active:scale-95 transition-all neo-pop"
+                  >
+                    BUKA CHAT
+                  </button>
+                </motion.div>
+              )}
             </AnimatePresence>
 
             {/* Top Stats Bar */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col lg:flex-row items-center justify-between bg-white neo-card p-4 lg:p-8 gap-6 lg:gap-10 relative overflow-hidden group mb-6 lg:mb-10"
+              className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between bg-white neo-card p-5 lg:p-8 gap-8 lg:gap-10 relative overflow-hidden group mb-8 lg:mb-12"
             >
               <div className="neo-accent-corner-tl opacity-30" />
               <div className="neo-accent-corner-tr opacity-30" />
               
               {/* Round Info Section */}
-              <div className="flex items-center gap-4 lg:gap-6 shrink-0 relative z-10 w-full lg:w-auto justify-between lg:justify-start px-1 lg:px-0">
-                <div className="flex items-center gap-3 lg:gap-4">
-                  <div className="w-12 h-12 lg:w-16 lg:h-16 neo-border bg-[var(--secondary)] flex items-center justify-center text-black neo-shadow-sm transform -rotate-6 group-hover:rotate-0 transition-transform shrink-0">
-                    <Gamepad2 className="w-6 lg:w-9 h-6 lg:h-9" strokeWidth={2.5} />
+              <div className="flex items-center gap-5 lg:gap-8 shrink-0 relative z-10 w-full lg:w-auto justify-between lg:justify-start px-1 lg:px-0">
+                <div className="flex items-center gap-4 lg:gap-6">
+                  <div className="w-14 h-14 lg:w-20 lg:h-20 neo-border bg-[var(--secondary)] flex items-center justify-center text-black neo-shadow-sm transform -rotate-6 group-hover:rotate-0 transition-transform shrink-0">
+                    <Gamepad2 className="w-7 lg:w-10 h-7 lg:h-10" strokeWidth={2.5} />
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] lg:text-lg font-black text-black/30 uppercase tracking-[0.2em] lg:tracking-[0.3em] leading-none mb-1 lg:mb-2 italic">
-                      PARTY VIBES
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[11px] lg:text-lg font-black text-black/30 uppercase tracking-[0.2em] lg:tracking-[0.3em] leading-none mb-1 lg:mb-2 italic">
+                      SUASANA PESTA
                     </span>
-                    <h2 className="flex items-center text-xl lg:text-4xl font-black text-black uppercase italic tracking-tighter leading-none">
-                      ROUND <div className="bg-[var(--primary)] px-3 py-1 lg:px-6 lg:py-2 neo-border neo-shadow-sm ml-2 text-xl lg:text-4xl">#{room.game.roundNumber}</div>
+                    <h2 className="flex items-center text-2xl lg:text-5xl font-black text-black uppercase italic tracking-tighter leading-none" data-text={`RONDE #${room.game.roundNumber}`}>
+                      RONDE <div className="bg-[var(--primary)] px-4 py-2 lg:px-8 lg:py-3 neo-border neo-shadow-sm ml-3 text-xl lg:text-5xl">#{room.game.roundNumber}</div>
                     </h2>
                   </div>
                 </div>
                 {/* Mobile phase indicator - Redesigned */}
-                <div className="lg:hidden flex flex-col items-end gap-1">
-                  <span className="text-[9px] font-black text-black/30 uppercase tracking-widest italic">PHASE</span>
-                  <div className="flex items-center gap-1.5 px-3 py-2 neo-border bg-white neo-shadow-sm rotate-2">
+                <div className="lg:hidden flex flex-col items-end gap-1.5">
+                  <span className="text-[10px] font-black text-black/30 uppercase tracking-widest italic">TAHAP</span>
+                  <div className={`flex items-center gap-2 px-5 py-3 neo-border ${PHASE_CONFIG[room.game.phase].color} neo-shadow-sm rotate-2`}>
                     {(() => {
                       const Icon = PHASE_CONFIG[room.game.phase].icon;
-                      return <Icon className={`w-4 h-4 ${room.game.phase === 'ended' ? 'animate-bounce' : 'animate-pulse'}`} strokeWidth={3} />;
+                      return <Icon className={`w-5 h-5 ${room.game.phase === 'ended' ? 'animate-bounce' : 'animate-pulse'}`} strokeWidth={3} />;
                     })()}
-                    <span className="text-xs font-black uppercase italic">
+                    <span className={`text-sm font-black uppercase italic ${room.game.phase === 'ended' ? 'text-white' : 'text-black'}`}>
                       {PHASE_CONFIG[room.game.phase].label.split(' ')[0]}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Stats Section - Optimized for Mobile */}
-              <div className="grid grid-cols-3 lg:flex items-stretch lg:items-center gap-3 lg:gap-10 relative z-10 w-full lg:w-auto border-t-4 lg:border-t-0 border-black pt-6 lg:pt-0 lg:border-l-4 lg:pl-10">
+              {/* Stats Section - Optimized for Mobile (Dashboard Style) */}
+              <div className="grid grid-cols-3 lg:flex items-stretch lg:items-center gap-3 lg:gap-12 relative z-10 w-full lg:w-auto border-t-[3px] lg:border-t-0 border-black pt-8 lg:pt-0 lg:border-l-[3px] lg:pl-12">
                 {/* Players In */}
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <span className="text-[9px] lg:text-lg font-black text-black/40 uppercase tracking-widest leading-none italic text-center">
-                    PLAYERS
+                <div className="flex flex-col items-center justify-center gap-3 lg:gap-4 bg-[var(--neutral)]/30 lg:bg-transparent p-3 lg:p-0 neo-border-sm lg:border-none">
+                  <span className="text-[10px] lg:text-lg font-black text-black/40 uppercase tracking-widest leading-none italic text-center">
+                    PEMAIN
                   </span>
-                  <div className="bg-[var(--neutral)] neo-border-sm lg:neo-border px-3 lg:px-5 py-1.5 lg:py-2.5 neo-shadow-sm -rotate-2 w-full flex justify-center items-center">
-                    <span className="text-sm lg:text-2xl font-black text-black tabular-nums italic">
+                  <div className="bg-white lg:bg-[var(--neutral)] neo-border-sm lg:neo-border px-3 lg:px-6 py-2 lg:py-3.5 neo-shadow-sm -rotate-2 w-full flex justify-center items-center">
+                    <span className="text-base lg:text-3xl font-black text-black tabular-nums italic">
                       {room.players.filter((p: Player) => p.isAlive).length}<span className="text-black/20 mx-0.5 lg:mx-1">/</span>{room.players.length}
                     </span>
                   </div>
                 </div>
                 
-                {/* Infiltrators (Crashers) */}
-                <div className="flex flex-col items-center justify-center gap-2 group/cr">
-                  <span className="text-[9px] lg:text-lg font-black text-black/40 uppercase tracking-widest leading-none italic text-center">
-                    CRASHERS
+                {/* Undercover Stat Box */}
+                <div className="flex flex-col items-center justify-center gap-3 lg:gap-4 group/cr bg-[var(--primary)]/10 lg:bg-transparent p-3 lg:p-0 neo-border-sm lg:border-none">
+                  <span className="text-[10px] lg:text-lg font-black text-black/40 uppercase tracking-widest leading-none italic text-center">
+                    UNDERCOVER
                   </span>
-                  <div className="flex items-center gap-1.5 lg:gap-2 bg-[var(--primary)] neo-border-sm lg:neo-border px-3 lg:px-5 py-1.5 lg:py-2.5 neo-shadow-sm group-hover/cr:scale-105 transition-transform w-full justify-center rotate-1">
-                    <Search className="text-black w-4 lg:w-7 h-4 lg:h-7" strokeWidth={4} />
-                    <span className="text-sm lg:text-2xl font-black text-black tabular-nums italic">
+                  <div className="flex items-center gap-2 lg:gap-3 bg-[var(--primary)] neo-border-sm lg:neo-border px-3 lg:px-6 py-2 lg:py-3.5 neo-shadow-sm group-hover/cr:scale-105 transition-transform w-full justify-center rotate-1">
+                    <Search className="text-black w-5 lg:w-8 h-5 lg:h-8" strokeWidth={4} />
+                    <span className="text-base lg:text-3xl font-black text-black tabular-nums italic">
                       {infiltratorStats.undercover}
                     </span>
                   </div>
                 </div>
                 
-                {/* Mystery Stat Box */}
-                <div className="flex flex-col items-center justify-center gap-2 group/mg">
-                  <span className="text-[9px] lg:text-lg font-black text-[var(--danger)]/60 uppercase tracking-widest leading-none italic text-center">
-                    MYSTERY
+                {/* Mr. White Stat Box */}
+                <div className="flex flex-col items-center justify-center gap-3 lg:gap-4 group/mg bg-[var(--danger)]/10 lg:bg-transparent p-3 lg:p-0 neo-border-sm lg:border-none">
+                  <span className="text-[10px] lg:text-lg font-black text-[var(--danger)]/60 uppercase tracking-widest leading-none italic text-center">
+                    MR. WHITE
                   </span>
-                  <div className="flex items-center gap-1.5 lg:gap-2 bg-[var(--danger)] neo-border-sm lg:neo-border px-3 lg:px-5 py-1.5 lg:py-2.5 neo-shadow-sm text-white group-hover/mg:scale-105 transition-transform w-full justify-center -rotate-1">
-                    <Ghost className="text-white w-4 lg:w-7 h-4 lg:h-7" strokeWidth={4} />
-                    <span className="text-sm lg:text-2xl font-black text-white tabular-nums italic">
+                  <div className="flex items-center gap-2 lg:gap-3 bg-[var(--danger)] neo-border-sm lg:neo-border px-3 lg:px-6 py-2 lg:py-3.5 neo-shadow-sm text-white group-hover/mg:scale-105 transition-transform w-full justify-center -rotate-1">
+                    <Ghost className="text-white w-5 lg:w-8 h-5 lg:h-8" strokeWidth={4} />
+                    <span className="text-base lg:text-3xl font-black text-white tabular-nums italic">
                       {infiltratorStats.mrWhite}
                     </span>
                   </div>
@@ -484,17 +544,17 @@ export default function GameScreen() {
                       initial={{ opacity: 0, scale: 0.98 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 1.02 }}
-                      className="flex flex-col gap-10 lg:gap-14 pb-32"
+                      className="flex flex-col gap-14 lg:gap-20 pb-32"
                     >
                     {room.game.phase === 'voting' && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-[var(--danger)] neo-border neo-shadow-sm p-4 sm:p-5 flex items-center justify-center gap-3"
+                        className="bg-[var(--danger)] neo-border neo-shadow-sm p-6 sm:p-8 flex items-center justify-center gap-5"
                       >
-                        <Vote size={24} className="text-white" />
-                        <span className="text-lg sm:text-2xl font-black uppercase tracking-wider text-white text-center italic">
-                          VOTE TO KICK THE PARTY CRASHER
+                        <Vote className="w-8 lg:w-10 h-8 lg:h-10 text-white" />
+                        <span className="text-xl sm:text-3xl font-black uppercase tracking-wider text-white text-center italic">
+                          PILIH UNTUK MENGELUARKAN PENYUSUP
                         </span>
                       </motion.div>
                     )}
@@ -531,7 +591,7 @@ export default function GameScreen() {
                             className="neo-button bg-[var(--warning)] text-black w-full max-w-[400px] py-5 text-xl font-black"
                           >
                             <AlertCircle size={24} />
-                            <span>ABSTAIN VOTE</span>
+                            <span>GOLPUT</span>
                           </button>
                         </motion.div>
                       )}
@@ -652,7 +712,7 @@ export default function GameScreen() {
               <AlertCircle size={20} className="text-white shrink-0" />
               <div className="flex flex-col">
                 <span className="text-lg font-black uppercase tracking-widest text-white/80">
-                  PARTY FOUL!
+                  PESTA BERANTAKAN!
                 </span>
                 <span className="font-black text-lg sm:text-xl leading-tight uppercase italic">
                   {error.message}
@@ -678,11 +738,11 @@ function LoadingState({ roomId }: { roomId: string }) {
       </div>
       <div className="space-y-3">
         <h2 className="text-2xl sm:text-4xl font-black uppercase italic tracking-tighter text-black leading-none transform -skew-x-6">
-          Joining Party
+          Gabung Pesta
         </h2>
         <div className="bg-[var(--success)] neo-border py-4 px-8 inline-block transform rotate-1">
           <p className="text-black font-black tracking-widest uppercase text-lg sm:text-xl">
-            PARTY ID: <span className="underline decoration-4 decoration-black/20">{roomId}</span>
+            ID PESTA: <span className="underline decoration-4 decoration-black/20">{roomId}</span>
           </p>
         </div>
       </div>
@@ -743,21 +803,21 @@ function ChatContent({
       
       {/* Chat Header */}
       <div className="h-auto shrink-0 px-4 sm:px-5 py-4 neo-border-b flex items-center justify-between bg-[var(--secondary)]">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 neo-border bg-white flex items-center justify-center text-black">
-            <MessageSquare size={16} />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 neo-border bg-white flex items-center justify-center text-black">
+            <MessageSquare className="w-5 h-5 lg:w-6 lg:h-6" strokeWidth={3} />
           </div>
           <div>
-            <h3 className="font-black text-xl sm:text-2xl uppercase tracking-wider text-black leading-none">
-              CHAT LOG
+            <h3 className="font-black text-2xl lg:text-3xl uppercase tracking-wider text-black leading-none">
+              RIWAYAT CHAT
             </h3>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="neo-button bg-white p-1.5 h-auto"
+          className="neo-button bg-white p-2 h-auto"
         >
-          <X size={16} />
+          <X className="w-5 h-5 lg:w-6 lg:h-6" strokeWidth={3} />
         </button>
       </div>
 
@@ -770,7 +830,7 @@ function ChatContent({
           <div className="h-full flex flex-col items-center justify-center text-center">
             <Music size={48} className="mb-6 text-black animate-float" />
             <p className="text-lg font-black uppercase tracking-widest text-black bg-[var(--primary)] px-8 py-3 neo-border neo-shadow-sm">
-              QUIET PARTY...
+              PESTA YANG SEPI...
             </p>
           </div>
         )}
@@ -795,54 +855,54 @@ function ChatContent({
       {/* Input Module */}
       <div className="p-3 sm:p-4 bg-white neo-border-t shrink-0 space-y-2">
         {/* Conditional Description Input */}
-        {/* <AnimatePresence>
+        <AnimatePresence>
           {phase === 'speaking' && isMyTurn && !currentPlayer?.description && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="p-3 neo-card bg-[var(--primary)]"
+              className="p-4 neo-card bg-[var(--primary)] gap-4 flex flex-col mb-4"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <PartyPopper size={24} className="text-black" />
-                <span className="text-lg font-black text-black uppercase tracking-widest">
-                  YOUR TURN: SHARE A HINT
+              <div className="flex items-center gap-3 mb-2">
+                <PartyPopper className="w-6 h-6 lg:w-8 lg:h-8 text-black" strokeWidth={3} />
+                <span className="text-lg lg:text-xl font-black text-black uppercase tracking-widest">
+                  GILIRAN ANDA: BERIKAN PETUNJUK
                 </span>
               </div>
-              <form onSubmit={handleSendDescription} className="flex gap-2">
+              <form onSubmit={handleSendDescription} className="flex gap-3">
                 <input
                   type="text"
                   value={descriptionInput}
                   onChange={(e) => setDescriptionInput(e.target.value)}
-                  placeholder="Secret message..."
+                  placeholder="Pesan rahasia..."
                   className="flex-1 neo-input text-lg py-3 px-5"
                 />
                 <button
                   type="submit"
                   disabled={!descriptionInput.trim()}
-                  className="neo-button bg-black text-white p-3"
+                  className="neo-button bg-black text-white p-3 hover:scale-105 transition-transform"
                 >
-                  <Send size={20} />
+                  <Send className="w-5 h-5 lg:w-6 lg:h-6" strokeWidth={3} />
                 </button>
               </form>
             </motion.div>
           )}
-        </AnimatePresence> */}
+        </AnimatePresence>
  
-        <form onSubmit={handleSendChat} className="flex gap-2">
+        <form onSubmit={handleSendChat} className="flex gap-4">
           <input
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Discuss here..."
-            className="flex-1 neo-input text-lg py-3 px-5"
+            placeholder="Diskusikan di sini..."
+            className="flex-1 neo-input text-lg py-4 px-6"
           />
           <button
             type="submit"
-            className="neo-button bg-[var(--primary)] text-black p-3"
+            className="neo-button bg-[var(--primary)] text-black p-4 lg:p-5"
             disabled={!chatInput.trim()}
           >
-            <Send size={20} />
+            <Send className="w-6 lg:w-8 h-6 lg:h-8 text-black" strokeWidth={3} />
           </button>
         </form>
       </div>
@@ -860,11 +920,19 @@ function ChatMessage({
   const isSystem = msg.playerName === 'SYSTEM'
   const type = msg.type || 'chat'
 
-  if (isSystem && !type) {
+  if (isSystem || type === 'system') {
     return (
-      <div className="flex justify-center py-4 w-full">
-        <div className="bg-[var(--neutral)] neo-border px-6 py-3 neo-shadow-sm text-base sm:text-lg font-black text-black uppercase tracking-[0.2em] text-center max-w-[90%] transform rotate-1 italic">
-          {msg.message}
+      <div className="flex justify-center py-6 w-full">
+        <div className="bg-[var(--neutral)] neo-border px-8 py-4 neo-shadow-sm text-base sm:text-xl font-black text-black uppercase tracking-[0.2em] text-center max-w-[95%] transform rotate-1 italic gap-3 flex items-center justify-center">
+          <AlertCircle className="w-5 h-5 text-black" strokeWidth={3} />
+          {msg.message.replace('submitted their description', 'telah mengirimkan petunjuk mereka')
+                     .replace('has submitted their description', 'telah mengirimkan petunjuk mereka')
+                     .replace('Game started!', 'Permainan dimulai!')
+                     .replace('New round started', 'Ronde baru dimulai')
+                     .replace('Voting phase started', 'Tahap voting dimulai')
+                     .replace('Discussion phase started', 'Tahap diskusi dimulai')
+                     .replace('Speaking phase started', 'Tahap berbicara dimulai')
+          }
         </div>
       </div>
     )
@@ -882,7 +950,7 @@ function ChatMessage({
         <span
           className={`neo-badge text-base sm:text-lg py-2 px-5 ${isMine ? 'bg-[var(--secondary)]' : 'bg-[var(--primary)]'}`}
         >
-          {msg.playerName || 'UNKNOWN PARTIER'}
+          {msg.playerName || 'PESERTA TANPA NAMA'}
         </span>
         <span className="text-lg font-black text-black/30 uppercase tracking-widest leading-none italic">
           {new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {
@@ -893,7 +961,7 @@ function ChatMessage({
       </div>
       <div
         className={`
-        px-4 py-2 neo-border neo-shadow-sm text-base sm:text-lg leading-snug max-w-[85%] relative transition-all font-bold uppercase italic
+        px-4 py-2 neo-border neo-shadow-sm text-base sm:text-lg leading-snug max-w-[85%] relative transition-all font-bold uppercase italic neo-pop
         ${
           type === 'vote'
             ? 'bg-[var(--danger)] text-white'
@@ -929,17 +997,17 @@ function StartingView() {
     >
       <div className="relative mb-3">
         <h2 
-          data-text="READY?"
+          data-text="SIAP?"
           className=" text-2xl sm:text-4xl font-black italic tracking-tighter text-black leading-none uppercase"
         >
-          READY?
+          SIAP?
         </h2>
       </div>
 
       <div className="flex items-center gap-4 px-8 py-4 bg-[var(--success)] neo-border neo-shadow-sm transform -rotate-1 mb-8">
         <PartyPopper size={32} strokeWidth={4} className="text-black animate-bounce" />
         <p className="text-base sm:text-xl text-black font-black tracking-widest uppercase italic">
-          STARTING THE PARTY...
+          MEMULAI PESTA...
         </p>
       </div>
 
@@ -953,8 +1021,8 @@ function StartingView() {
           />
         </div>
         <div className="flex justify-between w-full">
-          <span className="text-base sm:text-lg font-black uppercase tracking-[0.4em] opacity-30 italic">INITIALIZING CHAOS</span>
-          <span className="text-base sm:text-lg font-black uppercase tracking-[0.4em] opacity-30 italic">SECURE LINK</span>
+          <span className="text-base sm:text-lg font-black uppercase tracking-[0.4em] opacity-30 italic">MENYIAPKAN KEKACAUAN</span>
+          <span className="text-base sm:text-lg font-black uppercase tracking-[0.4em] opacity-30 italic">LINK AMAN</span>
         </div>
       </div>
     </motion.div>
@@ -992,7 +1060,7 @@ function MrWhiteGuessView({
           </motion.div>
         </div>
         <div className="absolute -top-4 -right-4 bg-black text-white px-6 py-3 font-black text-lg uppercase tracking-[0.2em] rotate-12 neo-border neo-shadow-sm">
-          BUSTED!
+          TERBONGKAR!
         </div>
       </div>
 
@@ -1000,28 +1068,28 @@ function MrWhiteGuessView({
         <div className="flex items-center justify-center gap-4">
           <div className="h-1.5 flex-1 bg-black" />
           <span className="text-lg sm:text-xl font-black uppercase tracking-[0.4em] text-black italic shrink-0">
-            PARTY CRASHER IDENTIFIED
+            PENYUSUP TERIDENTIFIKASI
           </span>
           <div className="h-1.5 flex-1 bg-black" />
         </div>
 
         <h2 
-          data-text="GUESS WORD"
-          className=" text-2xl sm:text-5xl font-black tracking-tighter text-black uppercase italic leading-[0.85] transform -skew-x-6"
+          data-text="TEBAK KATA"
+          className=" text-2xl sm:text-7xl font-black tracking-tighter text-black uppercase italic leading-[0.85] transform -skew-x-6"
         >
-          GUESS WORD
+          TEBAK KATA
         </h2>
 
         <p className="text-black font-black px-4 text-xl sm:text-3xl max-w-lg mx-auto leading-tight tracking-tight uppercase italic">
-          The party was crashed by{' '}
+          Pesta disusupi oleh{' '}
           <span className="bg-[var(--secondary)] px-5 py-3 neo-border neo-shadow-sm mx-1 inline-block -rotate-2">
-            THE MYSTERY GUEST
+            MR. WHITE
           </span>
           <br />
           <span className="text-black/60 text-lg sm:text-xl mt-6 block">
             {currentPlayer?.role === 'mrwhite'
-              ? 'Guess the secret word to win the party!'
-              : 'Waiting for the crasher to guess...'}
+              ? 'Tebak kata rahasia untuk memenangkan pesta!'
+              : 'Menunggu penyusup menebak...'}
           </span>
         </p>
       </div>
@@ -1039,7 +1107,7 @@ function MrWhiteGuessView({
               type="text"
               value={guessInput}
               onChange={(e) => setGuessInput(e.target.value)}
-              placeholder="SECRET WORD..."
+              placeholder="KATA RAHASIA..."
               className="w-full neo-input p-3 sm:p-5 text-lg sm:text-2xl text-center italic font-black"
               autoFocus
               autoComplete="off"
@@ -1049,10 +1117,10 @@ function MrWhiteGuessView({
           <button
             type="submit"
             disabled={!guessInput.trim()}
-            className="w-full neo-button bg-[var(--primary)] py-4 sm:py-6 text-lg sm:text-xl"
+            className="w-full neo-button bg-[var(--primary)] py-4 sm:py-6 text-lg sm:text-xl neo-pop"
           >
             <span className="font-black uppercase tracking-[0.2em] italic">
-              SUBMIT GUESS
+              KIRIM TEBAKAN
             </span>
             <ChevronRight size={16} strokeWidth={4} />
           </button>
@@ -1061,7 +1129,7 @@ function MrWhiteGuessView({
             <div className="bg-[var(--danger)] neo-border px-6 py-2.5 flex items-center gap-3 text-white neo-shadow-sm rotate-1">
               <AlertCircle size={22} strokeWidth={3} />
               <p className="text-lg sm:text-xl font-black uppercase tracking-[0.2em]">
-                ONLY ONE GUESS ALLOWED
+                HANYA BOLEH SATU TEBAKAN
               </p>
             </div>
           </div>
@@ -1075,13 +1143,13 @@ function MrWhiteGuessView({
         >
           <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-black animate-spin" strokeWidth={3} />
             <h3 
-              data-text="GUESSING IN PROGRESS"
-              className=" text-3xl sm:text-5xl font-black text-black uppercase tracking-[0.2em] italic"
+              data-text="SEDANG MENEBAK"
+              className=" text-3xl sm:text-7xl font-black text-black uppercase tracking-[0.2em] italic"
             >
-              GUESSING IN PROGRESS
+              SEDANG MENEBAK
             </h3>
             <p className="text-base sm:text-lg font-bold text-black/60 uppercase tracking-widest italic">
-              THE MYSTERY GUEST IS TRYING TO GUESS THE WORD...
+              MR. WHITE SEDANG MENCOBA MENEBAK KATA...
             </p>
         </motion.div>
       )}
@@ -1113,10 +1181,10 @@ function GameEndedView({
 
   const winTitle = useMemo(() => {
     const role = room.game?.winnerRole
-    if (role === 'civilian') return 'PARTY SAVED!'
-    if (role === 'undercover') return 'CRASHERS WIN!'
-    if (role === 'mrwhite') return 'MYSTERY GUEST WIN!'
-    return 'PARTY OVER!'
+    if (role === 'civilian') return 'PESTA TERSELAMATKAN!'
+    if (role === 'undercover') return 'UNDERCOVER MENANG!'
+    if (role === 'mrwhite') return 'MR. WHITE MENANG!'
+    return 'PESTA BERAKHIR!'
   }, [room.game?.winnerRole])
 
   const winBg = useMemo(() => {
@@ -1131,7 +1199,7 @@ function GameEndedView({
     <motion.div
       initial={{ opacity: 0, scale: 0.9, y: 30 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      className="flex flex-col items-center py-4 text-center max-w-2xl mx-auto w-full gap-4 bg-white neo-border neo-shadow-sm my-4 p-4 sm:p-6 relative overflow-hidden"
+      className="flex flex-col items-center py-4 text-center max-w-[1400px] mx-auto w-full gap-4 bg-white neo-border neo-shadow-sm my-4 p-4 sm:p-6 relative overflow-hidden"
     >
       {/* Celebration background elements */}
       <div className="absolute top-0 left-0 w-full h-3 bg-black" />
@@ -1151,11 +1219,11 @@ function GameEndedView({
       <div className="space-y-1 relative z-10">
         <div className="flex flex-col items-center gap-1">
           <span className="text-lg sm:text-xl font-black uppercase tracking-[0.5em] text-black/40 italic">
-            FINAL RESULTS
+            HASIL AKHIR
           </span>
           <h2 
             data-text={winTitle}
-            className=" text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-[0.8] transform -skew-x-6"
+            className=" text-3xl sm:text-7xl font-black uppercase italic tracking-tighter text-black leading-[0.8] transform -skew-x-6"
           >
             {winTitle}
           </h2>
@@ -1163,7 +1231,7 @@ function GameEndedView({
         
         <div className="bg-black text-white py-4 px-10 inline-block transform rotate-1 neo-border neo-shadow-sm mt-4">
           <p className="text-white font-black tracking-[0.4em] uppercase text-lg sm:text-xl italic">
-            PARTY CONCLUDED • FUN SECURED
+            PESTA BERAKHIR • KESERUAN TERJAMIN
           </p>
         </div>
       </div>
@@ -1194,30 +1262,29 @@ function GameEndedView({
                 >
                   {p.name[0]}
                 </div>
-                <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="font-black text-xl sm:text-2xl tracking-tight uppercase italic">
+                <div className="text-left flex flex-col gap-1">
+                  <div className="flex items-center gap-3">
+                    <span className="font-black text-xl sm:text-3xl tracking-tight uppercase italic">
                       {p.name}
                     </span>
                     {isWinner && (
                       <Crown
-                        size={24}
+                        className="w-6 h-6 lg:w-8 lg:h-8 text-black animate-pulse"
                         strokeWidth={3}
-                        className="text-black animate-pulse"
                       />
                     )}
                     {p.id === playerId && (
-                      <span className="text-lg px-6 py-2.5 bg-black text-white font-black uppercase tracking-widest italic">
-                        YOU
+                      <span className="text-base px-6 py-2.5 bg-black text-white font-black uppercase tracking-widest italic ml-2">
+                        ANDA
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-col mt-2">
-                    <span className={`text-lg sm:text-xl font-black uppercase tracking-widest ${isWinner ? 'text-black/60' : 'text-black/40'}`}>
-                      {p.role === 'civilian' ? 'PARTIER' : p.role === 'undercover' ? 'PARTY CRASHER' : 'MYSTERY GUEST'}
+                  <div className="flex flex-col mt-3 gap-2">
+                    <span className={`text-lg sm:text-2xl font-black uppercase tracking-widest ${isWinner ? 'text-black/60' : 'text-black/40'}`}>
+                      {p.role === 'civilian' ? 'CIVILIAN' : p.role === 'undercover' ? 'UNDERCOVER' : 'MR. WHITE'}
                     </span>
                     {p.word && (
-                      <span className="text-lg sm:text-xl font-black text-black italic bg-white/50 px-6 py-3 neo-border inline-block w-fit mt-4 uppercase neo-shadow-sm">
+                      <span className="text-lg sm:text-2xl font-black text-black italic bg-white/50 px-6 py-3 neo-border inline-block w-fit mt-2 uppercase neo-shadow-sm">
                         "{p.word}"
                       </span>
                     )}
@@ -1225,11 +1292,11 @@ function GameEndedView({
                 </div>
               </div>
               <div
-                className={`px-8 py-4 neo-border text-lg sm:text-xl font-black uppercase tracking-widest italic
+                className={`px-8 py-5 neo-border text-lg sm:text-2xl font-black uppercase tracking-widest italic
                 ${p.isAlive ? 'bg-[var(--success)] text-black neo-shadow-sm' : 'bg-[var(--danger)] text-white'}
               `}
               >
-                {p.isAlive ? 'AT PARTY' : 'KICKED OUT'}
+                {p.isAlive ? 'DI PESTA' : 'DITENDANG'}
               </div>
             </motion.div>
           )
@@ -1239,10 +1306,10 @@ function GameEndedView({
       <div className="mt-6 flex flex-col gap-2 w-full max-w-[500px] relative z-10">
           <button
             onClick={onReturn}
-            className="neo-button bg-[var(--success)] py-5 text-lg sm:text-xl"
+            className="neo-button bg-[var(--success)] py-5 text-lg sm:text-xl neo-pop"
           >
             <ArrowLeft size={24} strokeWidth={4} />
-            <span className="font-black uppercase tracking-[0.2em] italic">BACK TO LOBBY</span>
+            <span className="font-black uppercase tracking-[0.2em] italic">KEMBALI KE LOBBY</span>
           </button>
       </div>
     </motion.div>
@@ -1349,7 +1416,7 @@ function PlayerCard({
               <div className="flex items-center gap-2 absolute -top-6 left-1/2 -translate-x-1/2 w-max">
                 {isSelf && (
                   <span className="text-base sm:text-lg font-black bg-black text-white px-5 py-2 neo-border-sm uppercase tracking-[0.2em] italic">
-                    YOU
+                    ANDA
                   </span>
                 )}
                 {/* {player.isHost && (
@@ -1370,14 +1437,14 @@ function PlayerCard({
               >
                 <div className="w-2.5 h-2.5 bg-black rounded-full animate-ping" />
                 <span className="text-base sm:text-lg font-black uppercase tracking-[0.2em] italic">
-                  THINKING...
+                  BERPIKIR...
                 </span>
               </motion.div>
             ) : (
               !player.isAlive && (
                 <div className="flex items-center gap-2 px-4 py-2 bg-[var(--danger)] neo-border-sm text-white neo-shadow-sm transform rotate-2">
                   <span className="text-base sm:text-lg font-black uppercase tracking-[0.2em] italic">
-                    KICKED OUT
+                    DITENDANG
                   </span>
                 </div>
               )
@@ -1389,10 +1456,10 @@ function PlayerCard({
         {phase === 'voting' && player.isAlive && !isSelf && !hasVoted && (
           <button
             onClick={onVote}
-            className="neo-button w-full mt-2 bg-[var(--danger)] text-white py-4 font-black uppercase tracking-widest italic hover:bg-[var(--danger)]/90 active:scale-95 transition-all text-base sm:text-lg"
+            className="neo-button w-full mt-6 bg-[var(--danger)] text-white py-6 lg:py-8 font-black uppercase tracking-widest italic hover:bg-[var(--danger)]/90 active:scale-95 transition-all text-xl sm:text-2xl flex items-center justify-center gap-4 neo-pop"
           >
-            <Vote size={20} strokeWidth={4} />
-            VOTE
+            <Vote className="w-8 lg:w-10 h-8 lg:h-10 text-white" strokeWidth={4} />
+            KELUARKAN!
           </button>
         )}
       </div>
@@ -1413,21 +1480,29 @@ function Timer({
   useEffect(() => {
     if (!endsAt) {
       setInitialTime(null)
+      setTimeLeft(0)
       return
     }
     
     const now = Date.now()
     const remaining = Math.max(0, Math.ceil((endsAt - now) / 1000))
     
-    // Set initial time if we don't have one or if endsAt changed significantly (new turn)
-    setInitialTime(prev => {
-      if (prev === null || remaining > prev) return remaining
-      return prev
-    })
+    // Always update initial time when endsAt changes to a future time
+    setInitialTime(remaining)
 
     const update = () => {
       const currentRemaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000))
       setTimeLeft(currentRemaining)
+      
+      // Play tick sound when low
+      if (currentRemaining <= 5 && currentRemaining > 0) {
+        try {
+          const audio = new Audio('/sounds/tick.mp3')
+          audio.volume = 0.3
+          audio.play().catch(() => {})
+        } catch (e) {}
+      }
+      
       if (currentRemaining === 0) onExpire()
     }
     update()
@@ -1441,19 +1516,18 @@ function Timer({
   return (
     <div className="flex flex-col gap-1 items-end">
       <div
-        className={`flex items-center gap-1.5 px-3 py-1 neo-border-sm neo-shadow-sm transition-all duration-300 transform -rotate-1 ${
+        className={`flex items-center gap-2 px-4 py-2 neo-border-sm neo-shadow-sm transition-all duration-300 transform -rotate-1 ${
           isLow
             ? 'bg-[var(--danger)] text-white'
             : 'bg-white text-black'
         }`}
       >
         <TimerIcon
-          size={20}
+          className={`w-5 h-5 ${isLow ? 'text-white animate-bounce' : 'text-black'}`}
           strokeWidth={4}
-          className={isLow ? 'text-white animate-bounce' : 'text-black'}
         />
         <span
-          className="text-lg sm:text-xl font-black tabular-nums italic tracking-tighter"
+          className="text-lg sm:text-2xl font-black tabular-nums italic tracking-tighter"
         >
           {timeLeft.toString().padStart(2, '0')}S
         </span>
@@ -1505,20 +1579,20 @@ function RoleOverlay({
           <motion.div 
             animate={{ rotate: [5, -5, 5], scale: [1, 1.05, 1] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-14 h-14 sm:w-20 sm:h-20 bg-[var(--secondary)] neo-border flex items-center justify-center neo-shadow-sm transform rotate-3"
+            className="w-16 h-16 sm:w-24 sm:h-24 bg-[var(--secondary)] neo-border flex items-center justify-center neo-shadow-sm transform rotate-3"
           >
-            <Sparkles className="w-8 lg:w-12 h-8 lg:h-12 text-black" strokeWidth={3} />
+            <Sparkles className="w-10 lg:w-14 h-10 lg:h-14 text-black" strokeWidth={3} />
           </motion.div>
           
           <div className="space-y-1">
             <h3 className="text-lg sm:text-xl font-black text-black/40 uppercase tracking-[0.6em] text-center italic">
-              MY PARTY ROLE
+              PERAN SAYA
             </h3>
             <h2 
-              data-text={player.role === 'civilian' ? 'PARTIER' : player.role === 'undercover' ? 'PARTY CRASHER' : 'MYSTERY GUEST'}
-              className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter text-black transform -skew-x-6 leading-none"
+              data-text={player.role === 'civilian' ? 'CIVILIAN' : player.role === 'undercover' ? 'UNDERCOVER' : 'MR. WHITE'}
+              className="text-4xl sm:text-7xl font-black uppercase italic tracking-tighter text-black transform -skew-x-6 leading-none"
             >
-              {player.role === 'civilian' ? 'PARTIER' : player.role === 'undercover' ? 'PARTY CRASHER' : 'MYSTERY GUEST'}
+              {player.role === 'civilian' ? 'CIVILIAN' : player.role === 'undercover' ? 'UNDERCOVER' : 'MR. WHITE'}
             </h2>
           </div>
         </div>
@@ -1526,7 +1600,7 @@ function RoleOverlay({
         <div className="w-full mt-12 p-4 sm:p-6 bg-[var(--primary)] neo-border flex flex-col items-center gap-3 neo-shadow-sm relative">
           <div className="absolute whitespace-nowrap -top-10 left-1/2 -translate-x-1/2 bg-black px-10 py-3 neo-border neo-shadow-sm">
             <span className="text-lg sm:text-xl font-black text-white uppercase tracking-[0.4em] italic">
-              MY SECRET WORD
+              KATA RAHASIA SAYA
             </span>
           </div>
           <p className="text-4xl sm:text-6xl font-black text-black uppercase tracking-tighter text-center break-all transform skew-x-6 leading-none py-2">
@@ -1538,11 +1612,11 @@ function RoleOverlay({
               <div className="flex items-center gap-4">
                 <Ghost size={32} strokeWidth={4} />
                 <p className="text-lg sm:text-xl font-black uppercase tracking-[0.3em] text-center leading-tight">
-                  INFILTRATION SUCCESS
+                  INFILTRASI BERHASIL
                 </p>
               </div>
               <p className="text-lg sm:text-xl font-bold text-center leading-relaxed tracking-tight uppercase opacity-90 max-w-xs">
-                Blend in with the party and guess the secret word from their gossip!
+                Baurkan diri Anda dengan peserta pesta dan tebak kata rahasia dari gosip mereka!
               </p>
             </div>
           )}
@@ -1552,7 +1626,7 @@ function RoleOverlay({
           onClick={onClose}
           className="neo-button w-full py-4 sm:py-5 bg-[var(--success)] text-lg sm:text-xl relative z-10 neo-pop"
         >
-          <span className="font-black uppercase tracking-[0.2em] italic">RETURN TO PARTY</span>
+          <span className="font-black uppercase tracking-[0.2em] italic">KEMBALI KE PESTA</span>
         </button>
       </motion.div>
     </div>

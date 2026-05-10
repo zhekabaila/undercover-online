@@ -6,22 +6,22 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "Party Crashers | The Ultimate Social Deduction Game",
-  description: "Join the most chaotic party online! Play Party Crashers with your friends. Real-time word deduction game with a vibrant neobrutalist vibe.",
+  title: "Undercover Online | Game Deteksi Kata Terseru",
+  description: "Gabung ke pesta paling seru online! Main Undercover Online bareng teman. Game deteksi kata real-time dengan gaya neobrutalis yang keren.",
   icons: {
       icon: [
         { url: "/favicon-512.png", sizes: "any" }
       ],
     },
     openGraph: {
-      title: "Party Crashers | The Ultimate Social Deduction Game",
-      description: "Join the most chaotic party online! Play Party Crashers with your friends. Real-time word deduction game with a vibrant neobrutalist vibe.",
+      title: "Undercover Online | Game Deteksi Kata Terseru",
+      description: "Gabung ke pesta paling seru online! Main Undercover Online bareng teman. Game deteksi kata real-time dengan gaya neobrutalis yang keren.",
       images: ["https://undercover.coreapps.web.id/og-image.png"],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Party Crashers | The Ultimate Social Deduction Game",
-      description: "Join the most chaotic party online! Play Party Crashers with your friends. Real-time word deduction game with a vibrant neobrutalist vibe.",
+      title: "Undercover Online | Game Deteksi Kata Terseru",
+      description: "Gabung ke pesta paling seru online! Main Undercover Online bareng teman. Game deteksi kata real-time dengan gaya neobrutalis yang keren.",
       images: ["https://undercover.coreapps.web.id/og-image.png"],
     },
 };
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="id">
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased`}>
         {children}
       </body>
