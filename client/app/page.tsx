@@ -41,12 +41,12 @@ export default function Home() {
   }, [room, router])
 
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && view === 'play') {
       refreshPublicRooms()
       const interval = setInterval(refreshPublicRooms, 5000)
       return () => clearInterval(interval)
     }
-  }, [isConnected, refreshPublicRooms])
+  }, [view, isConnected, refreshPublicRooms])
 
   return (
     <main className="min-h-screen bg-[var(--bg-cheerful)] text-black flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-x-hidden overflow-y-auto selection:bg-[var(--secondary)]">
