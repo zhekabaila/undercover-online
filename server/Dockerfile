@@ -25,6 +25,7 @@ RUN npm run build
 # Stage 4: Production
 FROM node:22-bookworm-slim AS production
 WORKDIR /app
+RUN apt-get update -y && apt-get install -y openssl
 ENV NODE_ENV=production
 ENV PORT=3021
 
