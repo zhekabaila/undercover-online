@@ -1,11 +1,11 @@
 # Stage 1: Dependencies
-FROM node:22-alpine AS deps
+FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
 # Stage 2: Development
-FROM node:22-alpine AS development
+FROM node:22-bookworm-slim AS development
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -14,7 +14,7 @@ EXPOSE 3021
 CMD ["npm", "run", "dev"]
 
 # Stage 3: Build
-FROM node:22-alpine AS builder
+FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -22,7 +22,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Stage 4: Production
-FROM node:22-alpine AS production
+FROM node:22-bookworm-slim AS production
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3021

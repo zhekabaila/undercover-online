@@ -3,16 +3,13 @@ services:
     build:
       context: ./server
       target: production
-    ports:
-      - "3021:3021"
+    network_mode: "host"
     restart: always
     environment:
       - NODE_ENV=production
       - PORT=3021
-      - DATABASE_URL=${DATABASE_URL:-mysql://root:root@host.docker.internal:3306/undercover}
+      - DATABASE_URL=${DATABASE_URL:-mysql://root:root@127.0.0.1:3306/undercover}
       - JWT_SECRET=${JWT_SECRET:-supersecretundercover}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     deploy:
       resources:
         limits:
