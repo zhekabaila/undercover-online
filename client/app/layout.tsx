@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     openGraph: {
       title: "Undercover Online | Game Deteksi Kata Terseru",
       description: "Gabung ke pesta paling seru online! Main Undercover Online bareng teman. Game deteksi kata real-time dengan gaya neobrutalis yang keren.",
-      images: ["https://undercover.coreapps.web.id/og-image.png"],
+      images: ["https://undercover.coreapps.web.id/og-image.jpeg"],
     },
     twitter: {
       card: "summary_large_image",
       title: "Undercover Online | Game Deteksi Kata Terseru",
       description: "Gabung ke pesta paling seru online! Main Undercover Online bareng teman. Game deteksi kata real-time dengan gaya neobrutalis yang keren.",
-      images: ["https://undercover.coreapps.web.id/og-image.png"],
+      images: ["https://undercover.coreapps.web.id/og-image.jpeg"],
     },
 };
 
