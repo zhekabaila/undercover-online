@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import { handleConnection } from './ws/wsHandler.js';
 import { getAllRooms } from './state/roomStore.js';
+import authRouter from './routes/auth.js';
 
 const app = express();
 const server = createServer(app);
@@ -17,8 +18,15 @@ const wss = new Server(server, {
   allowEIO3: true // for compatibility if needed
 });
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://undercover.coreapps.web.id", "http://localhost:3020"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}));
 app.use(express.json());
+
+// Auth routes
+app.use('/auth', authRouter);
 
 // Health check
 app.get('/health', (_, res) => res.json({ status: 'ok' }));

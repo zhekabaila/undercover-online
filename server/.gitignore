@@ -5,3 +5,5 @@ dist
 *.map
 # Prevent ignoring source files if they happen to be JS
 !src/**/*.js
+
+/src/generated/prisma

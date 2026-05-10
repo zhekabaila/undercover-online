@@ -274,11 +274,13 @@ export function useGameState() {
   }, [])
 
   const createRoom = useCallback((name: string, settings: any) => {
-    wsClient?.send(WSEvent.CREATE_ROOM, { name, settings })
+    const token = localStorage.getItem('token') || undefined;
+    wsClient?.send(WSEvent.CREATE_ROOM, { name, settings, token })
   }, [])
 
   const joinRoom = useCallback((roomId: string, name: string) => {
-    wsClient?.send(WSEvent.JOIN_ROOM, { roomId, name })
+    const token = localStorage.getItem('token') || undefined;
+    wsClient?.send(WSEvent.JOIN_ROOM, { roomId, name, token })
   }, [])
 
   const setReady = useCallback((isReady: boolean) => {

@@ -2,6 +2,7 @@ import { Socket, Server } from 'socket.io';
 import * as roomStore from '../state/roomStore.js';
 import { Player, RoomSettings } from '../state/types.js';
 import { WSEvent, ErrorCode } from '../ws/events.js';
+import jwt from 'jsonwebtoken';
 
 export function sendToPlayer(ws: Socket, event: WSEvent, payload: any) {
   if (ws.connected) {
@@ -45,8 +46,19 @@ export function broadcast(roomId: string, event: WSEvent, payload: any) {
   });
 }
 
-export function handleCreateRoom(ws: Socket, payload: { name: string, settings: RoomSettings }): string {
+export function handleCreateRoom(ws: Socket, payload: { name: string, settings: RoomSettings, token?: string }): string {
   const playerId = Math.random().toString(36).substring(7);
+  let userId: string | undefined = undefined;
+
+  if (payload.token) {
+    try {
+      const decoded = jwt.verify(payload.token, process.env.JWT_SECRET || 'supersecretundercover') as { id: string };
+      userId = decoded.id;
+    } catch (err) {
+      console.warn('Invalid token on CREATE_ROOM');
+    }
+  }
+
   const host: Player = {
     id: playerId,
     name: payload.name || 'Host',
@@ -54,6 +66,7 @@ export function handleCreateRoom(ws: Socket, payload: { name: string, settings: 
     isReady: true, // Host is always ready
     isAlive: true,
     hasSpokenThisRound: false,
+    userId: userId,
   };
 
   const settings: RoomSettings = {
@@ -85,8 +98,9 @@ export function handleListPublicRooms(ws: Socket) {
   sendToPlayer(ws, WSEvent.PUBLIC_ROOMS_LIST, { rooms: publicRooms });
 }
 
-export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: string }): string | undefined {
+export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: string, token?: string }): string | undefined {
   const room = roomStore.getRoom(payload.roomId);
+  const playerId = Math.random().toString(36).substring(7);
 
   console.log(`[JoinRoom] Player "${payload.name}" attempting to join "${payload.roomId}"`);
 
@@ -109,7 +123,16 @@ export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: stri
     return;
   }
 
-  const playerId = Math.random().toString(36).substring(7);
+  let userId: string | undefined = undefined;
+  if (payload.token) {
+    try {
+      const decoded = jwt.verify(payload.token, process.env.JWT_SECRET || 'supersecretundercover') as { id: string };
+      userId = decoded.id;
+    } catch (err) {
+      console.warn('Invalid token on JOIN_ROOM');
+    }
+  }
+
   const player: Player = {
     id: playerId,
     name: payload.name || `Player ${room.players.size + 1}`,
@@ -117,6 +140,7 @@ export function handleJoinRoom(ws: Socket, payload: { roomId: string, name: stri
     isReady: false,
     isAlive: true,
     hasSpokenThisRound: false,
+    userId: userId,
   };
 
   roomStore.addPlayerToRoom(room.id, player);
