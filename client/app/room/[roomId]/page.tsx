@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Crown, Play, CheckCircle2, Circle, ArrowLeft, Copy, Loader2, Zap, Sparkles, Smile, PartyPopper, Music, Gamepad2, Settings2, Sliders, AlertCircle, ChevronRight, TimerIcon } from 'lucide-react';
+import { Users, Crown, Play, CheckCircle2, Circle, ArrowLeft, Copy, Loader2, Zap, Sparkles, Smile, PartyPopper, Music, Gamepad2, Settings2, Sliders, AlertCircle, ChevronRight, TimerIcon, Search } from 'lucide-react';
 import { useGameState } from '../../../hooks/useGameState';
 import { Player } from '../../../types/game';
 import { FloatingShape } from '../../../components/ui/FloatingShape';
@@ -201,6 +201,19 @@ export default function Lobby() {
 
     const currentPlayer = room.players.find((p: Player) => p.id === playerId);
     const isHost = currentPlayer?.isHost;
+    // Logic for role counts (custom or automatic)
+    const totalPlayers = room.players.length;
+    const currentUcCount = room.settings.undercoverCount !== undefined 
+      ? room.settings.undercoverCount 
+      : (totalPlayers >= 7 ? 2 : 1);
+    const currentMwCount = room.settings.mrWhiteCount !== undefined 
+      ? room.settings.mrWhiteCount 
+      : (totalPlayers >= 5 ? 1 : 0);
+    
+    const civilianCount = totalPlayers - currentUcCount - currentMwCount;
+    
+    // Validation: Civilians must be more than Undercover + Mr. White
+    const isValidRolesConfiguration = civilianCount > (currentUcCount + currentMwCount);
     const allReady = room.players.length >= 3 && room.players.every((p: Player) => p.isReady);
 
     return (
@@ -456,7 +469,7 @@ export default function Lobby() {
                       <div className="space-y-6 pt-6 border-t-[3px] border-black/5 border-dashed">
                         <button
                           onClick={startGame}
-                          disabled={!allReady}
+                          disabled={!allReady || !isValidRolesConfiguration}
                           className="w-full neo-button bg-[var(--success)] text-black text-base sm:text-lg h-16 group relative overflow-hidden disabled:bg-black/10 disabled:grayscale disabled:opacity-40 neo-pop"
                         >
                           <motion.div 
@@ -468,8 +481,26 @@ export default function Lobby() {
                           </div>
                         </button>
 
+                        {!isValidRolesConfiguration && (
+                          <div className="flex flex-col gap-2 py-4 bg-[var(--danger)]/10 neo-border-sm border-dashed">
+                            <div className="flex items-center justify-center gap-2">
+                              <AlertCircle className="text-[var(--danger)] w-5 lg:w-6 h-5 lg:h-6" />
+                              <p className="text-xs sm:text-sm font-black uppercase text-[var(--danger)] italic tracking-[0.1em] text-center px-2">
+                                KOMPOSISI PERAN TIDAK VALID
+                              </p>
+                            </div>
+                            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[10px] font-black uppercase text-black/40">
+                              <span>CIVILIAN: {civilianCount}</span>
+                              <span className="text-black/10">|</span>
+                              <span>UC + MW: {currentUcCount + currentMwCount}</span>
+                            </div>
+                            <p className="text-[9px] font-bold text-center text-[var(--danger)]/60 px-4 leading-tight">
+                              CIVILIAN HARUS LEBIH BANYAK DARI TOTAL MUSUH (UC + MR. WHITE)
+                            </p>
+                          </div>
+                        )}
                         
-                        {!allReady && (
+                        {!allReady && isValidRolesConfiguration && (
                           <div className="flex items-center justify-center gap-2 py-3 bg-[var(--danger)]/5 neo-border-sm border-dashed">
                             <AlertCircle className="text-[var(--danger)] w-5 lg:w-6 h-5 lg:h-6" />
                             <p className="text-xs sm:text-sm font-black uppercase text-[var(--danger)] italic animate-pulse tracking-[0.2em]">
@@ -575,6 +606,61 @@ export default function Lobby() {
                               </select>
                               <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none group-hover:scale-125 transition-transform duration-300">
                                 <Sparkles className="text-[var(--primary)] w-5 lg:w-7 h-5 lg:h-7" strokeWidth={2} />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between px-1">
+                              <div className="flex items-center gap-2">
+                                <Search className="text-black/40 w-4 lg:w-6 h-4 lg:h-6" />
+                                <label className="text-xs sm:text-sm font-black uppercase tracking-[0.3em] block text-black/40 italic">JUMLAH UNDERCOVER</label>
+                              </div>
+                            </div>
+                            <div className="relative group">
+                              <select 
+                                value={room.settings.undercoverCount ?? -1}
+                                onChange={(e) => {
+                                  const val = parseInt(e.target.value);
+                                  updateSettings({ undercoverCount: val === -1 ? undefined : val });
+                                }}
+                                className="w-full neo-input cursor-pointer text-base lg:text-lg italic uppercase hover:bg-[var(--neutral)] transition-all appearance-none pr-12 py-4"
+                              >
+                                <option value={-1}>OTOMATIS</option>
+                                {[1, 2, 3, 4, 5].map(n => (
+                                  <option key={n} value={n}>{n} AGEN</option>
+                                ))}
+                              </select>
+                              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none group-hover:rotate-180 transition-transform duration-500">
+                                <ChevronRight className="w-5 lg:w-7 h-5 lg:h-7" strokeWidth={4} />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between px-1">
+                              <div className="flex items-center gap-2">
+                                <Smile className="text-black/40 w-4 lg:w-6 h-4 lg:h-6" />
+                                <label className="text-xs sm:text-sm font-black uppercase tracking-[0.3em] block text-black/40 italic">JUMLAH MR. WHITE</label>
+                              </div>
+                            </div>
+                            <div className="relative group">
+                              <select 
+                                value={room.settings.mrWhiteCount ?? -1}
+                                onChange={(e) => {
+                                  const val = parseInt(e.target.value);
+                                  updateSettings({ mrWhiteCount: val === -1 ? undefined : val });
+                                }}
+                                className="w-full neo-input cursor-pointer text-base lg:text-lg italic uppercase hover:bg-[var(--neutral)] transition-all appearance-none pr-12 py-4"
+                              >
+                                <option value={-1}>OTOMATIS</option>
+                                <option value={0}>0 AGEN</option>
+                                {[1, 2, 3, 4, 5].map(n => (
+                                  <option key={n} value={n}>{n} AGEN</option>
+                                ))}
+                              </select>
+                              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none group-hover:rotate-180 transition-transform duration-500">
+                                <ChevronRight className="w-5 lg:w-7 h-5 lg:h-7" strokeWidth={4} />
                               </div>
                             </div>
                           </div>

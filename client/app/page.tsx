@@ -21,6 +21,9 @@ export default function Home() {
   const [authForm, setAuthForm] = useState({ username: '', password: '' })
   const [authError, setAuthError] = useState('')
   const [authLoading, setAuthLoading] = useState(false)
+  const [formError, setFormError] = useState('')
+  const [isNameAlertOpen, setIsNameAlertOpen] = useState(false)
+  const [codeOrEventState, setCodeOrEventState] = useState<string | React.MouseEvent | undefined>(undefined)
   
   const [user, setUser] = useState<{ id: string, username: string } | null>(null)
   const [token, setToken] = useState<string | null>(null)
@@ -85,7 +88,10 @@ export default function Home() {
   }
 
   const handleCreate = () => {
-    if (!name) return
+    if (!name) {
+      setIsNameAlertOpen(true)
+      return
+    }
     createRoom(name, {
       maxPlayers: 8,
       turnDurationSeconds: 60,
@@ -97,7 +103,16 @@ export default function Home() {
 
   const handleJoin = (codeOrEvent?: string | React.MouseEvent) => {
     const targetCode = typeof codeOrEvent === 'string' ? codeOrEvent : roomCode
-    if (!name || !targetCode) return
+    if (!name) {
+      setIsNameAlertOpen(true)
+      setCodeOrEventState(codeOrEvent)
+      return
+    }
+    if (!targetCode) {
+      setFormError('KODE RUANGAN BELUM DIISI!')
+      setTimeout(() => setFormError(''), 3000)
+      return
+    }
     joinRoom(targetCode, name)
   }
 
@@ -344,6 +359,7 @@ export default function Home() {
                     </div>
                     <div className="relative group">
                       <input
+                        id="name-input"
                         type="text"
                         placeholder="PILIH NAMA KERENMU..."
                         value={user ? user.username : name}
@@ -389,7 +405,7 @@ export default function Home() {
                       
                       <button
                         onClick={() => handleCreate()}
-                        disabled={!name || isCreating || !isConnected}
+                        disabled={isCreating || !isConnected}
                         className="w-full neo-button bg-[var(--primary)] text-black min-h-[90px] sm:min-h-[110px] flex flex-col gap-2 items-center justify-center group relative overflow-hidden animate-shimmer neo-pop"
                       >
                         <div className="flex items-center gap-3 sm:gap-4 relative z-10 font-black italic tracking-tighter text-2xl lg:text-4xl">
@@ -417,7 +433,7 @@ export default function Home() {
                         </div>
                         <button
                           onClick={() => handleJoin()}
-                          disabled={!name || !roomCode || !isConnected}
+                          disabled={!roomCode || !isConnected}
                           className="w-full neo-button bg-[var(--secondary)] min-h-[90px] sm:min-h-[110px] flex items-center justify-center gap-4 group animate-shimmer neo-pop"
                         >
                           <ArrowRight className="w-7 lg:w-10 h-7 lg:h-10 group-hover:translate-x-3 transition-transform duration-500" strokeWidth={4} />
@@ -429,7 +445,7 @@ export default function Home() {
                 </div>
 
 
-                {error && (
+                {(error || formError) && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -440,7 +456,7 @@ export default function Home() {
                     </div>
                     <div className="flex flex-col text-left gap-1">
                       <span className="text-xs sm:text-sm opacity-80 italic font-black">ADA MASALAH!</span>
-                      <span className="text-lg sm:text-xl leading-tight tracking-tight">{error.message}</span>
+                      <span className="text-lg sm:text-xl leading-tight tracking-tight">{error?.message || formError}</span>
                     </div>
                   </motion.div>
                 )}
@@ -644,6 +660,81 @@ export default function Home() {
                   {authMode === 'login' ? 'DAFTAR SEKARANG' : 'LOGIN SAJA'}
                 </button>
               </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Name Alert Modal */}
+      {isNameAlertOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsNameAlertOpen(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            className="bg-white w-full max-w-sm neo-card relative z-10 overflow-hidden flex flex-col border-t-[6px] border-t-[var(--danger)]"
+          >
+            <div className="bg-black text-white p-4 sm:p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Zap className="w-6 h-6 text-[var(--danger)]" strokeWidth={3} />
+                <h3 className="font-black uppercase tracking-tighter text-xl sm:text-2xl italic leading-none">
+                  TUNGGU DULU!
+                </h3>
+              </div>
+              <button 
+                onClick={() => setIsNameAlertOpen(false)}
+                className="w-10 h-10 bg-white/10 hover:bg-white/20 neo-border-sm flex items-center justify-center transition-colors"
+              >
+                <X className="w-6 h-6" strokeWidth={3} />
+              </button>
+            </div>
+
+            <div className="p-6 sm:p-8 flex flex-col gap-6 text-center">
+              <div className="flex justify-center">
+                <Smile className="w-16 h-16 text-[var(--danger)] -rotate-12" />
+              </div>
+              <p className="font-black text-lg uppercase tracking-wider text-black/40 italic">
+                SIAPA NAMA KAMU?
+              </p>
+              
+              <div className="relative group">
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="MASUKKAN NAMAMU..."
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && name.trim()) {
+                      setIsNameAlertOpen(false);
+                    }
+                  }}
+                  className="w-full neo-input text-xl sm:text-2xl py-5 px-6 uppercase placeholder:text-black/10 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter"
+                />
+                <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-10">
+                  <Gamepad2 className="w-5 lg:w-7 h-5 lg:h-7 text-black" />
+                </div>
+              </div>
+
+              <button 
+                onClick={() => {
+                  if (name.trim()) {
+                    handleJoin(codeOrEventState)
+                    setIsNameAlertOpen(false)
+                  }
+                }}
+                disabled={!name.trim()}
+                className="neo-button w-full bg-[var(--primary)] text-black py-4 font-black text-lg tracking-widest italic flex justify-center items-center gap-2 hover:bg-white transition-colors disabled:opacity-50 disabled:grayscale"
+              >
+                OKE, SIAP!
+              </button>
             </div>
           </motion.div>
         </div>

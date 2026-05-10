@@ -48,7 +48,7 @@ export function handleStartGame(playerId: string) {
 function startGameFlow(room: Room | any) {
   const wordPair = getRandomWordPair()
   const playerIds = Array.from(room.players.keys()) as string[]
-  const assignments = assignRoles(playerIds, wordPair)
+  const assignments = assignRoles(playerIds, wordPair, room.settings)
 
   // Assign roles and words
   assignments.forEach((assign, pId) => {

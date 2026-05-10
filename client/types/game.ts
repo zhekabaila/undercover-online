@@ -7,6 +7,8 @@ export interface RoomSettings {
   discussionDurationSeconds: number; // default: 120
   wordPairId?: string;       // optional: pilih kategori kata
   isPublic: boolean;         // default: false
+  undercoverCount?: number;  // custom undercover count
+  mrWhiteCount?: number;     // custom mrwhite count
 }
 
 export interface Player {

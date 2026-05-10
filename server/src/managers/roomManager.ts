@@ -218,7 +218,7 @@ export function handleSetReady(playerId: string, payload: { isReady: boolean }) 
   }
 }
 
-export function handleUpdateSettings(playerId: string, payload: { settings: RoomSettings }) {
+export function handleUpdateSettings(playerId: string, payload: { settings: Partial<RoomSettings> }) {
     const rooms = roomStore.getAllRooms();
     for (const [roomId, room] of rooms.entries()) {
       if (room.players.has(playerId)) {
