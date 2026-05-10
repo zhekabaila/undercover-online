@@ -238,26 +238,26 @@ export default function GameScreen() {
 
 
       {/* App Header */}
-      <header className="sticky top-0 h-auto overflow-x-auto shrink-0 neo-border-b bg-[var(--surface)] flex items-center px-4 py-4 sm:px-6 z-[100] neo-shadow-sm">
+      <header className="sticky top-0 h-auto overflow-x-auto custom-scrollbar shrink-0 neo-border-b bg-[var(--surface)] flex items-center px-4 py-4 sm:px-6 z-[100] neo-shadow-sm">
         <div className="w-full flex items-center justify-between max-w-[1920px] mx-auto gap-4">
           <div className="flex items-center gap-4 sm:gap-6">
             <button
               onClick={() =>
                 confirm('Leaving the party? You will miss all the fun!') && (leaveRoom(), router.push('/'))
               }
-              className="neo-button bg-[var(--danger)] text-white p-3 hover:rotate-6 active:translate-y-0.5 transition-all"
+              className="neo-button group bg-[var(--danger)] text-white p-2 lg:p-3 hover:rotate-6 active:translate-y-0.5 transition-all flex items-center justify-center"
               title="Leave Party"
             >
-              <ArrowLeft size={24} strokeWidth={4} />
+              <ArrowLeft className="w-5 lg:w-6 h-5 lg:h-6 text-white group-hover:scale-110 transition-transform" strokeWidth={4} />
             </button>
             
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 lg:gap-2">
                 <h1 
                   data-text={`PARTY ID: ${params.roomId}`}
-                  className="flex whitespace-nowrap items-center text-2xl sm:text-4xl font-black uppercase italic leading-none tracking-tighter"
+                  className="flex whitespace-nowrap items-center text-xl lg:text-4xl font-black uppercase italic leading-none tracking-tighter"
                 >
-                  PARTY ID: <div className="bg-[var(--primary)] px-5 py-2.5 neo-border neo-shadow-sm ml-1">{params.roomId}</div>
+                  PARTY ID: <div className="bg-[var(--primary)] px-3 py-1.5 lg:px-5 lg:py-2.5 neo-border neo-shadow-sm ml-1 text-base lg:text-2xl">{params.roomId}</div>
                 </h1>
               </div>
             </div>
@@ -286,23 +286,23 @@ export default function GameScreen() {
             
             <button
               onClick={() => setShowRoleOverlay(true)}
-              className="neo-button bg-[var(--success)] text-black px-4 sm:px-6 py-2 sm:py-3 flex items-center gap-3 hover:scale-105 active:translate-y-0.1 transition-all"
+              className="neo-button bg-[var(--success)] text-black px-3 lg:px-6 py-2 lg:py-3 flex items-center gap-2 lg:gap-3 hover:scale-105 active:translate-y-0.1 transition-all"
             >
-              <Smile size={20} strokeWidth={3} />
-              <span className="hidden sm:inline text-lg font-black uppercase tracking-widest italic">MY ROLE</span>
+              <Smile className="w-4.5 lg:w-5 h-4.5 lg:h-5" strokeWidth={3} />
+              <span className="hidden sm:inline text-base lg:text-lg font-black uppercase tracking-widest italic">MY ROLE</span>
             </button>
  
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
-              className={`neo-button p-3 flex items-center justify-center relative transition-all ${
+              className={`neo-button p-2 lg:p-3 flex items-center justify-center relative transition-all ${
                 isChatOpen
                   ? 'bg-black text-white'
                   : 'bg-[var(--secondary)] text-black'
               }`}
             >
-              <MessageSquare size={24} strokeWidth={3} />
+              <MessageSquare className="w-5 lg:w-6 h-5 lg:h-6" strokeWidth={3} />
               {messages.length > 0 && !isChatOpen && (
-                <span className="absolute -top-1 -right-1 w-8 h-8 sm:w-9 sm:h-9 bg-[var(--danger)] neo-border-sm rounded-full text-lg font-black flex items-center justify-center text-white animate-bounce neo-shadow-sm">
+                <span className="absolute -top-1.5 -right-1.5 w-6 h-6 lg:w-9 lg:h-9 bg-[var(--danger)] neo-border-sm rounded-full text-xs lg:text-lg font-black flex items-center justify-center text-white animate-bounce neo-shadow-sm">
                   !
                 </span>
               )}
@@ -390,61 +390,76 @@ export default function GameScreen() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col lg:flex-row items-center justify-between bg-white neo-card p-5 sm:p-8 gap-6 sm:gap-10 relative overflow-hidden group"
+              className="flex flex-col lg:flex-row items-center justify-between bg-white neo-card p-4 lg:p-8 gap-6 lg:gap-10 relative overflow-hidden group mb-6 lg:mb-10"
             >
               <div className="neo-accent-corner-tl opacity-30" />
               <div className="neo-accent-corner-tr opacity-30" />
               
               {/* Round Info Section */}
-              <div className="flex items-center gap-4 shrink-0 relative z-10 w-full lg:w-auto justify-center lg:justify-start">
-                <div className="w-12 h-12 sm:w-14 sm:h-14 neo-border bg-[var(--secondary)] flex items-center justify-center text-black neo-shadow-sm transform -rotate-6 group-hover:rotate-0 transition-transform shrink-0">
-                  <Gamepad2 size={28} strokeWidth={2.5} className="sm:w-8 sm:h-8" />
+              <div className="flex items-center gap-4 lg:gap-6 shrink-0 relative z-10 w-full lg:w-auto justify-between lg:justify-start px-1 lg:px-0">
+                <div className="flex items-center gap-3 lg:gap-4">
+                  <div className="w-12 h-12 lg:w-16 lg:h-16 neo-border bg-[var(--secondary)] flex items-center justify-center text-black neo-shadow-sm transform -rotate-6 group-hover:rotate-0 transition-transform shrink-0">
+                    <Gamepad2 className="w-6 lg:w-9 h-6 lg:h-9" strokeWidth={2.5} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] lg:text-lg font-black text-black/30 uppercase tracking-[0.2em] lg:tracking-[0.3em] leading-none mb-1 lg:mb-2 italic">
+                      PARTY VIBES
+                    </span>
+                    <h2 className="flex items-center text-xl lg:text-4xl font-black text-black uppercase italic tracking-tighter leading-none">
+                      ROUND <div className="bg-[var(--primary)] px-3 py-1 lg:px-6 lg:py-2 neo-border neo-shadow-sm ml-2 text-xl lg:text-4xl">#{room.game.roundNumber}</div>
+                    </h2>
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] sm:text-lg font-black text-black/30 uppercase tracking-[0.3em] leading-none mb-1 italic">
-                    PARTY VIBES
-                  </span>
-                  <h2 className="flex items-center text-xl sm:text-4xl font-black text-black uppercase italic tracking-tighter leading-none">
-                    ROUND <div className="bg-[var(--primary)] px-3 py-1 sm:px-5 sm:py-2 neo-border neo-shadow-sm ml-2 text-2xl sm:text-4xl">#{room.game.roundNumber}</div>
-                  </h2>
+                {/* Mobile phase indicator - Redesigned */}
+                <div className="lg:hidden flex flex-col items-end gap-1">
+                  <span className="text-[9px] font-black text-black/30 uppercase tracking-widest italic">PHASE</span>
+                  <div className="flex items-center gap-1.5 px-3 py-2 neo-border bg-white neo-shadow-sm rotate-2">
+                    {(() => {
+                      const Icon = PHASE_CONFIG[room.game.phase].icon;
+                      return <Icon className={`w-4 h-4 ${room.game.phase === 'ended' ? 'animate-bounce' : 'animate-pulse'}`} strokeWidth={3} />;
+                    })()}
+                    <span className="text-xs font-black uppercase italic">
+                      {PHASE_CONFIG[room.game.phase].label.split(' ')[0]}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Stats Section - Grid on Mobile, Flex on Desktop */}
-              <div className="grid grid-cols-3 lg:flex items-stretch lg:items-center gap-3 sm:gap-8 relative z-10 w-full lg:w-auto border-t-4 border-black pt-6 lg:border-t-0 lg:pt-0 lg:border-l-4 lg:pl-10">
+              {/* Stats Section - Optimized for Mobile */}
+              <div className="grid grid-cols-3 lg:flex items-stretch lg:items-center gap-3 lg:gap-10 relative z-10 w-full lg:w-auto border-t-4 lg:border-t-0 border-black pt-6 lg:pt-0 lg:border-l-4 lg:pl-10">
                 {/* Players In */}
-                <div className="flex flex-col items-center justify-between py-1 px-1">
-                  <span className="text-[9px] sm:text-lg font-black text-black/40 uppercase tracking-widest leading-none mb-2 italic text-center">
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <span className="text-[9px] lg:text-lg font-black text-black/40 uppercase tracking-widest leading-none italic text-center">
                     PLAYERS
                   </span>
-                  <div className="bg-[var(--neutral)] neo-border px-2 py-1.5 sm:px-4 sm:py-2 neo-shadow-sm -rotate-2 w-full flex justify-center items-center">
-                    <span className="text-sm sm:text-2xl font-black text-black tabular-nums italic">
-                      {room.players.filter((p: Player) => p.isAlive).length} <span className="text-black/20 italic">/</span> {room.players.length}
+                  <div className="bg-[var(--neutral)] neo-border-sm lg:neo-border px-3 lg:px-5 py-1.5 lg:py-2.5 neo-shadow-sm -rotate-2 w-full flex justify-center items-center">
+                    <span className="text-sm lg:text-2xl font-black text-black tabular-nums italic">
+                      {room.players.filter((p: Player) => p.isAlive).length}<span className="text-black/20 mx-0.5 lg:mx-1">/</span>{room.players.length}
                     </span>
                   </div>
                 </div>
                 
                 {/* Infiltrators (Crashers) */}
-                <div className="flex flex-col items-center justify-between py-1 px-1 group/cr">
-                  <span className="text-[9px] sm:text-lg font-black text-black/40 uppercase tracking-widest leading-none mb-2 italic text-center">
+                <div className="flex flex-col items-center justify-center gap-2 group/cr">
+                  <span className="text-[9px] lg:text-lg font-black text-black/40 uppercase tracking-widest leading-none italic text-center">
                     CRASHERS
                   </span>
-                  <div className="flex items-center gap-1.5 sm:gap-2 bg-[var(--primary)] neo-border px-2 py-1.5 sm:px-4 sm:py-2 neo-shadow-sm group-hover/cr:scale-105 transition-transform w-full justify-center">
-                    <Search size={16} className="text-black sm:w-6 sm:h-6" strokeWidth={4} />
-                    <span className="text-sm sm:text-2xl font-black text-black tabular-nums italic">
+                  <div className="flex items-center gap-1.5 lg:gap-2 bg-[var(--primary)] neo-border-sm lg:neo-border px-3 lg:px-5 py-1.5 lg:py-2.5 neo-shadow-sm group-hover/cr:scale-105 transition-transform w-full justify-center rotate-1">
+                    <Search className="text-black w-4 lg:w-7 h-4 lg:h-7" strokeWidth={4} />
+                    <span className="text-sm lg:text-2xl font-black text-black tabular-nums italic">
                       {infiltratorStats.undercover}
                     </span>
                   </div>
                 </div>
                 
                 {/* Mystery Stat Box */}
-                <div className="flex flex-col items-center justify-between py-1 px-1 group/mg">
-                  <span className="text-[9px] sm:text-lg font-black text-[var(--danger)]/60 uppercase tracking-widest leading-none mb-2 italic text-center">
+                <div className="flex flex-col items-center justify-center gap-2 group/mg">
+                  <span className="text-[9px] lg:text-lg font-black text-[var(--danger)]/60 uppercase tracking-widest leading-none italic text-center">
                     MYSTERY
                   </span>
-                  <div className="flex items-center gap-1.5 sm:gap-2 bg-[var(--danger)] neo-border px-2 py-1.5 sm:px-4 sm:py-2 neo-shadow-sm text-white group-hover/mg:scale-105 transition-transform w-full justify-center">
-                    <Ghost size={16} className="text-white sm:w-6 sm:h-6" strokeWidth={4} />
-                    <span className="text-sm sm:text-2xl font-black text-white tabular-nums italic">
+                  <div className="flex items-center gap-1.5 lg:gap-2 bg-[var(--danger)] neo-border-sm lg:neo-border px-3 lg:px-5 py-1.5 lg:py-2.5 neo-shadow-sm text-white group-hover/mg:scale-105 transition-transform w-full justify-center -rotate-1">
+                    <Ghost className="text-white w-4 lg:w-7 h-4 lg:h-7" strokeWidth={4} />
+                    <span className="text-sm lg:text-2xl font-black text-white tabular-nums italic">
                       {infiltratorStats.mrWhite}
                     </span>
                   </div>
@@ -464,27 +479,27 @@ export default function GameScreen() {
                 {['speaking', 'discussion', 'voting'].includes(
                   room.game.phase,
                 ) && (
-                  <motion.div
-                    key="gameplay"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
-                    className="flex flex-col gap-6 sm:gap-8 pb-32"
-                  >
+                    <motion.div
+                      key="gameplay"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.02 }}
+                      className="flex flex-col gap-10 lg:gap-14 pb-32"
+                    >
                     {room.game.phase === 'voting' && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-[var(--danger)] neo-border neo-shadow-sm p-3 flex items-center justify-center gap-2"
+                        className="bg-[var(--danger)] neo-border neo-shadow-sm p-4 sm:p-5 flex items-center justify-center gap-3"
                       >
-                        <Vote size={20} className="text-white" />
-                        <span className="text-lg sm:text-xl font-black uppercase tracking-wider text-white text-center italic">
+                        <Vote size={24} className="text-white" />
+                        <span className="text-lg sm:text-2xl font-black uppercase tracking-wider text-white text-center italic">
                           VOTE TO KICK THE PARTY CRASHER
                         </span>
                       </motion.div>
                     )}
  
-                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 sm:gap-8 lg:gap-12">
+                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 lg:gap-14">
                        {room.players.map((player: Player) => (
                          <PlayerCard
                            key={player.id}
@@ -749,7 +764,7 @@ function ChatContent({
       {/* Messages List */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar bg-dot-pattern"
+        className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar"
       >
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center">
@@ -1298,7 +1313,7 @@ function PlayerCard({
 
         <div className="relative group">
           <div
-            className={`w-14 h-14 sm:w-20 sm:h-20 neo-border flex items-center justify-center font-black text-lg sm:text-2xl transition-all duration-500 neo-shadow-sm relative z-10 ${
+            className={`w-14 h-14 sm:w-20 sm:h-20 lg:w-24 lg:h-24 neo-border flex items-center justify-center font-black text-xl sm:text-2xl lg:text-3xl transition-all duration-500 neo-shadow-sm relative z-10 ${
               isCurrent && player.isAlive
                 ? 'bg-[var(--primary)] text-black rotate-3'
                 : isSelf
@@ -1492,7 +1507,7 @@ function RoleOverlay({
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             className="w-14 h-14 sm:w-20 sm:h-20 bg-[var(--secondary)] neo-border flex items-center justify-center neo-shadow-sm transform rotate-3"
           >
-            <Sparkles size={24} strokeWidth={3} className="text-black" />
+            <Sparkles className="w-8 lg:w-12 h-8 lg:h-12 text-black" strokeWidth={3} />
           </motion.div>
           
           <div className="space-y-1">

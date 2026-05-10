@@ -28,7 +28,6 @@ export default function Home() {
   }
 
   const handleJoin = (codeOrEvent?: string | React.MouseEvent) => {
-    console.log("neo-shadow-sm relative z-10 neo", codeOrEvent)
     const targetCode = typeof codeOrEvent === 'string' ? codeOrEvent : roomCode
     if (!name || !targetCode) return
     joinRoom(targetCode, name)
@@ -71,19 +70,19 @@ export default function Home() {
         className="z-10 min-h-screen w-full max-w-4xl px-4 flex flex-col justify-center items-center"
       >
         {view === "landing" && (
-          <header className="mb-10 mt-4 flex flex-col items-center text-center relative w-full gap-8">
+          <header className="mb-12 sm:mb-20 mt-8 sm:mt-12 flex flex-col items-center text-center relative w-full gap-10 sm:gap-14">
             <motion.div 
               initial={{ scale: 0, rotate: -45 }}
               animate={{ scale: 1, rotate: -12 }}
               whileHover={{ scale: 1.1, rotate: 10 }}
-              className="w-24 h-24 bg-[var(--secondary)] neo-border neo-shadow flex items-center justify-center mb-6 transition-transform cursor-pointer relative"
+              className="w-20 h-20 sm:w-24 sm:h-24 bg-[var(--secondary)] neo-border neo-shadow flex items-center justify-center mb-6 transition-transform cursor-pointer relative"
             >
-              <PartyPopper size={48} className="text-black" strokeWidth={3} />
+              <PartyPopper className="w-10 h-10 sm:w-12 sm:h-12 text-black" strokeWidth={3} />
               <motion.div 
                 animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="absolute -top-4 -right-4 w-10 h-10 bg-[var(--success)] neo-border rounded-full flex items-center justify-center"             >
-                <Sparkles size={20} className="text-black" fill="currentColor" />
+                className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-8 h-8 sm:w-10 sm:h-10 bg-[var(--success)] neo-border rounded-full flex items-center justify-center"             >
+                <Sparkles className="w-4 lg:w-5 h-4 lg:h-5 text-black" fill="currentColor" />
               </motion.div>
             </motion.div>
             
@@ -120,21 +119,21 @@ export default function Home() {
               </motion.div>
             </div>
             
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-8">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-8">
               <motion.span 
-                className="neo-badge bg-[var(--secondary)] py-2.5 px-5 text-base rotate-1 cursor-default neo-shadow-sm"
+                className="neo-badge bg-[var(--secondary)] py-1.5 px-3 sm:py-2.5 sm:px-5 text-sm sm:text-base rotate-1 cursor-default neo-shadow-sm"
               >
                 SOCIAL FUN
               </motion.span>
               <motion.span 
                 whileHover={{ scale: 1.1, rotate: -3 }}
-                className="neo-badge bg-[var(--warning)] py-2.5 px-5 text-base -rotate-1 cursor-default neo-shadow-sm"
+                className="neo-badge bg-[var(--warning)] py-1.5 px-3 sm:py-2.5 sm:px-5 text-sm sm:text-base -rotate-1 cursor-default neo-shadow-sm"
               >
                 PLAY WITH FRIENDS
               </motion.span>
               <motion.span 
                 whileHover={{ scale: 1.1, rotate: 2 }}
-                className="neo-badge bg-white py-2.5 px-5 text-base rotate-2 cursor-default neo-shadow-sm"
+                className="neo-badge bg-white py-1.5 px-3 sm:py-2.5 sm:px-5 text-sm sm:text-base rotate-2 cursor-default neo-shadow-sm"
               >
                 FREE FOREVER
               </motion.span>
@@ -142,7 +141,7 @@ export default function Home() {
 
             <button 
               onClick={() => setView('play')}
-              className="neo-button w-full max-w-[200px] bg-white text-sm py-2 px-6 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
+              className="neo-button w-full max-w-[240px] bg-white text-sm sm:text-base py-3 px-8 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
             >
               START GAME
             </button>
@@ -151,22 +150,22 @@ export default function Home() {
 
         {view === "play" && (
           <>
-            <div className="grid grid-cols-1 gap-8 w-full items-stretch mb-10 pt-24">
+            <div className="grid grid-cols-1 gap-10 lg:gap-16 w-full items-stretch mb-12 pt-20 sm:pt-32">
               {/* Main Action Card */}
-              <div className="bg-white p-6 md:p-8 neo-card relative overflow-hidden flex flex-col justify-between border-t-[4px] border-t-[var(--primary)]">
+              <div className="bg-white p-5 sm:p-8 neo-card relative overflow-hidden flex flex-col justify-between border-t-[4px] border-t-[var(--primary)]">
                 <div className="neo-accent-corner-tl opacity-50" />
                 <div className="neo-accent-corner-tr opacity-50" />
                 <div className="neo-accent-corner-bl opacity-10" />
                 <div className="neo-accent-corner-br opacity-10" />
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none animate-spin-slow">
-                  <Smile size={160} className="rotate-12" />
+                  <Smile className="w-24 h-24 sm:w-40 sm:h-40 rotate-12" />
                 </div>
                 
-                <div className="space-y-8 relative z-10">
+                <div className="space-y-10 lg:space-y-14 relative z-10">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <label className="flex items-center gap-2 text-left text-base font-black uppercase tracking-[0.2em] text-black italic leading-none">
-                        <Smile size={24} className="text-[var(--secondary)]" /> WHO ARE YOU?
+                      <label className="flex items-center gap-3 text-left text-sm sm:text-base font-black uppercase tracking-[0.2em] text-black italic leading-none">
+                        <Smile className="w-5 lg:w-7 h-5 lg:h-7 text-[var(--secondary)]" strokeWidth={3} /> WHO ARE YOU?
                       </label>
                       <motion.div 
                         animate={{ scale: [1, 1.1, 1] }}
@@ -185,7 +184,7 @@ export default function Home() {
                         className="w-full neo-input text-lg py-4 px-5 uppercase placeholder:text-black/20 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter"
                       />
                       <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-10 group-focus-within:opacity-40 transition-opacity">
-                        <Gamepad2 size={28} className="text-black" />
+                        <Gamepad2 className="w-5 lg:w-7 h-5 lg:h-7 text-black" />
                       </div>
                     </div>
                   </div>
@@ -203,11 +202,11 @@ export default function Home() {
                         disabled={!name || isCreating || !isConnected}
                         className="w-full neo-button bg-[var(--primary)] text-black min-h-[70px] flex flex-col gap-1 items-center justify-center group relative overflow-hidden animate-shimmer neo-pop"
                       >
-                        <div className="flex items-center gap-2 relative z-10 font-black italic tracking-tighter text-xl">
-                          <Plus size={24} strokeWidth={4} />
+                        <div className="flex items-center gap-3 sm:gap-4 relative z-10 font-black italic tracking-tighter text-xl lg:text-3xl">
+                          <Plus className="w-6 lg:w-8 h-6 lg:h-8" strokeWidth={4} />
                           <span>NEW PARTY</span>
                         </div>
-                        <span className="text-sm font-black opacity-40 uppercase tracking-[0.1em] relative z-10 leading-none">Host a Room</span>
+                        <span className="text-sm lg:text-lg font-black opacity-40 uppercase tracking-[0.1em] relative z-10 leading-none">Host a Room</span>
                       </button>
                       
                       <label className="flex items-center gap-3 cursor-pointer p-4 bg-[var(--neutral)] neo-border hover:bg-white transition-all group active:translate-y-1 hover:neo-shadow-md border-l-[4px] border-l-[var(--success)] relative overflow-hidden">
@@ -251,10 +250,10 @@ export default function Home() {
                         <button
                           onClick={() => handleJoin()}
                           disabled={!name || !roomCode || !isConnected}
-                          className="w-full neo-button bg-[var(--secondary)] min-h-[70px] flex items-center justify-center gap-3 group animate-shimmer neo-pop"
+                          className="w-full neo-button bg-[var(--secondary)] min-h-[70px] lg:min-h-[90px] flex items-center justify-center gap-4 group animate-shimmer neo-pop"
                         >
-                          <ArrowRight size={28} strokeWidth={4} className="group-hover:translate-x-2 transition-transform duration-500" />
-                          <span className="text-xl font-black italic tracking-tighter">JOIN PARTY</span>
+                          <ArrowRight className="w-6 lg:w-10 h-6 lg:h-10 group-hover:translate-x-3 transition-transform duration-500" strokeWidth={4} />
+                          <span className="text-xl lg:text-4xl font-black italic tracking-tighter">JOIN PARTY</span>
                         </button>
                       </div>
                     </div>
@@ -268,8 +267,8 @@ export default function Home() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     className="bg-[var(--danger)] text-white p-4 neo-border neo-shadow-sm font-black text-sm mt-6 uppercase tracking-wider flex items-center gap-4 rotate-1"
                   >
-                    <div className="w-12 h-12 bg-white flex items-center justify-center text-[var(--danger)] shrink-0 neo-border-sm animate-wiggle">
-                      <Zap size={24} fill="currentColor" />
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white flex items-center justify-center text-[var(--danger)] shrink-0 neo-border-sm animate-wiggle">
+                      <Zap className="w-5 lg:w-7 h-5 lg:h-7" fill="currentColor" />
                     </div>
                     <div className="flex flex-col text-left">
                       <span className="text-sm opacity-80 italic font-black mb-1">PARTY CRASHED!</span>
@@ -289,13 +288,13 @@ export default function Home() {
                 className="space-y-3 flex-1 flex flex-col"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h2 className="text-lg font-black uppercase tracking-tighter flex items-center gap-2 italic neo-text-glow">
-                    <Radio className="text-[var(--secondary)] animate-pulse" size={20} strokeWidth={4} />
+                  <h2 className="text-lg sm:text-xl font-black uppercase tracking-tighter flex items-center gap-2 sm:gap-3 italic neo-text-glow">
+                    <Radio className="text-[var(--secondary)] animate-pulse w-4 lg:w-6 h-4 lg:h-6" strokeWidth={4} />
                     OPEN PARTIES
                   </h2>
                   <button 
                     onClick={refreshPublicRooms}
-                    className="neo-button bg-white text-sm py-2 px-6 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
+                    className="neo-button bg-white text-xs sm:text-sm py-2 px-4 sm:px-6 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
                   >
                     REFRESH
                   </button>
@@ -311,7 +310,7 @@ export default function Home() {
                         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
                         className="w-16 h-16 bg-[var(--bg-cheerful)] neo-border flex items-center justify-center mb-4 rounded-full opacity-40 neo-shadow-sm"
                       >
-                        <Search size={32} className="text-black" strokeWidth={1.5} />
+                        <Search className="w-6 lg:w-10 h-6 lg:h-10 text-black" strokeWidth={1.5} />
                       </motion.div>
                       <p className="text-base font-black uppercase text-black tracking-tighter italic">NO PARTIES YET!</p>
                       <p className="text-sm uppercase font-bold text-black/30 mt-2 max-w-[200px] leading-relaxed">Quiet here. Start the celebration!</p>
@@ -331,12 +330,12 @@ export default function Home() {
                           <div className="absolute top-0 right-0 w-24 h-full neo-strip opacity-[0.03]" />
                           <div className="flex-1 min-w-0 pr-4 text-left relative z-10">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-black uppercase text-white bg-black px-3 py-1.5 neo-border-sm tracking-[0.1em]">{r.id}</span>
-                              <span className="text-lg font-black uppercase truncate tracking-tighter italic group-hover:text-[var(--secondary)] transition-colors">{r.name}'S ROOM</span>
-                            </div>
+                                <span className="text-xs sm:text-sm font-black uppercase text-white bg-black px-2 py-1 sm:px-4 sm:py-2 neo-border-sm tracking-[0.1em]">{r.id}</span>
+                                <span className="text-lg sm:text-2xl font-black uppercase truncate tracking-tighter italic group-hover:text-[var(--secondary)] transition-colors">{r.name}'S ROOM</span>
+                              </div>
                             <div className="flex items-center gap-4">
-                              <div className="neo-badge bg-[var(--success)] px-5 py-2.5 text-base italic neo-shadow-sm leading-none h-auto">
-                                <Users size={20} strokeWidth={4} />
+                              <div className="neo-badge bg-[var(--success)] px-3 py-1.5 sm:px-5 sm:py-2.5 text-sm sm:text-base italic neo-shadow-sm leading-none h-auto">
+                                <Users className="w-4 lg:w-6 h-4 lg:h-6" strokeWidth={4} />
                                 <span>{r.playerCount} / {r.maxPlayers}</span>
                               </div>
                               <span className="text-sm font-black uppercase text-black/40 italic flex items-center gap-2 tracking-[0.1em]">
@@ -345,8 +344,8 @@ export default function Home() {
                               </span>
                             </div>
                           </div>
-                          <div className="neo-button bg-[var(--secondary)] p-2 group-hover:rotate-12 transition-transform neo-shadow-sm relative z-10 neo-pop">
-                            <ChevronRight size={24} strokeWidth={5} />
+                          <div className="neo-button bg-[var(--secondary)] p-1.5 sm:p-2 group-hover:rotate-12 transition-transform neo-shadow-sm relative z-10 neo-pop">
+                            <ChevronRight className="w-5 lg:w-8 h-5 lg:h-8" strokeWidth={5} />
                           </div>
                         </motion.div>
                       ))}

@@ -64,7 +64,7 @@ export default function Lobby() {
              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
              className="w-12 h-12 bg-[var(--primary)] neo-border neo-shadow flex items-center justify-center mb-4"
            >
-             <Loader2 size={24} className="animate-spin" />
+             <Loader2 className="w-6 lg:w-8 h-6 lg:h-8 animate-spin" />
            </motion.div>
         </div>
         <p className="text-[var(--text)] font-black uppercase tracking-[0.2em] animate-pulse italic text-base">Setting up the party...</p>
@@ -95,16 +95,16 @@ export default function Lobby() {
             <div className="absolute top-0 left-0 w-full h-2 neo-strip" />
             
             <div className="absolute top-8 right-8 opacity-5">
-              <PartyPopper size={60} className="rotate-12" />
+              <PartyPopper className="w-12 lg:w-16 h-12 lg:h-16 rotate-12" />
             </div>
-100: 
+
             <div className="text-center mb-6 sm:mb-8 relative z-10">
               <motion.div 
                 animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
                 transition={{ duration: 4, repeat: Infinity }}
                 className="inline-block bg-[var(--primary)] neo-border neo-shadow-sm p-3 mb-4 neo-pop"
               >
-                <Music size={24} strokeWidth={3} />
+                <Music className="w-6 lg:w-8 h-6 lg:h-8" strokeWidth={3} />
               </motion.div>
               
               <h1 
@@ -130,7 +130,7 @@ export default function Lobby() {
             <form onSubmit={handleJoin} className="space-y-4 sm:space-y-6 text-left relative z-10">
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.3em] text-[var(--text)]/40 px-1 italic">
-                  <Smile size={18} strokeWidth={3} /> YOUR PARTY NAME
+                  <Smile className="w-4 lg:w-5 h-4 lg:h-5" strokeWidth={3} /> YOUR PARTY NAME
                 </label>
                 <div className="relative group">
                   <input
@@ -143,7 +143,7 @@ export default function Lobby() {
                     required
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-focus-within:opacity-100 transition-opacity">
-                    <Sparkles className="text-[var(--primary)] animate-wiggle" size={20} />
+                    <Sparkles className="text-[var(--primary)] animate-wiggle w-5 lg:w-6 h-5 lg:h-6" />
                   </div>
                 </div>
               </div>
@@ -159,10 +159,10 @@ export default function Lobby() {
                   />
                   <div className="flex items-center justify-center gap-2 relative z-10">
                     {isJoining ? (
-                      <Loader2 className="animate-spin" size={18} strokeWidth={4} />
+                      <Loader2 className="animate-spin w-4.5 h-4.5" strokeWidth={4} />
                     ) : (
                       <>
-                        <Zap size={18} strokeWidth={4} className="group-hover:scale-125 transition-transform group-hover:rotate-12" />
+                        <Zap strokeWidth={4} className="group-hover:scale-125 transition-transform group-hover:rotate-12 w-4.5 lg:w-6 h-4.5 lg:h-6" />
                         <span className="tracking-tighter font-black italic uppercase">READY TO CRASH</span>
                       </>
                     )}
@@ -172,9 +172,9 @@ export default function Lobby() {
                 <button 
                   type="button"
                   onClick={handleBackToMenu}
-                  className="w-full py-4 text-[var(--text)] font-black uppercase tracking-[0.3em] text-sm hover:text-[var(--danger)] transition-all flex items-center justify-center gap-3 group italic neo-pop"
+                  className="w-full py-3 lg:py-4 text-[var(--text)] font-black uppercase tracking-[0.3em] text-xs lg:text-sm hover:text-[var(--danger)] transition-all flex items-center justify-center gap-2 lg:gap-3 group italic neo-pop"
                 >
-                  <ArrowLeft size={18} strokeWidth={3} className="group-hover:-translate-x-1 transition-transform" />
+                  <ArrowLeft strokeWidth={3} className="group-hover:-translate-x-1 transition-transform w-4.5 lg:w-6 h-4.5 lg:h-6" />
                   BACK TO BASE
                 </button>
               </div>
@@ -187,7 +187,7 @@ export default function Lobby() {
                 className="mt-6 bg-[var(--danger)] text-white p-6 neo-border neo-shadow font-black text-sm uppercase tracking-widest text-center italic leading-relaxed"
               >
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <AlertCircle size={18} strokeWidth={4} />
+                  <AlertCircle strokeWidth={4} className="w-4.5 lg:w-6 h-4.5 lg:h-6" />
                   <span>PARTY ERROR!</span>
                 </div>
                 {error.message}
@@ -225,24 +225,24 @@ export default function Lobby() {
               whileHover={{ scale: 1.1, rotate: -5 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleBackToMenu} 
-              className="neo-button bg-white text-black p-3 neo-shadow-sm hover:bg-[var(--danger)] hover:text-white transition-colors flex items-center justify-center neo-pop"
+              className="neo-button group bg-white text-black p-2 lg:p-3 neo-shadow-sm hover:bg-[var(--danger)] hover:text-white transition-colors flex items-center justify-center neo-pop shrink-0"
             >
-              <ArrowLeft size={24} strokeWidth={4} />
+              <ArrowLeft className="w-5 lg:w-7 h-5 lg:h-7 text-black group-hover:text-white transition-colors" strokeWidth={4} />
             </motion.button>
             
             <div className="flex flex-col">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-black uppercase tracking-[0.3em] hidden lg:inline text-black/30 italic">LOBBY</span>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center bg-[var(--primary)] px-3 py-1 neo-border neo-shadow-sm italic tracking-tighter gap-2 group relative overflow-hidden neo-pop">
+                  <div className="flex items-center bg-[var(--primary)] px-2.5 py-1 lg:px-3 lg:py-1 neo-border neo-shadow-sm italic tracking-tighter gap-1.5 lg:gap-2 group relative overflow-hidden neo-pop">
                     <motion.div className="absolute inset-0 bg-white/20 animate-shimmer pointer-events-none" />
-                    <span className="text-base font-black relative z-10 neo-text-glow">{params.roomId}</span>
+                    <span className="text-sm lg:text-base font-black relative z-10 neo-text-glow">{params.roomId}</span>
                     <button 
                       onClick={copyRoomCode} 
                       className="hover:scale-125 hover:rotate-12 transition-all text-black/40 hover:text-black relative z-10"
                       title="Copy Access Code"
                     >
-                      {copied ? <CheckCircle2 size={18} className="text-[var(--success)]" strokeWidth={4} /> : <Copy size={18} strokeWidth={4} />}
+                      {copied ? <CheckCircle2 className="text-[var(--success)] w-4 lg:w-5 h-4 lg:h-5" strokeWidth={4} /> : <Copy className="w-4 lg:w-5 h-4 lg:h-5" strokeWidth={4} />}
                     </button>
                   </div>
                   {room.settings.isPublic && (
@@ -287,18 +287,18 @@ export default function Lobby() {
 
       <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
         <div className="max-w-6xl mx-auto p-4 sm:p-10">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+          <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
             
             {/* Player List Section */}
-            <div className="flex-1 space-y-8">
+            <div className="flex-1 w-full space-y-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-5">
                   <motion.div 
                     animate={{ rotate: [-5, 5, -5], scale: [1, 1.05, 1] }}
                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     className="p-2 bg-[var(--secondary)] neo-border-sm neo-shadow-sm -rotate-6"
                   >
-                    <Users size={20} strokeWidth={4} />
+                    <Users className="w-5 lg:w-6 h-5 lg:h-6" strokeWidth={2} />
                   </motion.div>
                   <div className="flex flex-col">
                     <span className="text-sm font-black uppercase tracking-[0.4em] text-black/30 italic mb-0.5">GUEST LIST</span>
@@ -311,15 +311,15 @@ export default function Lobby() {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-1.5">
-                   <div className="text-base bg-white px-3 py-1 neo-border-sm neo-shadow-sm font-black italic rotate-3 border-l-[2px] border-l-[var(--primary)] neo-pop">
+                <div className="flex items-center gap-4">
+                   <div className="text-sm lg:text-base bg-white px-2.5 py-0.5 lg:px-3 lg:py-1 neo-border-sm neo-shadow-sm font-black italic rotate-3 border-l-[2px] border-l-[var(--primary)] neo-pop">
                     {room.players.length}
                   </div>
 
-                  <div className="hidden xl:flex flex-col gap-0.5">
-                    <div className="bg-[var(--warning)] neo-border-sm neo-shadow-sm px-3 py-1 -rotate-2 font-black text-sm uppercase tracking-[0.3em] flex items-center gap-2 italic">
+                  <div className="flex flex-col gap-0.5">
+                    <div className="bg-[var(--warning)] neo-border-sm neo-shadow-sm px-2 lg:px-3 py-0.5 lg:py-1 -rotate-2 font-black text-[10px] lg:text-sm uppercase tracking-[0.2em] lg:tracking-[0.3em] flex items-center gap-1.5 lg:gap-2 italic">
                       <div className="w-1 h-1 bg-black rounded-full animate-pulse" />
-                      GATHERING...
+                      {room.players.length < 3 ? 'GATHERING...' : 'READY?'}
                     </div>
                   </div>
                 </div>
@@ -375,7 +375,7 @@ export default function Lobby() {
                               </p>
                               {player.isHost && (
                                 <motion.div animate={{ y: [0, -2, 0], rotate: [0, 15, 0] }} transition={{ duration: 2.5, repeat: Infinity }}>
-                                  <Crown size={14} className="text-black fill-[var(--primary)]" strokeWidth={3} />
+                                  <Crown className="text-black fill-[var(--primary)] w-3.5 lg:w-4.5 h-3.5 lg:h-4.5" strokeWidth={3} />
                                 </motion.div>
                               )}
                             </div>
@@ -388,27 +388,35 @@ export default function Lobby() {
                           </div>
                         </div>
                         
-                        <motion.div 
-                          whileHover={{ scale: 1.1, rotate: player.isReady ? 12 : -12 }}
-                          className={`p-2 neo-border-sm neo-shadow-sm transition-all ${
-                            player.isReady 
-                              ? 'bg-[var(--secondary)] rotate-12' 
-                              : 'bg-[var(--neutral)] -rotate-6 opacity-40 group-hover:opacity-100'
-                          }`}
-                        >
-                          {player.isReady ? <CheckCircle2 size={16} strokeWidth={4} /> : <Circle size={16} strokeWidth={2} className="text-black/20" />}
-                        </motion.div>
+                        <div className="flex items-center gap-4">
+                          {player.id === playerId && (
+                            <motion.div 
+                              className={`p-2 neo-border-sm neo-shadow-sm transition-all ${
+                                player.isReady 
+                                  ? 'bg-[var(--primary)] rotate-12' 
+                                  : 'bg-[var(--primary)] -rotate-6'
+                              }`}
+                            >
+                              YOU
+                            </motion.div>
+                          )}
+                          <motion.div 
+                            whileHover={{ scale: 1.1, rotate: player.isReady ? 12 : -12 }}
+                            className={`p-2 neo-border-sm neo-shadow-sm transition-all ${
+                              player.isReady 
+                                ? 'bg-[var(--secondary)] rotate-12' 
+                                : 'bg-[var(--neutral)] -rotate-6 opacity-40 group-hover:opacity-100'
+                            }`}
+                          >
+                            {player.isReady ? <CheckCircle2 className="w-4 lg:w-5 h-4 lg:h-5" strokeWidth={4} /> : <Circle className="text-black/20 w-4 lg:w-5 h-4 lg:h-5" strokeWidth={2} />}
+                          </motion.div>
+                        </div>
                       </div>
                       
                       {/* Decorative background info */}
                       <div className="absolute -bottom-3 -right-1 text-[50px] font-black opacity-[0.03] select-none italic group-hover:opacity-[0.06] transition-opacity leading-none">
                         0{index + 1}
                       </div>
-                      {player.id === playerId && (
-                        <div className="absolute -top-3 -left-3 bg-black text-white px-3 py-1.5 text-sm font-black tracking-[0.4em] rotate-[-45deg] z-20">
-                          YOU
-                        </div>
-                      )}
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -418,19 +426,19 @@ export default function Lobby() {
 
             {/* Sidebar Controls */}
             <div className="w-full lg:w-80 space-y-8">
-              <div className="bg-white p-4 sm:p-6 neo-card lg:sticky lg:top-4 relative overflow-hidden group">
+              <div className="bg-white p-4 sm:p-6 neo-card relative overflow-hidden group">
                 {/* Visual Accent */}
                 <div className="absolute top-0 left-0 w-full h-1 neo-strip" />
                 
                 <div className="absolute -top-10 -right-10 p-10 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
-                  <Zap size={100} className="rotate-12" />
+                  <Zap className="w-20 lg:w-24 h-20 lg:h-24 rotate-12" />
                 </div>
 
                 <div className="flex flex-col gap-0.5 mb-2 relative z-10">
                   <span className="text-sm font-black uppercase tracking-[0.4em] text-black/30 italic">CONTROLS</span>
                   <h3 className="text-sm font-black italic uppercase flex items-center gap-2 leading-none">
                     <div className="p-1.5 bg-[var(--primary)] neo-border-sm -rotate-12 neo-shadow-sm group-hover:rotate-0 transition-all duration-700">
-                      <Gamepad2 size={18} strokeWidth={3} />
+                      <Gamepad2 className="w-4.5 lg:w-6 h-4.5 lg:h-6" strokeWidth={3} />
                     </div>
                     ACTIONS
                   </h3>
@@ -463,7 +471,7 @@ export default function Lobby() {
                           className="absolute inset-0 bg-white/30 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-12" 
                         />
                         <div className="flex items-center justify-center gap-1 relative z-10">
-                          <Play size={16} fill="black" className="group-hover:scale-125 transition-transform group-hover:rotate-12" />
+                          <Play fill="black" className="group-hover:scale-125 transition-transform group-hover:rotate-12 w-4 lg:w-5 h-4 lg:h-5" />
                           <span className="font-black italic tracking-tighter">START PARTY</span>
                         </div>
                       </button>
@@ -471,7 +479,7 @@ export default function Lobby() {
                       
                       {!allReady && (
                         <div className="flex items-center justify-center gap-1.5 py-1.5 bg-[var(--danger)]/5 neo-border-sm border-dashed">
-                          <AlertCircle size={14} className="text-[var(--danger)]" />
+                          <AlertCircle className="text-[var(--danger)] w-3.5 lg:w-5 h-3.5 lg:h-5" />
                           <p className="text-sm font-black uppercase text-[var(--danger)] italic animate-pulse tracking-[0.2em]">
                              WAITING FOR GUESTS
                           </p>
@@ -481,25 +489,25 @@ export default function Lobby() {
                   )}
 
                   {!allReady && (
-                    <div className="p-4 bg-[var(--neutral)] neo-border-sm neo-shadow-sm relative overflow-hidden group border-l-[4px] border-l-[var(--warning)] mt-2">
+                    <div className="p-3 lg:p-4 bg-[var(--neutral)] neo-border-sm neo-shadow-sm relative overflow-hidden group border-l-[4px] border-l-[var(--warning)] mt-2">
                       <div className="absolute top-0 left-0 w-full h-0.5 bg-[var(--warning)] animate-shimmer" />
                       <div className="flex flex-col gap-1.5">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-black uppercase tracking-[0.2em] italic text-black/60">
+                          <p className="text-[10px] lg:text-sm font-black uppercase tracking-[0.1em] lg:tracking-[0.2em] italic text-black/60">
                             {room.players.length < 3 
                               ? 'NEED MORE AGENTS' 
                               : 'GUESTS ASSEMBLING...'}
                           </p>
-                          <Loader2 className="animate-spin text-[var(--warning)]" size={14} strokeWidth={4} />
+                          <Loader2 className="animate-spin text-[var(--warning)] w-3.5 lg:w-5 h-3.5 lg:h-5" strokeWidth={4} />
                         </div>
-                        <div className="neo-progress-bar h-3">
+                        <div className="neo-progress-bar h-2 lg:h-3">
                           <motion.div 
                             initial={{ width: 0 }}
                             animate={{ width: `${(room.players.length / room.settings.maxPlayers) * 100}%` }}
                             className="neo-progress-bar-fill bg-[var(--warning)]"
                           />
                         </div>
-                        <p className="text-sm font-black uppercase text-center text-black/30 tracking-[0.1em]">
+                        <p className="text-[9px] lg:text-sm font-black uppercase text-center text-black/30 tracking-[0.1em]">
                           {room.players.length} / {room.settings.maxPlayers} SLOTS FILLED
                         </p>
                       </div>
@@ -518,14 +526,14 @@ export default function Lobby() {
                   <div className="absolute top-0 left-0 w-full h-0.5 neo-strip-secondary opacity-30" />
                   
                   <div className="absolute -bottom-10 -left-10 p-10 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
-                    <Sliders size={100} className="-rotate-12" />
+                    <Sliders className="w-20 lg:w-24 h-20 lg:h-24 -rotate-12" />
                   </div>
                   
                   <div className="flex flex-col gap-0.5 mb-2 relative z-10">
                     <span className="text-sm font-black uppercase tracking-[0.4em] text-black/30 italic">CONFIG</span>
                     <h3 className="text-sm font-black italic uppercase flex items-center gap-2 leading-none">
                       <div className="p-1.5 bg-[var(--warning)] neo-border-sm rotate-6 neo-shadow-sm group-hover:rotate-0 transition-all duration-700">
-                        <Settings2 size={18} strokeWidth={3} />
+                        <Settings2 className="w-4.5 lg:w-6 h-4.5 lg:h-6" strokeWidth={3} />
                       </div>
                       VIBE CHECK
                     </h3>
@@ -535,7 +543,7 @@ export default function Lobby() {
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
-                          <Users size={14} className="text-black/40" />
+                          <Users className="text-black/40 w-3.5 lg:w-5 h-3.5 lg:h-5" />
                           <label className="text-sm font-black uppercase tracking-[0.3em] block text-black/40 italic">CAPACITY</label>
                         </div>
                         <span className="text-sm font-black bg-black text-white px-2 py-1 neo-shadow-sm italic">MAX</span>
@@ -551,7 +559,7 @@ export default function Lobby() {
                           ))}
                         </select>
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none group-hover:rotate-180 transition-transform duration-500">
-                          <ChevronRight size={18} strokeWidth={4} />
+                          <ChevronRight className="w-4.5 lg:w-6 h-4.5 lg:h-6" strokeWidth={4} />
                         </div>
                       </div>
                     </div>
@@ -559,7 +567,7 @@ export default function Lobby() {
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between px-1">
                         <div className="flex items-center gap-2">
-                          <TimerIcon size={14} className="text-black/40" />
+                          <TimerIcon className="text-black/40 w-3.5 lg:w-5 h-3.5 lg:h-5" />
                           <label className="text-sm font-black uppercase tracking-[0.3em] block text-black/40 italic">SPEED</label>
                         </div>
                         <span className="text-sm font-black bg-black text-white px-2 py-1 neo-shadow-sm italic">SEC</span>
@@ -575,7 +583,7 @@ export default function Lobby() {
                           ))}
                         </select>
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none group-hover:scale-125 transition-transform duration-300">
-                          <Sparkles size={18} className="text-[var(--primary)]" strokeWidth={2} />
+                          <Sparkles className="text-[var(--primary)] w-4.5 lg:w-6 h-4.5 lg:h-6" strokeWidth={2} />
                         </div>
                       </div>
                     </div>
