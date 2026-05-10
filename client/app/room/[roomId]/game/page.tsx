@@ -238,7 +238,7 @@ export default function GameScreen() {
 
 
       {/* App Header */}
-      <header className="sticky top-0 h-16 sm:h-20 shrink-0 neo-border-b bg-[var(--surface)] flex items-center px-4 sm:px-6 z-[100] neo-shadow-sm">
+      <header className="sticky top-0 h-auto overflow-x-auto shrink-0 neo-border-b bg-[var(--surface)] flex items-center px-4 py-4 sm:px-6 z-[100] neo-shadow-sm">
         <div className="w-full flex items-center justify-between max-w-[1920px] mx-auto gap-4">
           <div className="flex items-center gap-4 sm:gap-6">
             <button
@@ -252,15 +252,12 @@ export default function GameScreen() {
             </button>
             
             <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-black uppercase tracking-[0.2em] text-black/30 italic leading-none mb-1">
-                PRIVATE PARTY
-              </span>
               <div className="flex items-center gap-2">
                 <h1 
                   data-text={`PARTY ID: ${params.roomId}`}
-                  className="neo-text-layered text-2xl sm:text-4xl font-black uppercase italic leading-none tracking-tighter"
+                  className="flex whitespace-nowrap items-center text-2xl sm:text-4xl font-black uppercase italic leading-none tracking-tighter"
                 >
-                  PARTY ID: <span className="bg-[var(--primary)] px-5 py-2.5 neo-border neo-shadow-sm ml-1">{params.roomId}</span>
+                  PARTY ID: <div className="bg-[var(--primary)] px-5 py-2.5 neo-border neo-shadow-sm ml-1">{params.roomId}</div>
                 </h1>
               </div>
             </div>
@@ -283,7 +280,9 @@ export default function GameScreen() {
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <Timer endsAt={room.game.turnEndTime} onExpire={() => {}} />
+            {room.game.phase !== 'voting' && (
+              <Timer endsAt={room.game.turnEndTime} onExpire={() => {}} />
+            )}
             
             <button
               onClick={() => setShowRoleOverlay(true)}
@@ -295,7 +294,7 @@ export default function GameScreen() {
  
             <button
               onClick={() => setIsChatOpen(!isChatOpen)}
-              className={`neo-button w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center relative transition-all ${
+              className={`neo-button p-3 flex items-center justify-center relative transition-all ${
                 isChatOpen
                   ? 'bg-black text-white'
                   : 'bg-[var(--secondary)] text-black'
@@ -353,7 +352,7 @@ export default function GameScreen() {
                       </div>
                       <h3 
                         data-text="Describe Your Word"
-                        className="neo-text-layered text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-none transform -skew-x-6"
+                        className=" text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-none transform -skew-x-6"
                       >
                         Describe Your Word
                       </h3>
@@ -391,68 +390,70 @@ export default function GameScreen() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-wrap items-center justify-between bg-white neo-card p-6 sm:p-8 gap-6 sm:gap-10 relative overflow-hidden group"
+              className="flex flex-col lg:flex-row items-center justify-between bg-white neo-card p-5 sm:p-8 gap-6 sm:gap-10 relative overflow-hidden group"
             >
               <div className="neo-accent-corner-tl opacity-30" />
               <div className="neo-accent-corner-tr opacity-30" />
-              <div className="flex items-center gap-3 sm:gap-4 shrink-0 relative z-10">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 neo-border bg-[var(--secondary)] flex items-center justify-center text-black neo-shadow-sm transform -rotate-6 group-hover:rotate-0 transition-transform">
-                  <Gamepad2 size={24} strokeWidth={4} />
+              
+              {/* Round Info Section */}
+              <div className="flex items-center gap-4 shrink-0 relative z-10 w-full lg:w-auto justify-center lg:justify-start">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 neo-border bg-[var(--secondary)] flex items-center justify-center text-black neo-shadow-sm transform -rotate-6 group-hover:rotate-0 transition-transform shrink-0">
+                  <Gamepad2 size={28} strokeWidth={2.5} className="sm:w-8 sm:h-8" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-lg sm:text-xl font-black text-black/30 uppercase tracking-[0.3em] leading-none mb-1 italic">
+                  <span className="text-[10px] sm:text-lg font-black text-black/30 uppercase tracking-[0.3em] leading-none mb-1 italic">
                     PARTY VIBES
                   </span>
-                  <h2 
-                    data-text={`ROUND #${room.game.roundNumber}`}
-                    className="neo-text-layered text-xl sm:text-3xl font-black text-black uppercase italic tracking-tighter leading-none"
-                  >
-                    ROUND <span className="bg-[var(--primary)] px-4 py-2 neo-border neo-shadow-sm ml-1">#{room.game.roundNumber}</span>
+                  <h2 className="flex items-center text-xl sm:text-4xl font-black text-black uppercase italic tracking-tighter leading-none">
+                    ROUND <div className="bg-[var(--primary)] px-3 py-1 sm:px-5 sm:py-2 neo-border neo-shadow-sm ml-2 text-2xl sm:text-4xl">#{room.game.roundNumber}</div>
                   </h2>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 sm:gap-6 relative z-10">
-                <div className="flex flex-col items-center">
-                  <span className="text-lg sm:text-xl font-black text-black/30 uppercase tracking-[0.2em] leading-none mb-1 italic">
-                    PLAYERS IN
+              {/* Stats Section - Grid on Mobile, Flex on Desktop */}
+              <div className="grid grid-cols-3 lg:flex items-stretch lg:items-center gap-3 sm:gap-8 relative z-10 w-full lg:w-auto border-t-4 border-black pt-6 lg:border-t-0 lg:pt-0 lg:border-l-4 lg:pl-10">
+                {/* Players In */}
+                <div className="flex flex-col items-center justify-between py-1 px-1">
+                  <span className="text-[9px] sm:text-lg font-black text-black/40 uppercase tracking-widest leading-none mb-2 italic text-center">
+                    PLAYERS
                   </span>
-                  <div className="bg-[var(--neutral)] neo-border px-4 py-2 neo-shadow-sm -rotate-2">
-                    <span className="text-xl sm:text-2xl font-black text-black tabular-nums italic">
+                  <div className="bg-[var(--neutral)] neo-border px-2 py-1.5 sm:px-4 sm:py-2 neo-shadow-sm -rotate-2 w-full flex justify-center items-center">
+                    <span className="text-sm sm:text-2xl font-black text-black tabular-nums italic">
                       {room.players.filter((p: Player) => p.isAlive).length} <span className="text-black/20 italic">/</span> {room.players.length}
                     </span>
                   </div>
                 </div>
                 
-                {/* Infiltrators Stat Box */}
-                <div className="flex items-center gap-6 sm:gap-10 neo-border-l pl-6 sm:pl-10">
-                    <div className="flex flex-col items-center group/cr">
-                  <div className="flex items-center gap-2 mb-1 bg-[var(--primary)] neo-border px-4 py-2 neo-shadow-sm group-hover/cr:scale-105 transition-transform">
-                    <Search size={24} className="text-black" strokeWidth={4} />
-                    <span className="text-xl sm:text-2xl font-black text-black tabular-nums italic">
+                {/* Infiltrators (Crashers) */}
+                <div className="flex flex-col items-center justify-between py-1 px-1 group/cr">
+                  <span className="text-[9px] sm:text-lg font-black text-black/40 uppercase tracking-widest leading-none mb-2 italic text-center">
+                    CRASHERS
+                  </span>
+                  <div className="flex items-center gap-1.5 sm:gap-2 bg-[var(--primary)] neo-border px-2 py-1.5 sm:px-4 sm:py-2 neo-shadow-sm group-hover/cr:scale-105 transition-transform w-full justify-center">
+                    <Search size={16} className="text-black sm:w-6 sm:h-6" strokeWidth={4} />
+                    <span className="text-sm sm:text-2xl font-black text-black tabular-nums italic">
                       {infiltratorStats.undercover}
                     </span>
                   </div>
-                  <span className="text-lg font-black text-black/40 uppercase tracking-widest italic">CRASHERS</span>
                 </div>
                 
-                <div className="flex flex-col items-center group/mg">
-                  <div className="flex items-center gap-2 mb-1 bg-[var(--danger)] neo-border px-4 py-2 neo-shadow-sm text-white group-hover/mg:scale-105 transition-transform">
-                    <Ghost size={24} className="text-white" strokeWidth={4} />
-                    <span className="text-xl sm:text-2xl font-black text-white tabular-nums italic">
+                {/* Mystery Stat Box */}
+                <div className="flex flex-col items-center justify-between py-1 px-1 group/mg">
+                  <span className="text-[9px] sm:text-lg font-black text-[var(--danger)]/60 uppercase tracking-widest leading-none mb-2 italic text-center">
+                    MYSTERY
+                  </span>
+                  <div className="flex items-center gap-1.5 sm:gap-2 bg-[var(--danger)] neo-border px-2 py-1.5 sm:px-4 sm:py-2 neo-shadow-sm text-white group-hover/mg:scale-105 transition-transform w-full justify-center">
+                    <Ghost size={16} className="text-white sm:w-6 sm:h-6" strokeWidth={4} />
+                    <span className="text-sm sm:text-2xl font-black text-white tabular-nums italic">
                       {infiltratorStats.mrWhite}
                     </span>
                   </div>
-                  <span className="text-lg font-black text-[var(--danger)]/60 uppercase tracking-widest italic">MYSTERY</span>
-                </div>
                 </div>
               </div>
 
               {/* Background accents for card */}
-              <div className="absolute top-0 right-0 w-20 h-full bg-[var(--neutral)] -skew-x-12 transform translate-x-10 z-0 opacity-50" />
+              <div className="absolute top-0 right-0 w-24 h-full bg-[var(--neutral)] -skew-x-12 transform translate-x-12 z-0 opacity-50 hidden lg:block" />
             </motion.div>
-
-
             {/* Game Phase Content */}
             <div className="flex-1 min-h-[40vh] flex flex-col">
               <AnimatePresence mode="wait">
@@ -549,10 +550,10 @@ export default function GameScreen() {
         {mounted && (
           <aside
             className={`hidden lg:flex shrink-0 transition-all duration-300 ease-in-out neo-border-l bg-[var(--surface)] relative overflow-hidden h-full ${
-              isChatOpen ? 'w-[320px] opacity-100' : 'w-0 opacity-0'
+              isChatOpen ? 'w-[500px] opacity-100' : 'w-0 opacity-0'
             }`}
           >
-            <div className="w-[320px] h-full flex flex-col">
+            <div className="w-[500px] h-full flex flex-col">
               <ChatContent
                 messages={messages}
                 playerId={playerId}
@@ -726,7 +727,7 @@ function ChatContent({
       <div className="neo-accent-corner-tr opacity-30" />
       
       {/* Chat Header */}
-      <div className="h-12 sm:h-14 shrink-0 px-4 sm:px-5 neo-border-b flex items-center justify-between bg-[var(--secondary)]">
+      <div className="h-auto shrink-0 px-4 sm:px-5 py-4 neo-border-b flex items-center justify-between bg-[var(--secondary)]">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="w-8 h-8 sm:w-10 sm:h-10 neo-border bg-white flex items-center justify-center text-black">
             <MessageSquare size={16} />
@@ -735,12 +736,6 @@ function ChatContent({
             <h3 className="font-black text-xl sm:text-2xl uppercase tracking-wider text-black leading-none">
               CHAT LOG
             </h3>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="w-3 h-3 bg-black rounded-full animate-pulse" />
-              <span className="text-lg font-black text-black uppercase tracking-widest">
-                LIVE
-              </span>
-            </div>
           </div>
         </div>
         <button
@@ -754,7 +749,7 @@ function ChatContent({
       {/* Messages List */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar bg-dot-pattern opacity-10"
+        className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 custom-scrollbar bg-dot-pattern"
       >
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center">
@@ -785,7 +780,7 @@ function ChatContent({
       {/* Input Module */}
       <div className="p-3 sm:p-4 bg-white neo-border-t shrink-0 space-y-2">
         {/* Conditional Description Input */}
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {phase === 'speaking' && isMyTurn && !currentPlayer?.description && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -817,7 +812,7 @@ function ChatContent({
               </form>
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
  
         <form onSubmit={handleSendChat} className="flex gap-2">
           <input
@@ -920,7 +915,7 @@ function StartingView() {
       <div className="relative mb-3">
         <h2 
           data-text="READY?"
-          className="neo-text-layered text-2xl sm:text-4xl font-black italic tracking-tighter text-black leading-none uppercase"
+          className=" text-2xl sm:text-4xl font-black italic tracking-tighter text-black leading-none uppercase"
         >
           READY?
         </h2>
@@ -997,7 +992,7 @@ function MrWhiteGuessView({
 
         <h2 
           data-text="GUESS WORD"
-          className="neo-text-layered text-2xl sm:text-5xl font-black tracking-tighter text-black uppercase italic leading-[0.85] transform -skew-x-6"
+          className=" text-2xl sm:text-5xl font-black tracking-tighter text-black uppercase italic leading-[0.85] transform -skew-x-6"
         >
           GUESS WORD
         </h2>
@@ -1066,7 +1061,7 @@ function MrWhiteGuessView({
           <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-black animate-spin" strokeWidth={3} />
             <h3 
               data-text="GUESSING IN PROGRESS"
-              className="neo-text-layered text-3xl sm:text-5xl font-black text-black uppercase tracking-[0.2em] italic"
+              className=" text-3xl sm:text-5xl font-black text-black uppercase tracking-[0.2em] italic"
             >
               GUESSING IN PROGRESS
             </h3>
@@ -1145,7 +1140,7 @@ function GameEndedView({
           </span>
           <h2 
             data-text={winTitle}
-            className="neo-text-layered text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-[0.8] transform -skew-x-6"
+            className=" text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-[0.8] transform -skew-x-6"
           >
             {winTitle}
           </h2>
@@ -1226,7 +1221,7 @@ function GameEndedView({
         })}
       </div>
 
-      <div className="mt-6 flex flex-col gap-2 w-full max-w-[320px] relative z-10">
+      <div className="mt-6 flex flex-col gap-2 w-full max-w-[500px] relative z-10">
           <button
             onClick={onReturn}
             className="neo-button bg-[var(--success)] py-5 text-lg sm:text-xl"
@@ -1342,11 +1337,11 @@ function PlayerCard({
                     YOU
                   </span>
                 )}
-                {player.isHost && (
+                {/* {player.isHost && (
                   <span className="text-base sm:text-lg font-black bg-[var(--primary)] text-black px-5 py-2 neo-border-sm uppercase tracking-[0.2em] flex items-center gap-2 italic">
                     <Crown size={16} strokeWidth={3} /> HOST
                   </span>
-                )}
+                )} */}
               </div>
             </div>
           </div>
@@ -1481,16 +1476,11 @@ function RoleOverlay({
         initial={{ scale: 0.9, opacity: 0, y: 40, rotate: -2 }}
         animate={{ scale: 1, opacity: 1, y: 0, rotate: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 40, rotate: 2 }}
-        className="relative w-full max-w-sm bg-white neo-border p-2 sm:p-4 neo-shadow-sm flex flex-col items-center gap-3 overflow-hidden"
+        className="relative w-full max-w-2xl bg-white neo-border p-2 sm:p-4 neo-shadow-sm flex flex-col items-center gap-3 overflow-hidden"
       >
         {/* Background decorative elements */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--neutral)] -rotate-12 transform translate-x-12 -translate-y-12 border-b-2 border-l-2 border-black/10" />
         <div className="absolute bottom-0 left-0 w-16 h-16 bg-[var(--secondary)]/10 rotate-45 transform -translate-x-8 translate-y-8 rounded-full" />
-        
-        {/* TOP SECRET STAMP */}
-        <div className="absolute top-4 left-4 border-2 border-[var(--danger)] text-[var(--danger)] px-6 py-3 font-black text-lg sm:text-xl uppercase -rotate-12 opacity-30 select-none pointer-events-none z-0">
-          TOP SECRET
-        </div>
 
         {/* Technical lines */}
         <div className="absolute top-2 right-10 w-12 h-[1px] bg-black/10" />
@@ -1511,15 +1501,15 @@ function RoleOverlay({
             </h3>
             <h2 
               data-text={player.role === 'civilian' ? 'PARTIER' : player.role === 'undercover' ? 'PARTY CRASHER' : 'MYSTERY GUEST'}
-              className="neo-text-layered text-4xl sm:text-5xl font-black uppercase italic tracking-tighter text-black transform -skew-x-6 leading-none"
+              className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter text-black transform -skew-x-6 leading-none"
             >
               {player.role === 'civilian' ? 'PARTIER' : player.role === 'undercover' ? 'PARTY CRASHER' : 'MYSTERY GUEST'}
             </h2>
           </div>
         </div>
  
-        <div className="w-full p-4 sm:p-6 bg-[var(--primary)] neo-border flex flex-col items-center gap-3 neo-shadow-sm relative transform -rotate-1">
-          <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-black px-10 py-3 neo-border transform rotate-1 neo-shadow-sm">
+        <div className="w-full mt-12 p-4 sm:p-6 bg-[var(--primary)] neo-border flex flex-col items-center gap-3 neo-shadow-sm relative">
+          <div className="absolute whitespace-nowrap -top-10 left-1/2 -translate-x-1/2 bg-black px-10 py-3 neo-border neo-shadow-sm">
             <span className="text-lg sm:text-xl font-black text-white uppercase tracking-[0.4em] italic">
               MY SECRET WORD
             </span>

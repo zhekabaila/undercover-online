@@ -218,7 +218,7 @@ export default function Lobby() {
 
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full shrink-0 h-20 neo-border-b bg-white flex items-center px-4 sm:px-8 neo-shadow-sm">
+      <header className="sticky top-0 overflow-x-auto z-50 w-full shrink-0 h-20 neo-border-b bg-white flex items-center px-4 sm:px-8 neo-shadow-sm">
         <div className="w-full flex items-center justify-between max-w-[1920px] mx-auto gap-4">
           <div className="flex items-center gap-4 sm:gap-6">
             <motion.button 
