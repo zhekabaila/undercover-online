@@ -341,45 +341,42 @@ export default function GameScreen() {
                     initial={{ opacity: 0, y: -40, scale: 0.95, rotate: -1 }}
                     animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                     exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    className="bg-[var(--primary)] neo-border p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 sm:gap-6 relative overflow-hidden group neo-shadow-sm"
+                    className="bg-[var(--primary)] w-full neo-border p-4 sm:p-6 flex flex-col lg:flex-row lg:justify-between items-center gap-4 sm:gap-6 relative overflow-hidden group neo-shadow-sm"
                   >
-                    <div className="neo-accent-corner-tl opacity-50" />
-                    <div className="neo-accent-corner-tr opacity-50" />
-                    <div className="neo-accent-corner-bl opacity-20" />
-                    <div className="neo-accent-corner-br opacity-20" />
-                    
                     {/* Decorative elements for banner */}
                     <div className="absolute -top-8 -right-8 opacity-10">
                       <Send size={80} className="-rotate-12" />
                     </div>
                     
-                    <div className="shrink-0 relative">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white neo-border flex items-center justify-center text-black neo-shadow-sm transform group-hover:rotate-12 transition-transform duration-500">
-                        <Send size={24} className="animate-pulse" />
+                    <div className="flex w-full gap-4 sm:gap-6 flex-col lg:flex-row items-center">
+                      <div className="shrink-0 relative">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white neo-border flex items-center justify-center text-black neo-shadow-sm transform group-hover:rotate-12 transition-transform duration-500">
+                          <Send size={24} className="animate-pulse" />
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex-1 text-center lg:text-left space-y-4 relative z-10">
-                      <div className="flex items-center justify-center lg:justify-start gap-4">
-                        <span className="bg-black text-white px-5 py-2 text-lg font-black uppercase tracking-[0.2em]">
-                          GILIRAN ANDA!
-                        </span>
-                        <span className="w-2.5 h-2.5 bg-black rounded-full animate-ping" />
+                      
+                      <div className="text-center lg:text-left space-y-4 relative z-10">
+                        <div className="flex items-center justify-center lg:justify-start gap-4">
+                          <span className="bg-black text-white px-5 py-2 text-lg font-black uppercase tracking-[0.2em]">
+                            GILIRAN ANDA!
+                          </span>
+                          <span className="w-2.5 h-2.5 bg-black rounded-full animate-ping" />
+                        </div>
+                        <h3 
+                          data-text="Jelaskan Kata Anda"
+                          className=" text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-none transform -skew-x-6"
+                        >
+                          Jelaskan Kata Anda
+                        </h3>
+                        <p className="text-black/80 font-bold uppercase text-base sm:text-lg tracking-widest italic max-w-xl">
+                          Ucapkan sesuatu yang memberi petunjuk tentang kata Anda!
+                        </p>
                       </div>
-                      <h3 
-                        data-text="Jelaskan Kata Anda"
-                        className=" text-3xl sm:text-5xl font-black uppercase italic tracking-tighter text-black leading-none transform -skew-x-6"
-                      >
-                        Jelaskan Kata Anda
-                      </h3>
-                      <p className="text-black/80 font-bold uppercase text-base sm:text-lg tracking-widest italic max-w-xl">
-                        Ucapkan sesuatu yang memberi petunjuk tentang kata Anda!
-                      </p>
                     </div>
                     
                       <form
                         onSubmit={handleSendDescription}
-                        className="w-full lg:w-[300px] flex gap-2 relative z-10"
+                        className="w-full flex justify-end gap-2 relative z-10"
                       >
                         <input
                           type="text"
@@ -387,7 +384,7 @@ export default function GameScreen() {
                           onChange={(e) => setDescriptionInput(e.target.value)}
                           placeholder="Petunjuk..."
                           maxLength={100}
-                          className="flex-1 neo-input text-lg py-2 px-3 focus:bg-[var(--primary)]/10 transition-colors"
+                          className="neo-input text-lg py-2 px-3 focus:bg-[var(--primary)]/10 transition-colors"
                           autoFocus
                         />
                         <button
@@ -409,9 +406,6 @@ export default function GameScreen() {
                   exit={{ opacity: 0, y: -20, scale: 0.95 }}
                   className="bg-[var(--secondary)] neo-border p-4 sm:p-6 flex flex-col lg:flex-row items-center gap-4 sm:gap-6 relative overflow-hidden group neo-shadow-sm"
                 >
-                  <div className="neo-accent-corner-tl opacity-50" />
-                  <div className="neo-accent-corner-tr opacity-50" />
-                  
                   <div className="shrink-0 relative">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white neo-border flex items-center justify-center text-black neo-shadow-sm transform group-hover:rotate-12 transition-transform duration-500">
                       <MessageSquare size={24} className="animate-pulse" />
@@ -452,9 +446,6 @@ export default function GameScreen() {
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between bg-white neo-card p-5 lg:p-8 gap-8 lg:gap-10 relative overflow-hidden group mb-8 lg:mb-12"
             >
-              <div className="neo-accent-corner-tl opacity-30" />
-              <div className="neo-accent-corner-tr opacity-30" />
-              
               {/* Round Info Section */}
               <div className="flex items-center gap-5 lg:gap-8 shrink-0 relative z-10 w-full lg:w-auto justify-between lg:justify-start px-1 lg:px-0">
                 <div className="flex items-center gap-4 lg:gap-6">
