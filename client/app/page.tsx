@@ -211,9 +211,9 @@ export default function Home() {
         ) : (
           <button 
             onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
-            className="neo-button bg-[var(--primary)] px-6 py-2.5 font-black italic uppercase tracking-wider text-sm neo-shadow-sm hover:bg-white hover:text-[var(--primary)] transition-colors flex items-center gap-2"
+            className="neo-button bg-[var(--primary)] px-4 py-2 font-black italic uppercase tracking-wider text-xs neo-shadow-sm hover:bg-white hover:text-[var(--primary)] transition-colors flex items-center gap-2"
           >
-            <KeyRound className="w-4 h-4" />
+            <KeyRound className="w-3.5 h-3.5" />
             LOGIN / DAFTAR
           </button>
         )}
@@ -245,9 +245,9 @@ export default function Home() {
               initial={{ scale: 0, rotate: -45 }}
               animate={{ scale: 1, rotate: -12 }}
               whileHover={{ scale: 1.1, rotate: 10 }}
-              className="w-20 h-20 sm:w-24 sm:h-24 bg-[var(--secondary)] neo-border neo-shadow flex items-center justify-center mb-6 transition-transform cursor-pointer relative"
+              className="w-16 h-16 sm:w-20 sm:h-20 bg-[var(--secondary)] neo-border neo-shadow flex items-center justify-center mb-4 transition-transform cursor-pointer relative"
             >
-              <PartyPopper className="w-10 h-10 sm:w-12 sm:h-12 text-black" strokeWidth={3} />
+              <PartyPopper className="w-8 h-8 sm:w-10 sm:h-10 text-black" strokeWidth={3} />
               <motion.div 
                 animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -256,9 +256,9 @@ export default function Home() {
               </motion.div>
             </motion.div>
             
-            <div className="relative mb-4">
+            <div className="relative mb-2">
               <h1 
-                className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tighter mb-4 uppercase leading-[0.8] relative z-10 neo-text-layered neo-text-glow"
+                className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter mb-3 uppercase leading-[0.8] relative z-10 neo-text-layered neo-text-glow"
                 data-text="UNDERCOVER"
               >
                 UNDERCOVER
@@ -289,30 +289,30 @@ export default function Home() {
               </motion.div>
             </div>
             
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 mt-12 sm:mt-16">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-8 sm:mt-12">
               <motion.span 
-                className="neo-badge bg-[var(--secondary)] py-1.5 px-3 sm:py-2.5 sm:px-5 text-xs sm:text-sm md:text-base rotate-1 cursor-default neo-shadow-sm"
+                className="neo-badge bg-[var(--secondary)] py-1 px-3 sm:py-1.5 sm:px-4 text-[10px] sm:text-xs md:text-sm rotate-1 cursor-default neo-shadow-sm"
               >
                 SERU-SERUAN
               </motion.span>
               <motion.span 
                 whileHover={{ scale: 1.1, rotate: -3 }}
-                className="neo-badge bg-[var(--warning)] py-1.5 px-3 sm:py-2.5 sm:px-5 text-xs sm:text-sm md:text-base -rotate-1 cursor-default neo-shadow-sm"
+                className="neo-badge bg-[var(--warning)] py-1 px-3 sm:py-1.5 sm:px-4 text-[10px] sm:text-xs md:text-sm -rotate-1 cursor-default neo-shadow-sm"
               >
                 MAIN BARENG TEMAN
               </motion.span>
               <motion.span 
                 whileHover={{ scale: 1.1, rotate: 2 }}
-                className="neo-badge bg-white py-1.5 px-3 sm:py-2.5 sm:px-5 text-xs sm:text-sm md:text-base rotate-2 cursor-default neo-shadow-sm"
+                className="neo-badge bg-white py-1 px-3 sm:py-1.5 sm:px-4 text-[10px] sm:text-xs md:text-sm rotate-2 cursor-default neo-shadow-sm"
               >
                 GRATIS SELAMANYA
               </motion.span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-12 sm:mt-16 w-full max-w-[600px]">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-10 sm:mt-12 w-full max-w-[500px]">
               <button 
                 onClick={() => setView('play')}
-                className="neo-button flex-1 w-full bg-white text-base sm:text-lg py-5 px-10 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
+                className="neo-button flex-1 w-full bg-white text-sm sm:text-base py-3.5 px-8 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
               >
                 MULAI BERMAIN
               </button>
@@ -321,9 +321,9 @@ export default function Home() {
                   setGuideStep(0)
                   setIsGuideOpen(true)
                 }}
-                className="neo-button flex-1 w-full bg-[var(--secondary)] text-base sm:text-lg py-5 px-10 h-auto hover:bg-white font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop flex items-center justify-center gap-3"
+                className="neo-button flex-1 w-full bg-[var(--secondary)] text-sm sm:text-base py-3.5 px-8 h-auto hover:bg-white font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop flex items-center justify-center gap-2"
               >
-                <HelpCircle className="w-6 h-6" strokeWidth={3} />
+                <HelpCircle className="w-5 h-5" strokeWidth={3} />
                 CARA BERMAIN
               </button>
             </div>
@@ -332,27 +332,27 @@ export default function Home() {
 
         {view === "play" && (
           <>
-            <div className="grid grid-cols-1 gap-12 lg:gap-20 w-full items-stretch mb-12 pt-24 sm:pt-32">
+            <div className="grid grid-cols-1 gap-6 lg:gap-10 w-full items-stretch mb-8 pt-20 sm:pt-24">
               {/* Main Action Card */}
-              <div className="bg-white p-6 sm:p-10 neo-card relative overflow-hidden flex flex-col justify-between border-t-[6px] border-t-[var(--primary)]">
+              <div className="bg-white p-4 sm:p-5 neo-card relative overflow-hidden flex flex-col justify-between border-t-[4px] border-t-[var(--primary)]">
                 <div className="neo-accent-corner-tl opacity-50" />
                 <div className="neo-accent-corner-tr opacity-50" />
                 <div className="neo-accent-corner-bl opacity-10" />
                 <div className="neo-accent-corner-br opacity-10" />
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none animate-spin-slow">
-                  <Smile className="w-24 h-24 sm:w-40 sm:h-40 rotate-12" />
+                  <Smile className="w-20 h-20 sm:w-32 sm:h-32 rotate-12" />
                 </div>
                 
-                <div className="space-y-10 lg:space-y-14 relative z-10">
+                <div className="space-y-6 lg:space-y-8 relative z-10">
                   <div className="space-y-6 sm:space-y-8">
                     <div className="flex items-center justify-between gap-4">
-                      <label className="flex items-center gap-3 text-left text-sm sm:text-base font-black uppercase tracking-[0.2em] text-black italic leading-none">
-                        <Smile className="w-5 lg:w-7 h-5 lg:h-7 text-[var(--secondary)]" strokeWidth={3} /> SIAPA KAMU?
+                      <label className="flex items-center gap-2 text-left text-xs sm:text-sm font-black uppercase tracking-[0.2em] text-black italic leading-none">
+                        <Smile className="w-4 lg:w-5 h-4 lg:h-5 text-[var(--secondary)]" strokeWidth={3} /> SIAPA KAMU?
                       </label>
                       <motion.div 
                         animate={{ scale: [1, 1.1, 1] }}
                         transition={{ repeat: Infinity, duration: 2 }}
-                        className="text-[10px] sm:text-xs font-black uppercase bg-[var(--primary)] text-black px-4 py-1.5 sm:px-6 sm:py-2 neo-border-sm neo-shadow-sm whitespace-nowrap"
+                        className="text-[9px] sm:text-[10px] font-black uppercase bg-[var(--primary)] text-black px-3 py-1 sm:px-4 sm:py-1.5 neo-border-sm neo-shadow-sm whitespace-nowrap"
                       >
                         WAJIB ISI
                       </motion.div>
@@ -365,59 +365,59 @@ export default function Home() {
                         value={user ? user.username : name}
                         onChange={(e) => !user && setName(e.target.value)}
                         disabled={!!user}
-                        className="w-full neo-input text-lg sm:text-2xl py-5 px-6 uppercase placeholder:text-black/10 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter disabled:opacity-60"
+                        className="w-full neo-input text-sm sm:text-base py-3 px-4 uppercase placeholder:text-black/10 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter disabled:opacity-60"
                       />
                       <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-10 group-focus-within:opacity-40 transition-opacity">
-                        <Gamepad2 className="w-5 lg:w-7 h-5 lg:h-7 text-black" />
+                        <Gamepad2 className="w-4 lg:w-5 h-4 lg:h-5 text-black" />
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6 py-2 sm:py-4">
+                  <div className="flex items-center gap-6 py-1 sm:py-2">
                     <div className="h-[2px] bg-black/10 flex-1 neo-border-b-sm border-black/5" />
                     <div className="text-xs sm:text-sm font-black text-black/60 uppercase tracking-[0.3em] italic whitespace-nowrap">IKUTI KESERUAN</div>
                     <div className="h-[2px] bg-black/10 flex-1 neo-border-b-sm border-black/5" />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-1 gap-10 md:gap-14">
-                    <div className="space-y-8">
-                      <label className="flex items-center gap-4 cursor-pointer p-5 sm:p-6 bg-[var(--neutral)] neo-border hover:bg-white transition-all group active:translate-y-1 hover:neo-shadow-md border-l-[6px] border-l-[var(--success)] relative overflow-hidden">
+                  <div className="grid grid-cols-1 md:grid-cols-1 gap-6 md:gap-8">
+                    <div className="space-y-6">
+                      <label className="flex items-center gap-3 cursor-pointer p-3 sm:p-4 bg-[var(--neutral)] neo-border hover:bg-white transition-all group active:translate-y-1 hover:neo-shadow-md border-l-[6px] border-l-[var(--success)] relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-12 h-full neo-strip opacity-10" />
-                        <div className="relative w-8 h-8 shrink-0">
+                        <div className="relative w-6 h-6 shrink-0">
                           <input 
                             type="checkbox" 
                             checked={isPublic} 
                             onChange={(e) => setIsPublic(e.target.checked)}
                             className="peer absolute inset-0 opacity-0 cursor-pointer z-10"
                           />
-                          <div className="w-8 h-8 neo-border bg-white peer-checked:bg-[var(--success)] flex items-center justify-center transition-colors neo-shadow-sm peer-active:shadow-none peer-active:translate-x-[1px] peer-active:translate-y-[1px]">
+                          <div className="w-6 h-6 neo-border bg-white peer-checked:bg-[var(--success)] flex items-center justify-center transition-colors neo-shadow-sm peer-active:shadow-none peer-active:translate-x-[1px] peer-active:translate-y-[1px]">
                             <motion.div 
                               animate={{ scale: isPublic ? 1 : 0 }}
-                              className="w-4 h-4 bg-black rounded-sm"
+                              className="w-3 h-3 bg-black rounded-sm"
                             />
                           </div>
                         </div>
-                        <div className="flex flex-col relative z-10 gap-1">
-                          <span className="text-base sm:text-lg font-black uppercase tracking-wider select-none group-hover:text-[var(--success)] transition-colors">Tampilkan di Lobi</span>
-                          <span className="text-xs sm:text-sm font-bold opacity-30 uppercase tracking-tighter leading-tight">Izinkan pemain lain untuk bergabung</span>
+                        <div className="flex flex-col relative z-10 gap-0.5">
+                          <span className="text-sm sm:text-base font-black uppercase tracking-wider select-none group-hover:text-[var(--success)] transition-colors">Tampilkan di Lobi</span>
+                          <span className="text-[10px] sm:text-xs font-bold opacity-30 uppercase tracking-tighter leading-tight">Izinkan pemain lain untuk bergabung</span>
                         </div>
                       </label>
                       
                       <button
                         onClick={() => handleCreate()}
                         disabled={isCreating || !isConnected}
-                        className="w-full neo-button bg-[var(--primary)] text-black min-h-[90px] sm:min-h-[110px] flex flex-col gap-2 items-center justify-center group relative overflow-hidden animate-shimmer neo-pop"
+                        className="w-full neo-button bg-[var(--primary)] text-black min-h-[56px] sm:min-h-[64px] flex flex-col gap-0.5 items-center justify-center group relative overflow-hidden animate-shimmer neo-pop"
                       >
-                        <div className="flex items-center gap-3 sm:gap-4 relative z-10 font-black italic tracking-tighter text-2xl lg:text-4xl">
-                          <Plus className="w-6 lg:w-10 h-6 lg:h-10" strokeWidth={4} />
+                        <div className="flex items-center gap-2 relative z-10 font-black italic tracking-tighter text-lg lg:text-xl">
+                          <Plus className="w-4 lg:w-5 h-4 lg:h-5" strokeWidth={4} />
                           <span>BUAT PESTA</span>
                         </div>
-                        <span className="text-xs lg:text-base font-black opacity-40 uppercase tracking-[0.1em] relative z-10 leading-none">Mulai Ruangan Baru</span>
+                        <span className="text-[9px] lg:text-[10px] font-black opacity-40 uppercase tracking-[0.1em] relative z-10 leading-none">Mulai Ruangan Baru</span>
                       </button>
                     </div>
 
-                    <div className="space-y-8">
-                      <div className="flex flex-col gap-6 sm:gap-8">
+                    <div className="space-y-6">
+                      <div className="flex flex-col gap-4 sm:gap-6">
                         <div className="relative group">
                           <input
                             type="text"
@@ -425,19 +425,19 @@ export default function Home() {
                             value={roomCode}
                             onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                             maxLength={6}
-                            className="w-full neo-input text-3xl sm:text-4xl text-center font-mono tracking-[0.3em] uppercase py-6 sm:py-8 bg-[var(--neutral)] group-focus-within:bg-white group-focus-within:neo-shadow-md transition-all placeholder:opacity-10"
+                            className="w-full neo-input text-xl sm:text-2xl text-center font-mono tracking-[0.3em] uppercase py-3 sm:py-4 bg-[var(--neutral)] group-focus-within:bg-white group-focus-within:neo-shadow-md transition-all placeholder:opacity-10"
                           />
-                          <div className="absolute -top-4 left-4 bg-black text-white text-xs sm:text-sm px-5 py-2 font-black uppercase tracking-[0.2em] italic neo-shadow-sm leading-none whitespace-nowrap">
+                          <div className="absolute -top-3 left-3 bg-black text-white text-[9px] sm:text-[10px] px-3 py-1 font-black uppercase tracking-[0.2em] italic neo-shadow-sm leading-none whitespace-nowrap">
                             KODE GABUNGAN
                           </div>
                         </div>
                         <button
                           onClick={() => handleJoin()}
                           disabled={!roomCode || !isConnected}
-                          className="w-full neo-button bg-[var(--secondary)] min-h-[90px] sm:min-h-[110px] flex items-center justify-center gap-4 group animate-shimmer neo-pop"
+                          className="w-full neo-button bg-[var(--secondary)] min-h-[56px] sm:min-h-[64px] flex items-center justify-center gap-2 group animate-shimmer neo-pop"
                         >
-                          <ArrowRight className="w-7 lg:w-10 h-7 lg:h-10 group-hover:translate-x-3 transition-transform duration-500" strokeWidth={4} />
-                          <span className="text-2xl lg:text-4xl font-black italic tracking-tighter">GABUNG PESTA</span>
+                          <ArrowRight className="w-4 lg:w-5 h-4 lg:h-5 group-hover:translate-x-2 transition-transform duration-500" strokeWidth={4} />
+                          <span className="text-lg lg:text-xl font-black italic tracking-tighter">GABUNG PESTA</span>
                         </button>
                       </div>
                     </div>
@@ -449,14 +449,14 @@ export default function Home() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="bg-[var(--danger)] text-white p-5 neo-border neo-shadow-sm font-black text-sm mt-10 uppercase tracking-wider flex items-center gap-4 rotate-1"
+                    className="bg-[var(--danger)] text-white p-3 neo-border neo-shadow-sm font-black text-xs mt-6 uppercase tracking-wider flex items-center gap-3 rotate-1"
                   >
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white flex items-center justify-center text-[var(--danger)] shrink-0 neo-border-sm animate-wiggle">
-                      <Zap className="w-7 h-7 lg:w-10 lg:h-10" fill="currentColor" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white flex items-center justify-center text-[var(--danger)] shrink-0 neo-border-sm animate-wiggle">
+                      <Zap className="w-5 h-5 lg:w-6 lg:h-6" fill="currentColor" />
                     </div>
-                    <div className="flex flex-col text-left gap-1">
-                      <span className="text-xs sm:text-sm opacity-80 italic font-black">ADA MASALAH!</span>
-                      <span className="text-lg sm:text-xl leading-tight tracking-tight">{error?.message || formError}</span>
+                    <div className="flex flex-col text-left gap-0.5">
+                      <span className="text-[10px] sm:text-xs opacity-80 italic font-black">ADA MASALAH!</span>
+                      <span className="text-base sm:text-lg leading-tight tracking-tight">{error?.message || formError}</span>
                     </div>
                   </motion.div>
                 )}
@@ -472,32 +472,32 @@ export default function Home() {
                 className="space-y-6 flex-1 flex flex-col"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter flex items-center gap-2 sm:gap-4 italic neo-text-glow">
-                    <Radio className="text-[var(--secondary)] animate-pulse w-6 h-6 lg:w-8 lg:h-8" strokeWidth={4} />
+                  <h2 className="text-lg sm:text-xl font-black uppercase tracking-tighter flex items-center gap-2 sm:gap-3 italic neo-text-glow">
+                    <Radio className="text-[var(--secondary)] animate-pulse w-5 h-5 lg:w-6 lg:h-6" strokeWidth={4} />
                     PESTA YANG TERBUKA
                   </h2>
                   <button 
                     onClick={refreshPublicRooms}
-                    className="neo-button bg-white text-xs sm:text-sm py-3 px-6 sm:px-10 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
+                    className="neo-button bg-white text-[10px] sm:text-xs py-2 px-4 sm:px-6 h-auto hover:bg-[var(--primary)] font-black tracking-widest active:translate-y-1 active:shadow-none transition-colors neo-pop"
                   >
                     SEGARKAN
                   </button>
                 </div>
 
-                <div className="flex-1 bg-white neo-border p-5 sm:p-8 min-h-[300px] flex flex-col neo-shadow bg-grid-pattern bg-[length:20px_20px] relative overflow-hidden">
+                <div className="flex-1 bg-white neo-border p-4 sm:p-6 min-h-[250px] flex flex-col neo-shadow bg-grid-pattern bg-[length:20px_20px] relative overflow-hidden">
                   <div className="absolute inset-0 bg-white/70 pointer-events-none" />
                   
                   {publicRooms.length === 0 ? (
-                    <div className="flex-1 flex flex-col items-center justify-center text-center p-10 relative z-10 gap-4">
+                    <div className="flex-1 flex flex-col items-center justify-center text-center p-6 relative z-10 gap-3">
                       <motion.div 
                         animate={{ rotate: 360 }}
                         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                        className="w-20 h-20 bg-[var(--bg-cheerful)] neo-border flex items-center justify-center mb-2 rounded-full opacity-40 neo-shadow-sm"
+                        className="w-16 h-16 bg-[var(--bg-cheerful)] neo-border flex items-center justify-center mb-1 rounded-full opacity-40 neo-shadow-sm"
                       >
-                        <Search className="w-10 h-10 lg:w-14 lg:h-14 text-black" strokeWidth={1.5} />
+                        <Search className="w-8 h-8 lg:w-10 lg:h-10 text-black" strokeWidth={1.5} />
                       </motion.div>
-                      <p className="text-xl font-black uppercase text-black tracking-tighter italic">BELUM ADA PESTA!</p>
-                      <p className="text-sm sm:text-base uppercase font-bold text-black/30 max-w-[240px] leading-relaxed">Sepertinya semua orang sedang sibuk. Yuk mulai pestamu sendiri!</p>
+                      <p className="text-lg font-black uppercase text-black tracking-tighter italic">BELUM ADA PESTA!</p>
+                      <p className="text-[10px] sm:text-xs uppercase font-bold text-black/30 max-w-[200px] leading-relaxed">Sepertinya semua orang sedang sibuk. Yuk mulai pestamu sendiri!</p>
                     </div>
                   ) : (
                     <div className="space-y-4 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar flex-1 relative z-10">
@@ -508,28 +508,28 @@ export default function Home() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.1 }}
                           whileHover={{ x: 10, scale: 1.01 }}
-                          className="bg-white p-5 sm:p-6 neo-border neo-shadow flex items-center justify-between group cursor-pointer border-l-[10px] border-l-[var(--primary)] relative overflow-hidden"
+                          className="bg-white p-3 sm:p-4 neo-border neo-shadow flex items-center justify-between group cursor-pointer border-l-[10px] border-l-[var(--primary)] relative overflow-hidden"
                           onClick={() => handleJoin(r.id)}
                         >
                           <div className="absolute top-0 right-0 w-32 h-full neo-strip opacity-[0.03]" />
-                          <div className="flex-1 min-w-0 pr-6 text-left relative z-10 flex flex-col gap-2">
-                            <div className="flex flex-wrap items-center gap-3">
-                                <span className="text-xs sm:text-sm font-black uppercase text-white bg-black px-3 py-1.5 sm:px-5 sm:py-2 neo-border-sm tracking-[0.1em]">{r.id}</span>
-                                <span className="text-xl sm:text-3xl font-black uppercase truncate tracking-tighter italic group-hover:text-[var(--secondary)] transition-colors">RUANGAN {r.name.toUpperCase()}</span>
+                          <div className="flex-1 min-w-0 pr-4 text-left relative z-10 flex flex-col gap-1.5">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[10px] sm:text-xs font-black uppercase text-white bg-black px-2 py-1 sm:px-3 sm:py-1.5 neo-border-sm tracking-[0.1em]">{r.id}</span>
+                                <span className="text-lg sm:text-xl font-black uppercase truncate tracking-tighter italic group-hover:text-[var(--secondary)] transition-colors">RUANGAN {r.name.toUpperCase()}</span>
                               </div>
-                            <div className="flex items-center gap-6">
-                              <div className="neo-badge bg-[var(--success)] px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-lg italic neo-shadow-sm leading-none h-auto gap-3">
-                                <Users className="w-5 lg:w-7 h-5 lg:h-7 text-black" strokeWidth={4} />
+                            <div className="flex items-center gap-4">
+                              <div className="neo-badge bg-[var(--success)] px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm italic neo-shadow-sm leading-none h-auto gap-2">
+                                <Users className="w-4 lg:w-5 h-4 lg:h-5 text-black" strokeWidth={4} />
                                 <span>{r.playerCount} / {r.maxPlayers}</span>
                               </div>
-                              <span className="text-xs sm:text-sm font-black uppercase text-black/40 italic flex items-center gap-2 tracking-[0.1em]">
-                                <div className="w-3 h-3 bg-[var(--success)] rounded-full animate-pulse shadow-[0_0_8px_var(--success)]" />
+                              <span className="text-[10px] sm:text-xs font-black uppercase text-black/40 italic flex items-center gap-2 tracking-[0.1em]">
+                                <div className="w-2 h-2 bg-[var(--success)] rounded-full animate-pulse shadow-[0_0_6px_var(--success)]" />
                                 SEDANG AKTIF
                               </span>
                             </div>
                           </div>
-                          <div className="neo-button bg-[var(--secondary)] p-3 sm:p-4 group-hover:rotate-12 transition-transform neo-shadow-sm relative z-10 neo-pop shrink-0">
-                            <ChevronRight className="w-6 lg:w-10 h-6 lg:h-10 text-black" strokeWidth={5} />
+                          <div className="neo-button bg-[var(--secondary)] p-2 sm:p-3 group-hover:rotate-12 transition-transform neo-shadow-sm relative z-10 neo-pop shrink-0">
+                            <ChevronRight className="w-5 lg:w-6 h-5 lg:h-6 text-black" strokeWidth={5} />
                           </div>
                         </motion.div>
                       ))}
@@ -587,7 +587,7 @@ export default function Home() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            className="bg-white w-full max-w-md neo-card relative z-10 overflow-hidden flex flex-col border-t-[6px] border-t-[var(--primary)]"
+            className="bg-white w-full max-w-md neo-card relative z-10 overflow-hidden flex flex-col border-t-[4px] border-t-[var(--primary)]"
           >
             <div className="bg-black text-white p-4 sm:p-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -679,7 +679,7 @@ export default function Home() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            className="bg-white w-full max-w-sm neo-card relative z-10 overflow-hidden flex flex-col border-t-[6px] border-t-[var(--danger)]"
+            className="bg-white w-full max-w-[340px] neo-card relative z-10 overflow-hidden flex flex-col border-t-[4px] border-t-[var(--danger)]"
           >
             <div className="bg-black text-white p-4 sm:p-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -696,11 +696,11 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="p-6 sm:p-8 flex flex-col gap-6 text-center">
+            <div className="p-4 sm:p-6 flex flex-col gap-4 text-center">
               <div className="flex justify-center">
-                <Smile className="w-16 h-16 text-[var(--danger)] -rotate-12" />
+                <Smile className="w-12 h-12 text-[var(--danger)] -rotate-12" />
               </div>
-              <p className="font-black text-lg uppercase tracking-wider text-black/40 italic">
+              <p className="font-black text-base uppercase tracking-wider text-black/40 italic">
                 SIAPA NAMA KAMU?
               </p>
               
@@ -716,7 +716,7 @@ export default function Home() {
                       setIsNameAlertOpen(false);
                     }
                   }}
-                  className="w-full neo-input text-xl sm:text-2xl py-5 px-6 uppercase placeholder:text-black/10 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter"
+                  className="w-full neo-input text-base sm:text-lg py-3 px-4 uppercase placeholder:text-black/10 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter"
                 />
                 <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-10">
                   <Gamepad2 className="w-5 lg:w-7 h-5 lg:h-7 text-black" />
@@ -731,7 +731,7 @@ export default function Home() {
                   }
                 }}
                 disabled={!name.trim()}
-                className="neo-button w-full bg-[var(--primary)] text-black py-4 font-black text-lg tracking-widest italic flex justify-center items-center gap-2 hover:bg-white transition-colors disabled:opacity-50 disabled:grayscale"
+                className="neo-button w-full bg-[var(--primary)] text-black py-3 font-black text-base tracking-widest italic flex justify-center items-center gap-2 hover:bg-white transition-colors disabled:opacity-50 disabled:grayscale"
               >
                 OKE, SIAP!
               </button>

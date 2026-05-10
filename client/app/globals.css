@@ -27,80 +27,80 @@ button {
 
 /* Neobrutalism Utilities */
 .neo-border {
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
 }
 
 .neo-border-t {
-  border-top: 3px solid var(--border);
+  border-top: 1px solid var(--border);
 }
 
 .neo-border-b {
-  border-bottom: 3px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .neo-border-l {
-  border-left: 3px solid var(--border);
+  border-left: 1px solid var(--border);
 }
 
 .neo-border-r {
-  border-right: 3px solid var(--border);
+  border-right: 1px solid var(--border);
 }
 
 .neo-border-sm {
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
 }
 
 .neo-border-t-sm {
-  border-top: 2px solid var(--border);
+  border-top: 1px solid var(--border);
 }
 
 .neo-border-b-sm {
-  border-bottom: 2px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .neo-border-l-sm {
-  border-left: 2px solid var(--border);
+  border-left: 1px solid var(--border);
 }
 
 .neo-border-r-sm {
-  border-right: 2px solid var(--border);
+  border-right: 1px solid var(--border);
 }
 
 .neo-shadow {
-  box-shadow: 4px 4px 0px 0px var(--shadow);
+  box-shadow: 2px 2px 0px 0px var(--shadow);
 }
 
 .neo-shadow-lg {
-  box-shadow: 10px 10px 0px 0px var(--shadow);
+  box-shadow: 4px 4px 0px 0px var(--shadow);
 }
 
 .neo-shadow-md {
-  box-shadow: 6px 6px 0px 0px var(--shadow);
+  box-shadow: 3px 3px 0px 0px var(--shadow);
 }
 
 .neo-shadow-sm {
-  box-shadow: 3px 3px 0px 0px var(--shadow);
+  box-shadow: 1px 1px 0px 0px var(--shadow);
 }
 
 .neo-card {
   background: var(--surface);
-  border: 3px solid var(--border);
-  box-shadow: 6px 6px 0px 0px var(--shadow);
+  border: 1px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--shadow);
   transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .neo-card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px var(--shadow);
+  box-shadow: 4px 4px 0px 0px var(--shadow);
 }
 
 .neo-button {
-  border: 3px solid var(--border);
-  box-shadow: 4px 4px 0px 0px var(--shadow);
+  border: 1px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--shadow);
   font-weight: 900;
   text-transform: uppercase;
   transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  padding: 0.8rem 1.5rem;
+  padding: 0.5rem 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -109,12 +109,12 @@ button {
 }
 
 .neo-button:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px var(--shadow);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px 0px var(--shadow);
 }
 
 .neo-button:active:not(:disabled) {
-  transform: translate(2px, 2px);
+  transform: translate(1px, 1px);
   box-shadow: 0px 0px 0px 0px var(--shadow);
 }
 
@@ -125,19 +125,19 @@ button {
 }
 
 .neo-input {
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   background: white;
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 1rem;
   font-weight: 700;
   outline: none;
-  box-shadow: inset 3px 3px 0px 0px rgba(0,0,0,0.05);
+  box-shadow: inset 2px 2px 0px 0px rgba(0,0,0,0.05);
   transition: all 0.2s ease;
 }
 
 .neo-input:focus {
   background: var(--neutral);
-  box-shadow: 4px 4px 0px 0px var(--primary);
-  transform: translate(-2px, -2px);
+  box-shadow: 2px 2px 0px 0px var(--primary);
+  transform: translate(-1px, -1px);
 }
 
 /* Glassmorphism Neobrutalism */
@@ -209,12 +209,12 @@ button {
 }
 
 .neo-badge {
-  padding: 0.5rem 1.25rem;
-  border: 3px solid var(--border);
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid var(--border);
   font-weight: 900;
   text-transform: uppercase;
-  font-size: 1rem;
-  box-shadow: 3px 3px 0px 0px var(--shadow);
+  font-size: 0.75rem;
+  box-shadow: 1.5px 1.5px 0px 0px var(--shadow);
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
@@ -307,14 +307,14 @@ button {
 /* Character Avatar Styles */
 .neo-avatar {
   background: var(--surface);
-  border: 3px solid var(--border);
-  box-shadow: 4px 4px 0px 0px var(--shadow);
+  border: 1.5px solid var(--border);
+  box-shadow: 2px 2px 0px 0px var(--shadow);
   transition: all 0.2s ease;
 }
 
 .neo-avatar:hover {
-  transform: translate(-3px, -3px) rotate(5deg);
-  box-shadow: 7px 7px 0px 0px var(--shadow);
+  transform: translate(-2px, -2px) rotate(5deg);
+  box-shadow: 4px 4px 0px 0px var(--shadow);
 }
 
 /* Pop effects */
@@ -333,9 +333,9 @@ button {
 /* Tactical Corner Accents */
 .neo-accent-corner {
   position: absolute;
-  width: 16px;
-  height: 16px;
-  border: 3px solid var(--border);
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--border);
   z-index: 20;
   pointer-events: none;
 }
@@ -347,10 +347,10 @@ button {
 
 /* Progress Bar */
 .neo-progress-bar {
-  height: 32px;
+  height: 24px;
   background: var(--neutral);
-  border: 3px solid var(--border);
-  box-shadow: inset 4px 4px 0px 0px rgba(0,0,0,0.1);
+  border: 1.5px solid var(--border);
+  box-shadow: inset 2px 2px 0px 0px rgba(0,0,0,0.1);
   overflow: hidden;
   position: relative;
 }
@@ -358,6 +358,6 @@ button {
 .neo-progress-bar-fill {
   height: 100%;
   background: var(--primary);
-  border-right: 3px solid var(--border);
+  border-right: 1.5px solid var(--border);
   transition: width 0.3s ease;
 }
