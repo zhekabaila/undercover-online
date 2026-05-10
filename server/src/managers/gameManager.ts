@@ -5,6 +5,9 @@ import { broadcast, playerSockets, sendToPlayer } from './roomManager.js'
 import { assignRoles } from '../utils/roleAssigner.js'
 import { getRandomWordPair } from '../utils/wordPairs.js'
 import { startTimer, clearTimer } from './timerManager.js'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export function handleStartGame(playerId: string) {
   const rooms = roomStore.getAllRooms()
@@ -410,6 +413,34 @@ function endGame(room: Room | any, winnerRole: RoleType | 'civilian') {
       room: { ...room, players: Array.from(room.players.values()) },
     })
   })
+
+  // Save history for authenticated users
+  saveGameHistory(room, winnerRole)
+}
+
+async function saveGameHistory(room: Room | any, winnerRole: RoleType | 'civilian') {
+  const players = Array.from(room.players.values()) as Player[];
+  const historyData = players
+    .filter(p => p.userId) // only save for authenticated users
+    .map(p => ({
+      userId: p.userId!,
+      roomId: room.id,
+      roomName: `Room ${room.id}`,
+      role: p.role as string,
+      word: p.word || null,
+      winner: winnerRole,
+      isWinner: p.role === winnerRole,
+    }));
+
+  if (historyData.length > 0) {
+    try {
+      await prisma.gameHistory.createMany({
+        data: historyData
+      });
+    } catch (err) {
+      console.error('Error saving game history:', err);
+    }
+  }
 }
 
 export function handleChat(playerId: string, payload: { message: string }) {

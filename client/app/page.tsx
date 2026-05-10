@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Search, Plus, Sparkles, Users, Zap, ChevronRight, Radio, ArrowRight, PartyPopper, Smile, Gamepad2, Info, X, ChevronLeft, HelpCircle } from 'lucide-react'
+import { Search, Plus, Sparkles, Users, Zap, ChevronRight, Radio, ArrowRight, PartyPopper, Smile, Gamepad2, Info, X, ChevronLeft, HelpCircle, LogOut, KeyRound, History } from 'lucide-react'
 import { useGameState } from '../hooks/useGameState'
 import { FloatingShape } from '../components/ui/FloatingShape'
 
@@ -15,8 +15,74 @@ export default function Home() {
   const [view, setView] = useState<'landing' | 'play'>('landing')
   const [isGuideOpen, setIsGuideOpen] = useState(false)
   const [guideStep, setGuideStep] = useState(0)
+  
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
+  const [authForm, setAuthForm] = useState({ username: '', password: '' })
+  const [authError, setAuthError] = useState('')
+  const [authLoading, setAuthLoading] = useState(false)
+  
+  const [user, setUser] = useState<{ id: string, username: string } | null>(null)
+  const [token, setToken] = useState<string | null>(null)
+
   const router = useRouter()
   const { createRoom, joinRoom, room, isConnected, error, publicRooms, refreshPublicRooms } = useGameState()
+
+  const API_URL = process.env.NEXT_PUBLIC_WS_URL 
+    ? process.env.NEXT_PUBLIC_WS_URL.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:') 
+    : 'http://localhost:3021'
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token')
+    if (savedToken) {
+      setToken(savedToken)
+      fetch(`${API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${savedToken}` }
+      }).then(res => res.json()).then(data => {
+        if (data.user) {
+          setUser(data.user)
+          setName(data.user.username)
+        } else {
+          localStorage.removeItem('token')
+        }
+      }).catch(err => console.error('Auth check error:', err))
+    }
+  }, [API_URL])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    setToken(null)
+    setUser(null)
+    setName('')
+  }
+
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAuthError('')
+    setAuthLoading(true)
+    try {
+      const endpoint = authMode === 'login' ? '/auth/login' : '/auth/register'
+      const res = await fetch(`${API_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(authForm)
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || data.message || 'Authentication failed')
+      }
+      localStorage.setItem('token', data.token)
+      setToken(data.token)
+      setUser(data.user)
+      setName(data.user.username)
+      setIsAuthModalOpen(false)
+      setAuthForm({ username: '', password: '' })
+    } catch (err: any) {
+      setAuthError(err.message)
+    } finally {
+      setAuthLoading(false)
+    }
+  }
 
   const handleCreate = () => {
     if (!name) return
@@ -104,6 +170,40 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[var(--bg-cheerful)] text-black flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-x-hidden overflow-y-auto selection:bg-[var(--secondary)]">
+      {/* Top Bar for Auth */}
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[110] flex items-center gap-4">
+        {user ? (
+          <div className="flex items-center gap-2">
+            <span className="neo-badge bg-[var(--primary)] text-sm sm:text-base px-4 py-2 italic tracking-widest font-black neo-shadow-sm flex items-center gap-2">
+              <Smile className="w-4 h-4" />
+              {user.username.toUpperCase()}
+            </span>
+            <button 
+              onClick={() => router.push('/history')} 
+              className="neo-button bg-[var(--accent)] text-black p-2 neo-shadow-sm group hover:bg-white hover:text-[var(--accent)] transition-colors"
+              title="History"
+            >
+               <History className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            </button>
+            <button 
+              onClick={handleLogout} 
+              className="neo-button bg-[var(--danger)] text-white p-2 neo-shadow-sm group hover:bg-white hover:text-[var(--danger)] transition-colors"
+              title="Logout"
+            >
+               <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            </button>
+          </div>
+        ) : (
+          <button 
+            onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
+            className="neo-button bg-[var(--primary)] px-6 py-2.5 font-black italic uppercase tracking-wider text-sm neo-shadow-sm hover:bg-white hover:text-[var(--primary)] transition-colors flex items-center gap-2"
+          >
+            <KeyRound className="w-4 h-4" />
+            LOGIN / DAFTAR
+          </button>
+        )}
+      </div>
+
       {/* Premium Decorative Accents */}
       <div className="fixed top-0 left-0 w-full h-4 neo-strip z-[100]" />
       <div className="fixed bottom-0 left-0 w-full h-4 neo-strip-secondary z-[100]" />
@@ -246,9 +346,10 @@ export default function Home() {
                       <input
                         type="text"
                         placeholder="PILIH NAMA KERENMU..."
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full neo-input text-lg sm:text-2xl py-5 px-6 uppercase placeholder:text-black/10 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter"
+                        value={user ? user.username : name}
+                        onChange={(e) => !user && setName(e.target.value)}
+                        disabled={!!user}
+                        className="w-full neo-input text-lg sm:text-2xl py-5 px-6 uppercase placeholder:text-black/10 font-black focus:bg-[var(--bg-cheerful)] transition-all italic tracking-tighter disabled:opacity-60"
                       />
                       <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-10 group-focus-within:opacity-40 transition-opacity">
                         <Gamepad2 className="w-5 lg:w-7 h-5 lg:h-7 text-black" />
@@ -455,6 +556,98 @@ export default function Home() {
           </div>
         </div> */}
       </motion.div>
+
+      {/* Auth Modal */}
+      {isAuthModalOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsAuthModalOpen(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+          
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            className="bg-white w-full max-w-md neo-card relative z-10 overflow-hidden flex flex-col border-t-[6px] border-t-[var(--primary)]"
+          >
+            <div className="bg-black text-white p-4 sm:p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <KeyRound className="w-6 h-6 text-[var(--primary)]" strokeWidth={3} />
+                <h3 className="font-black uppercase tracking-tighter text-xl sm:text-2xl italic leading-none">
+                  {authMode === 'login' ? 'LOGIN' : 'DAFTAR'}
+                </h3>
+              </div>
+              <button 
+                onClick={() => setIsAuthModalOpen(false)}
+                className="w-10 h-10 bg-white/10 hover:bg-white/20 neo-border-sm flex items-center justify-center transition-colors"
+              >
+                <X className="w-6 h-6" strokeWidth={3} />
+              </button>
+            </div>
+
+            <div className="p-6 sm:p-8 flex flex-col gap-6">
+              {authError && (
+                <div className="bg-[var(--danger)] text-white p-3 font-bold text-sm neo-border-sm italic uppercase flex items-center gap-2">
+                  <Zap className="w-4 h-4 shrink-0" />
+                  {authError}
+                </div>
+              )}
+              
+              <form onSubmit={handleAuthSubmit} className="flex flex-col gap-5">
+                <div className="space-y-2">
+                  <label className="font-black uppercase tracking-widest text-sm text-black/60">USERNAME</label>
+                  <input 
+                    type="text" 
+                    value={authForm.username}
+                    onChange={(e) => setAuthForm({ ...authForm, username: e.target.value })}
+                    required
+                    maxLength={20}
+                    className="w-full neo-input py-3 px-4 font-bold text-lg focus:bg-[var(--bg-cheerful)] transition-colors"
+                    placeholder="Masukkan nama kerenmu"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="font-black uppercase tracking-widest text-sm text-black/60">PASSWORD</label>
+                  <input 
+                    type="password" 
+                    value={authForm.password}
+                    onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                    required
+                    className="w-full neo-input py-3 px-4 font-bold text-lg focus:bg-[var(--bg-cheerful)] transition-colors"
+                    placeholder="Rahasia tingkat tinggi"
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={authLoading}
+                  className="neo-button w-full bg-[var(--primary)] text-black mt-2 py-4 font-black text-lg tracking-widest italic flex justify-center items-center gap-2 hover:bg-black hover:text-white transition-colors disabled:opacity-50"
+                >
+                  {authLoading ? 'TUNGGU...' : (authMode === 'login' ? 'MASUK' : 'BUAT AKUN')}
+                </button>
+              </form>
+
+              <div className="text-center mt-2 border-t-[2px] border-black/10 pt-6">
+                <p className="font-bold text-sm text-black/60 mb-3 uppercase tracking-wider">
+                  {authMode === 'login' ? 'BELUM PUNYA AKUN?' : 'SUDAH PUNYA AKUN?'}
+                </p>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setAuthMode(authMode === 'login' ? 'register' : 'login')
+                    setAuthError('')
+                  }}
+                  className="neo-badge bg-[var(--secondary)] text-sm px-6 py-2 hover:scale-105 transition-transform"
+                >
+                  {authMode === 'login' ? 'DAFTAR SEKARANG' : 'LOGIN SAJA'}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Guide Modal */}
       {isGuideOpen && (

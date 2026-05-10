@@ -19,6 +19,7 @@ export interface Player {
   isAlive: boolean;
   hasSpokenThisRound: boolean;
   description?: string;      // per-round description
+  userId?: string;           // authenticated user ID for saving history
 }
 
 export interface TurnOrder {
