@@ -1471,7 +1471,7 @@ function PlayerCard({
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       whileHover={player.isAlive ? { y: -5, rotate: isSelf ? 0 : isCurrent ? 1 : -1 } : {}}
-      className={`relative bg-white neo-border p-1.5 flex flex-col gap-2 transition-all overflow-hidden neo-shadow-sm ${
+      className={`relative bg-white neo-border p-1.5 flex flex-col gap-2 transition-all neo-shadow-sm ${
         isCurrent && player.isAlive ? 'border-[var(--primary)] border-2 ring-2 ring-[var(--primary)]/20' : ''
       } ${!player.isAlive ? 'grayscale opacity-60 bg-gray-100' : ''}`}
     >
@@ -1511,7 +1511,7 @@ function PlayerCard({
               exit={{ opacity: 0, scale: 0.8 }}
               className="absolute -top-12 left-1/2 -translate-x-1/2 w-[120%] z-40 pointer-events-none"
             >
-              <div className="bg-black text-[var(--primary)] p-1.5 neo-border-sm neo-shadow-sm text-center transform -rotate-1 relative">
+              <div className="bg-black max-w-[150px] mx-auto text-[var(--primary)] p-1.5 neo-border-sm neo-shadow-sm text-center transform -rotate-1 relative">
                 <div className="absolute -top-2 left-2 bg-[var(--primary)] text-black text-[6px] font-black px-1 uppercase tracking-tighter">
                   INTERCEPTED
                 </div>
