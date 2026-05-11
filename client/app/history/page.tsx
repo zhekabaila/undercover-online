@@ -28,7 +28,13 @@ export default function HistoryPage() {
           return
         }
 
-        const res = await fetch('http://localhost:3021/auth/me/history', {
+        const API_URL = process.env.NEXT_PUBLIC_WS_URL 
+          ? process.env.NEXT_PUBLIC_WS_URL.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:') 
+          : 'http://localhost:3021'
+
+        const url = `${API_URL}/auth/me/history` 
+          
+        const res = await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`
           }
