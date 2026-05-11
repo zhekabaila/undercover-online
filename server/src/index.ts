@@ -5,6 +5,7 @@ import cors from 'cors';
 import { handleConnection } from './ws/wsHandler.js';
 import { getAllRooms } from './state/roomStore.js';
 import authRouter from './routes/auth.js';
+import leaderboardRouter from './routes/leaderboard.js';
 
 const app = express();
 const server = createServer(app);
@@ -25,8 +26,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Auth routes
+// API routes
 app.use('/auth', authRouter);
+app.use('/api/leaderboard', leaderboardRouter);
 
 // Health check
 app.get('/health', (_, res) => res.json({ status: 'ok' }));

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Search, Plus, Sparkles, Users, Zap, ChevronRight, Radio, ArrowRight, PartyPopper, Smile, Gamepad2, Info, X, ChevronLeft, HelpCircle, LogOut, KeyRound, History } from 'lucide-react'
+import { Search, Plus, Sparkles, Users, Zap, ChevronRight, Radio, ArrowRight, PartyPopper, Smile, Gamepad2, Info, X, ChevronLeft, HelpCircle, LogOut, KeyRound, History, Trophy } from 'lucide-react'
 import { useGameState } from '../hooks/useGameState'
 import { FloatingShape } from '../components/ui/FloatingShape'
 
@@ -187,7 +187,14 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[var(--bg-cheerful)] text-black flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-x-hidden overflow-y-auto selection:bg-[var(--secondary)]">
       {/* Top Bar for Auth */}
-      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[110] flex items-center gap-4">
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[110] flex items-center gap-2 sm:gap-4">
+        <button 
+          onClick={() => router.push('/leaderboard')} 
+          className="neo-button bg-[var(--primary)] text-black p-2 neo-shadow-sm group hover:bg-white hover:text-[var(--primary)] transition-colors"
+          title="Leaderboard"
+        >
+           <Trophy className="w-5 h-5 group-hover:scale-110 transition-transform" />
+        </button>
         {user ? (
           <div className="flex items-center gap-2">
             <span className="neo-badge bg-[var(--primary)] text-sm sm:text-base px-4 py-2 italic tracking-widest font-black neo-shadow-sm flex items-center gap-2">

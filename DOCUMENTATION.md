@@ -37,6 +37,7 @@ undercover-online/
 │   │   ├── history/        # Halaman Riwayat Permainan
 │   │   ├── layout.tsx      # Layout Utama
 │   │   ├── page.tsx        # Halaman Utama (Masuk/Buat Ruangan)
+│   │   ├── leaderboard/    # Halaman Pemeringkatan (Global/Per Peran)
 │   │   └── globals.css     # Style Global (Neobrutalism)
 │   ├── components/         # Komponen UI Reusable
 │   ├── hooks/              # Custom React Hooks
@@ -60,6 +61,8 @@ undercover-online/
 │   │   │   ├── roleAssigner.ts # Logika Inisialisasi Game
 │   │   │   └── wordPairs.ts    # Database Kosakata
 │   │   ├── routes/         # Rute REST API (Auth/User)
+│   │   │   ├── auth.ts     # Manajemen Sesi & Registrasi
+│   │   │   └── leaderboard.ts # Endpoint Pemeringkatan Pemain
 │   │   └── index.ts        # Entry Point Server
 │   ├── prisma/             # Schema Database
 │   └── Dockerfile          # Build Image Server
@@ -247,7 +250,30 @@ Untuk memperbarui schema:
 
 ---
 
-## 9. Sistem Desain: Neobrutalism
+## 9. Sistem Leaderboard
+
+Fitur Leaderboard memungkinkan pemain untuk melihat peringkat pemain terbaik berdasarkan jumlah kemenangan mereka.
+
+### 🛠️ Mekanisme Pengambilan Data (Backend)
+Pemeringkatan dilakukan secara dinamis melalui query agregasi pada model `GameHistory`:
+1.  **Agregasi**: Server menggunakan fungsi `groupBy` dari Prisma untuk mengelompokkan data berdasarkan `userId`.
+2.  **Filter Kemenangan**: Hanya record dengan `isWinner: true` yang dihitung.
+3.  **Filter Peran (Opsional)**: Mendukung query parameter `role` untuk melihat peringkat spesifik (misalnya: peringkat khusus *Mr. White*).
+4.  **Sorting**: Hasil diurutkan berdasarkan jumlah (`_count`) `userId` secara menurun (descending).
+5.  **Limitasi**: Mengambil Top 20 pemain untuk menjaga performa query tetap optimal.
+6.  **Resolusi Username**: Setelah mendapatkan ID pemenang, server melakukan query kedua ke tabel `User` untuk mendapatkan `username` yang sesuai sebelum dikirim ke client.
+
+**Endpoint API**: `GET /api/leaderboard?role=[civilian|undercover|mrwhite]`
+
+### 🎨 Implementasi Frontend
+- **Tab Dinamis**: Menggunakan state untuk beralih antara kategori "Global", "Civilian", "Undercover", dan "Mr. White".
+- **Real-time Fetching**: Data diambil setiap kali user berpindah tab menggunakan `useEffect`.
+- **Visual Rank**: Memberikan identitas visual khusus (Mahkota/Medali) untuk peringkat 1-3.
+- **Optimistic Loading**: Menggunakan `AnimatePresence` dari Framer Motion untuk transisi halus saat memuat data.
+
+---
+
+## 10. Sistem Desain: Neobrutalism
 
 UI dibangun menggunakan bahasa desain **Neobrutalist**:
 - **Kontras Tinggi**: Border hitam tebal (`border-4 border-black`).
