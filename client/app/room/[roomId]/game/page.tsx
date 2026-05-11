@@ -1460,11 +1460,6 @@ function PlayerCard({
   votesReceived?: number
   hasActioned?: boolean
 }) {
-  // Random ID for tactical feel
-  const agentId = useMemo(() => {
-    return `AGT-${player.id.slice(0, 3).toUpperCase()}`
-  }, [player.id])
-
   return (
     <motion.div
       layout
@@ -1482,9 +1477,6 @@ function PlayerCard({
       {/* Identity Label */}
       <div className="flex justify-between items-center px-1 relative z-10">
         <div className="flex items-center gap-1.5">
-          <span className="text-[7px] font-black text-black/40 uppercase tracking-widest tabular-nums">
-            {agentId}
-          </span>
           {hasActioned && player.isAlive && (
             <div className="flex items-center gap-0.5 bg-black text-[var(--primary)] px-1 py-0.5 rounded-sm">
               <Check size={6} strokeWidth={4} />
