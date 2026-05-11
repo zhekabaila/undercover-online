@@ -15,11 +15,7 @@ import {
   Loader2,
   X,
   ChevronRight,
-  PartyPopper,
-  Crown, Ghost,
-  Music,
-  Gamepad2,
-  Users, Search,
+  PartyPopper, Ghost, Gamepad2, Search,
   Sparkles,
   Fingerprint,
   Target,
@@ -331,11 +327,6 @@ export default function GameScreen() {
               }`}
             >
               <MessageSquare className="w-3.5 lg:w-4 h-3.5 lg:h-4" strokeWidth={3} />
-              {messages.length > 0 && !isChatOpen && (
-                <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 lg:w-4 lg:h-4 bg-[var(--danger)] neo-border-sm rounded-full text-[9px] lg:text-[10px] font-black flex items-center justify-center text-white animate-bounce neo-shadow-sm">
-                  !
-                </span>
-              )}
             </button>
           </div>
         </div>
@@ -455,7 +446,7 @@ export default function GameScreen() {
                     className="neo-button bg-black text-white px-6 py-3 text-sm font-black hover:bg-[var(--primary)] hover:text-black active:scale-95 transition-all neo-pop flex items-center gap-2"
                   >
                     <MessageSquare size={16} />
-                    BUKA TERMINAL
+                    BUKA PERCAKAPAN
                   </button>
                 </motion.div>
               )}
@@ -860,19 +851,15 @@ function ChatContent({
       <div className="h-auto shrink-0 px-3 sm:px-4 py-3 neo-border-b flex items-center justify-between bg-black text-white relative z-10">
         <div className="flex items-center gap-2 relative z-10">
           <div className="w-8 h-8 sm:w-10 sm:h-10 neo-border-sm bg-[var(--primary)] flex items-center justify-center text-black neo-shadow-sm transform -rotate-3">
-            <Terminal className="w-4 h-4 lg:w-5 lg:h-5" strokeWidth={3} />
+            <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5" strokeWidth={3} />
           </div>
           <div className="flex flex-col">
             <h3 
-              data-text="SALURAN AMAN"
+              data-text="PERCAKAPAN"
               className="font-black text-[10px] lg:text-xs uppercase tracking-[0.2em] text-[var(--primary)] leading-none italic"
             >
-              SALURAN AMAN
+              PERCAKAPAN
             </h3>
-            <div className="flex items-center gap-1.5 mt-1">
-              <div className="w-1.5 h-1.5 bg-[var(--success)] rounded-full animate-pulse" />
-              <span className="text-[8px] font-black uppercase tracking-widest text-white/40">ENCRYPTED: AES-256</span>
-            </div>
           </div>
         </div>
         <button
