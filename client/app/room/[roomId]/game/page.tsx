@@ -1428,7 +1428,7 @@ function GameEndedView({
         })}
       </div>
 
-      <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-[500px] relative z-10">
+      {/* <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-[500px] relative z-10">
           <button
             onClick={onReturn}
             className="neo-button bg-[var(--success)] flex-1 py-3 text-sm sm:text-lg neo-pop group"
@@ -1436,7 +1436,7 @@ function GameEndedView({
             <ArrowLeft size={20} strokeWidth={4} className="group-hover:-translate-x-1 transition-transform" />
             <span className="font-black uppercase tracking-[0.2em] italic">KE LOBBY</span>
           </button>
-      </div>
+      </div> */}
     </motion.div>
   )
 }
