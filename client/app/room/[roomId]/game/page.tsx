@@ -1643,11 +1643,16 @@ function Timer({
 }) {
   const [timeLeft, setTimeLeft] = useState(0)
   const [initialTime, setInitialTime] = useState<number | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
     if (!endsAt) {
       setInitialTime(null)
       setTimeLeft(0)
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current.currentTime = 0
+      }
       return
     }
     
@@ -1661,20 +1666,36 @@ function Timer({
       const currentRemaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000))
       setTimeLeft(currentRemaining)
       
-      // Play tick sound when low
-      if (currentRemaining <= 5 && currentRemaining > 0) {
-        try {
-          const audio = new Audio('/sounds/tick.mp3')
-          audio.volume = 0.3
-          audio.play().catch(() => {})
-        } catch (e) {}
+      // Play tick sound when low (start at 10s to match UI "isLow")
+      if (currentRemaining <= 10 && currentRemaining > 0) {
+        if (!audioRef.current) {
+          audioRef.current = new Audio('/sounds/tick.mp3')
+          audioRef.current.volume = 0.3
+          audioRef.current.loop = true
+        }
+        
+        if (audioRef.current.paused) {
+          audioRef.current.play().catch(() => {})
+        }
+      } else {
+        // Stop audio if not in critical time or expired
+        if (audioRef.current) {
+          audioRef.current.pause()
+          audioRef.current.currentTime = 0
+        }
       }
       
       if (currentRemaining === 0) onExpire()
     }
     update()
     const interval = setInterval(update, 1000)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      if (audioRef.current) {
+        audioRef.current.pause()
+        audioRef.current.currentTime = 0
+      }
+    }
   }, [endsAt, onExpire])
 
   const progress = initialTime ? (timeLeft / initialTime) * 100 : 0
